@@ -33,4 +33,13 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
   </ItemGroup>
 
+  <!-- Exclude Demo project files from this project -->
+  <ItemGroup>
+    <Compile Remove="Demo\**" />
+    <Page Remove="Demo\**" />
+    <ApplicationDefinition Remove="Demo\**" />
+    <None Remove="Demo\**" />
+    <EmbeddedResource Remove="Demo\**" />
+  </ItemGroup>
+
 </Project>
