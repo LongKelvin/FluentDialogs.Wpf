@@ -1,0 +1,60 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:FluentDialogs.Controls"
+                    xmlns:enums="clr-namespace:FluentDialogs.Enums">
+
+    <Style TargetType="{x:Type controls:IconPresenter}">
+        <Setter Property="Width" Value="48"/>
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:IconPresenter}">
+                    <Viewbox Width="{TemplateBinding Width}" 
+                             Height="{TemplateBinding Height}"
+                             Stretch="Uniform">
+                        <Path Width="32" 
+                              Height="32"
+                              Data="{TemplateBinding IconContent}"
+                              Fill="{DynamicResource InfoIconBrush}"
+                              Stroke="{DynamicResource InfoIconBrush}"
+                              StrokeThickness="2"
+                              Stretch="Uniform">
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.Info}">
+                                            <Setter Property="Fill" Value="{DynamicResource InfoIconBrush}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource InfoIconBrush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.Warning}">
+                                            <Setter Property="Fill" Value="{DynamicResource WarningIconBrush}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource WarningIconBrush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.Error}">
+                                            <Setter Property="Fill" Value="{DynamicResource ErrorIconBrush}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource ErrorIconBrush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.Success}">
+                                            <Setter Property="Fill" Value="{DynamicResource SuccessIconBrush}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource SuccessIconBrush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.Question}">
+                                            <Setter Property="Fill" Value="{DynamicResource QuestionIconBrush}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource QuestionIconBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
