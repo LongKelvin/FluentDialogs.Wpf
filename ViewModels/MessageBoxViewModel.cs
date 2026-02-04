@@ -39,7 +39,7 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
     /// <summary>
     /// Occurs when the dialog should be closed.
     /// </summary>
-    public event EventHandler? CloseRequested;
+    public event EventHandler<MessageBoxResult>? CloseRequested;
 
     /// <summary>
     /// Gets or sets the title text displayed in the dialog.
@@ -297,7 +297,7 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
         }
 
         Result = buttonViewModel.Result;
-        CloseRequested?.Invoke(this, EventArgs.Empty);
+        CloseRequested?.Invoke(this, buttonViewModel.Result);
     }
 
     private void OnToggleStackTrace()
