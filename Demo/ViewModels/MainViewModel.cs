@@ -62,15 +62,17 @@ public partial class MainViewModel : ObservableObject
     #region Theme Commands
 
     /// <summary>
-    /// Toggles between Light and Dark themes.
+    /// Applies the current theme based on IsDarkMode value.
     /// </summary>
     /// <remarks>
     /// Theme changes take effect immediately for all subsequent dialogs.
+    /// Note: IsDarkMode is already toggled by the ToggleButton's IsChecked binding.
     /// </remarks>
     [RelayCommand]
     private void ToggleTheme()
     {
-        IsDarkMode = !IsDarkMode;
+        // IsDarkMode is already set by the ToggleButton's IsChecked two-way binding
+        // We just need to apply the theme based on the current value
         var newTheme = IsDarkMode ? MessageBoxTheme.Dark : MessageBoxTheme.Light;
 
         _themeService.SetTheme(newTheme);
