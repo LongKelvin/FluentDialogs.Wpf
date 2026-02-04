@@ -1,0 +1,18 @@
+<Application x:Class="FluentDialogs.Demo.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 
+                    Load FluentDialogs theme resources.
+                    The library provides both Light and Dark themes.
+                    Theme switching is handled by IMessageBoxThemeService at runtime.
+                -->
+                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
+                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

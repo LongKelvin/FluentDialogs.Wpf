@@ -1,0 +1,267 @@
+<Window x:Class="FluentDialogs.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FluentDialogs.Demo.ViewModels"
+        mc:Ignorable="d"
+        Title="FluentDialogs.Wpf Demo"
+        Width="800"
+        Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}">
+
+    <Window.Resources>
+        <!-- Demo application styles -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,16,0,8"/>
+            <Setter Property="Foreground" Value="#323130"/>
+        </Style>
+
+        <Style x:Key="DescriptionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#605E5C"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="DemoButtonStyle" TargetType="Button">
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#8A8886"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3F2F1"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#EDEBE9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource DemoButtonStyle}">
+            <Setter Property="Background" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#0078D4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#106EBE"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32">
+            
+            <!-- Header -->
+            <TextBlock Text="FluentDialogs.Wpf Demo"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#323130"/>
+            <TextBlock Text="A modern, injectable WPF dialog library with Windows 11 Fluent Design"
+                       FontSize="14"
+                       Foreground="#605E5C"
+                       Margin="0,4,0,24"/>
+
+            <!-- Theme Toggle Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Theme Settings" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        FluentDialogs supports runtime theme switching between Light and Dark modes.
+                        Click the button below to toggle the theme for all dialogs.
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Toggle Theme"
+                                Command="{Binding ToggleThemeCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"/>
+                        <TextBlock VerticalAlignment="Center" Margin="16,0,0,0">
+                            <Run Text="Current Theme: "/>
+                            <Run Text="{Binding CurrentTheme, Mode=OneWay}" FontWeight="SemiBold"/>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Standard Dialogs Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Standard Dialogs" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        These are the quick helper methods for common dialog scenarios.
+                        Each method is async-safe and returns a Task&lt;MessageBoxResult&gt;.
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="Info Dialog"
+                                Command="{Binding ShowInfoCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Confirm Dialog"
+                                Command="{Binding ShowConfirmCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Error Dialog"
+                                Command="{Binding ShowErrorCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Error with Exception"
+                                Command="{Binding ShowErrorWithExceptionCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- All Button Configurations Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Button Configurations" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        Test all standard button configurations available in FluentDialogs.
+                        Each configuration provides different button combinations for various use cases.
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="OK"
+                                Command="{Binding ShowOkCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="OK / Cancel"
+                                Command="{Binding ShowOkCancelCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Yes / No"
+                                Command="{Binding ShowYesNoCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Yes / No / Cancel"
+                                Command="{Binding ShowYesNoCancelCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Retry / Cancel"
+                                Command="{Binding ShowRetryCancelCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Abort / Retry / Ignore"
+                                Command="{Binding ShowAbortRetryIgnoreCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- All Icon Types Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Icon Types" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        FluentDialogs provides vector-based icons that scale perfectly at any DPI.
+                        Each icon is theme-aware and uses appropriate colors.
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="No Icon"
+                                Command="{Binding ShowNoIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Info Icon"
+                                Command="{Binding ShowInfoIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Warning Icon"
+                                Command="{Binding ShowWarningIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Error Icon"
+                                Command="{Binding ShowErrorIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Success Icon"
+                                Command="{Binding ShowSuccessIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Question Icon"
+                                Command="{Binding ShowQuestionIconCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Custom Buttons Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Custom Buttons" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        Create dialogs with custom button text, styles, and behaviors.
+                        Supports Primary, Secondary, Default, and Danger button styles.
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="Save / Don't Save / Cancel"
+                                Command="{Binding ShowCustomButtonsCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Custom with Commands"
+                                Command="{Binding ShowCustomButtonsWithCommandsCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Custom Content Section -->
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Custom Content" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        Add any WPF content below the message text, such as checkboxes, 
+                        hyperlinks, or custom controls for advanced scenarios.
+                    </TextBlock>
+                    <WrapPanel>
+                        <Button Content="With Checkbox"
+                                Command="{Binding ShowWithCheckboxCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="With Hyperlink"
+                                Command="{Binding ShowWithHyperlinkCommand}"
+                                Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Result Display -->
+            <Border Background="White" CornerRadius="8" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Last Result" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}">
+                        The result from the last dialog interaction is displayed below.
+                    </TextBlock>
+                    <Border Background="#F3F2F1" CornerRadius="4" Padding="16">
+                        <TextBlock Text="{Binding LastResult}"
+                                   FontFamily="Consolas"
+                                   FontSize="14"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
