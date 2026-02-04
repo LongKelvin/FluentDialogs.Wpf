@@ -48,6 +48,12 @@ public partial class MainViewModel : ObservableObject
     private string _currentTheme = "Light";
 
     /// <summary>
+    /// Gets or sets whether dark mode is enabled.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isDarkMode;
+
+    /// <summary>
     /// Gets the last dialog result for display.
     /// </summary>
     [ObservableProperty]
@@ -64,9 +70,8 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ToggleTheme()
     {
-        var newTheme = _themeService.CurrentTheme == MessageBoxTheme.Light
-            ? MessageBoxTheme.Dark
-            : MessageBoxTheme.Light;
+        IsDarkMode = !IsDarkMode;
+        var newTheme = IsDarkMode ? MessageBoxTheme.Dark : MessageBoxTheme.Light;
 
         _themeService.SetTheme(newTheme);
         CurrentTheme = newTheme.ToString();
@@ -553,5 +558,108 @@ public partial class MainViewModel : ObservableObject
         LastResult = $"Hyperlink dialog returned: {result}";
     }
 
+    /// <summary>
+    /// Shows a dialog with a progress bar as custom content.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowWithProgressAsync()
+    {
+        var progressBar = new ProgressBar
+        {
+            IsIndeterminate = true,
+            Height = 4,
+            Margin = new Thickness(0, 16, 0, 0)
+        };
+
+        var options = new MessageBoxOptions
+        {
+            Title = "Processing",
+            Message = "Please wait while the operation completes...",
+            Icon = MessageBoxIcon.Info,
+            Buttons = MessageBoxButtons.OK,
+            Content = progressBar
+        };
+
+        var result = await _messageBoxService.ShowAsync(options);
+        LastResult = $"Progress dialog returned: {result}";
+    }
+
+    /// <summary>
+    /// Shows a dialog with a text input as custom content.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowWithInputAsync()
+    {
+        var stackPanel = new StackPanel { Margin = new Thickness(0, 12, 0, 0) };
+        
+        var label = new TextBlock
+        {
+            Text = "Enter your name:",
+            FontSize = 13,
+            Margin = new Thickness(0, 0, 0, 8)
+        };
+        
+        var textBox = new TextBox
+        {
+            Height = 32,
+            FontSize = 14,
+            Padding = new Thickness(8, 4, 8, 4)
+        };
+        
+        stackPanel.Children.Add(label);
+        stackPanel.Children.Add(textBox);
+
+        var options = new MessageBoxOptions
+        {
+            Title = "Input Required",
+            Message = "We need some information from you.",
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.OKCancel,
+            Content = stackPanel
+        };
+
+        var result = await _messageBoxService.ShowAsync(options);
+        var inputValue = textBox.Text;
+        LastResult = $"Input dialog returned: {result}, Input: \"{inputValue}\"";
+    }
+
+    /// <summary>
+    /// Shows a delete confirmation dialog with danger button.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowDeleteConfirmationAsync()
+    {
+        var customButtons = new List<MessageBoxButtonDefinition>
+        {
+            new()
+            {
+                Text = "Delete",
+                Result = MessageBoxResult.Yes,
+                Style = ButtonStyle.Danger,
+                IsDefault = false
+            },
+            new()
+            {
+                Text = "Cancel",
+                Result = MessageBoxResult.Cancel,
+                Style = ButtonStyle.Default,
+                IsCancel = true,
+                IsDefault = true
+            }
+        };
+
+        var options = new MessageBoxOptions
+        {
+            Title = "Delete Item",
+            Message = "Are you sure you want to delete this item? This action cannot be undone.",
+            Icon = MessageBoxIcon.Warning,
+            CustomButtons = customButtons
+        };
+
+        var result = await _messageBoxService.ShowAsync(options);
+        LastResult = $"Delete confirmation returned: {result}";
+    }
+
     #endregion
 }
+
