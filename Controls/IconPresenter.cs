@@ -72,7 +72,8 @@ public class IconPresenter : Control
             MessageBoxIcon.Error => CreateErrorGeometry(),
             MessageBoxIcon.Success => CreateSuccessGeometry(),
             MessageBoxIcon.Question => CreateQuestionGeometry(),
-            _ => null
+            MessageBoxIcon.None => CreateInfoGeometry(), // Default to Info icon
+            _ => CreateInfoGeometry()
         };
     }
 

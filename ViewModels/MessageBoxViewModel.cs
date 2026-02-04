@@ -29,6 +29,8 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
         Buttons = new ObservableCollection<MessageBoxButtonViewModel>();
         ButtonClickCommand = new RelayCommand<MessageBoxButtonViewModel>(OnButtonClick);
         ToggleStackTraceCommand = new RelayCommand(OnToggleStackTrace);
+        CopyExceptionCommand = new RelayCommand(OnCopyException);
+        CopyMessageCommand = new RelayCommand(OnCopyMessage);
     }
 
     /// <summary>
@@ -85,9 +87,21 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
             {
                 _icon = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsErrorDialog));
+                OnPropertyChanged(nameof(IsWarningDialog));
             }
         }
     }
+
+    /// <summary>
+    /// Gets a value indicating whether this is an error dialog.
+    /// </summary>
+    public bool IsErrorDialog => _icon == MessageBoxIcon.Error;
+
+    /// <summary>
+    /// Gets a value indicating whether this is a warning dialog.
+    /// </summary>
+    public bool IsWarningDialog => _icon == MessageBoxIcon.Warning;
 
     /// <summary>
     /// Gets or sets optional custom content to display below the message.
@@ -199,6 +213,35 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
     public ICommand ToggleStackTraceCommand { get; }
 
     /// <summary>
+    /// Gets the command to copy exception details to clipboard.
+    /// </summary>
+    public ICommand CopyExceptionCommand { get; }
+
+    /// <summary>
+    /// Gets the command to copy the message to clipboard.
+    /// </summary>
+    public ICommand CopyMessageCommand { get; }
+
+    /// <summary>
+    /// Gets the full exception text for copying.
+    /// </summary>
+    public string FullExceptionText
+    {
+        get
+        {
+            if (_exception == null)
+            {
+                return string.Empty;
+            }
+
+            return $"Exception: {_exception.GetType().FullName}\n" +
+                   $"Message: {_exception.Message}\n" +
+                   $"Stack Trace:\n{_exception.StackTrace}" +
+                   (_exception.InnerException != null ? $"\n\nInner Exception: {_exception.InnerException}" : string.Empty);
+        }
+    }
+
+    /// <summary>
     /// Initializes the view model with the specified options.
     /// </summary>
     /// <param name="options">The message box options.</param>
@@ -303,6 +346,35 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
     private void OnToggleStackTrace()
     {
         IsStackTraceVisible = !IsStackTraceVisible;
+    }
+
+    private void OnCopyException()
+    {
+        try
+        {
+            Clipboard.SetText(FullExceptionText);
+        }
+        catch
+        {
+            // Clipboard operations can fail - ignore silently
+        }
+    }
+
+    private void OnCopyMessage()
+    {
+        try
+        {
+            var text = $"{Title}\n\n{Message}";
+            if (HasException)
+            {
+                text += $"\n\n{FullExceptionText}";
+            }
+            Clipboard.SetText(text);
+        }
+        catch
+        {
+            // Clipboard operations can fail - ignore silently
+        }
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

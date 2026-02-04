@@ -49,6 +49,14 @@
     <Color x:Key="HyperlinkColor">#0078D4</Color>
     <Color x:Key="HyperlinkHoverColor">#106EBE</Color>
 
+    <!-- Error Dialog Accent Colors -->
+    <Color x:Key="ErrorDialogBorderColor">#D13438</Color>
+    <Color x:Key="ErrorDialogAccentColor">#FDE7E9</Color>
+    
+    <!-- Warning Dialog Accent Colors -->
+    <Color x:Key="WarningDialogBorderColor">#F7630C</Color>
+    <Color x:Key="WarningDialogAccentColor">#FFF4CE</Color>
+
     <!-- Convert Colors to Brushes using DynamicResource -->
     
     <!-- Background Brushes -->
@@ -96,5 +104,11 @@
     <SolidColorBrush x:Key="ExceptionForegroundBrush" Color="{DynamicResource ExceptionForegroundColor}" />
     <SolidColorBrush x:Key="HyperlinkBrush" Color="{DynamicResource HyperlinkColor}" />
     <SolidColorBrush x:Key="HyperlinkHoverBrush" Color="{DynamicResource HyperlinkHoverColor}" />
+
+    <!-- Error/Warning Dialog Accent Brushes -->
+    <SolidColorBrush x:Key="ErrorDialogBorderBrush" Color="{DynamicResource ErrorDialogBorderColor}" />
+    <SolidColorBrush x:Key="ErrorDialogAccentBrush" Color="{DynamicResource ErrorDialogAccentColor}" />
+    <SolidColorBrush x:Key="WarningDialogBorderBrush" Color="{DynamicResource WarningDialogBorderColor}" />
+    <SolidColorBrush x:Key="WarningDialogAccentBrush" Color="{DynamicResource WarningDialogAccentColor}" />
 
 </ResourceDictionary>
