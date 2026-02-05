@@ -61,4 +61,14 @@
     <Color x:Key="WarningDialogBorderColor">#FCE100</Color>
     <Color x:Key="WarningDialogAccentColor">#3C3520</Color>
 
+    <!-- Progress Bar Colors (Dark Theme) -->
+    <Color x:Key="ProgressBarBackgroundColor">#3E3E3E</Color>
+    <Color x:Key="ProgressBarForegroundColor">#60CDFF</Color>
+
+    <!-- Toast Colors (Dark Theme) -->
+    <Color x:Key="ToastBackgroundColor">#2D2D2D</Color>
+    <Color x:Key="ToastForegroundColor">#FFFFFF</Color>
+    <Color x:Key="ToastSecondaryForegroundColor">#C8C6C4</Color>
+    <Color x:Key="ToastBorderColor">#3E3E3E</Color>
+
 </ResourceDictionary>
