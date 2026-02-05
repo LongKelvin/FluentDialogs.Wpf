@@ -71,6 +71,52 @@ public sealed class MessageBoxOptions
     /// </summary>
     public Exception? Exception { get; init; }
 
+    #region Dialog Sizing and Appearance
+
+    /// <summary>
+    /// Gets the preferred width of the dialog in device-independent pixels.
+    /// When not specified, the dialog auto-sizes to fit content within reasonable limits.
+    /// </summary>
+    public double? Width { get; init; }
+
+    /// <summary>
+    /// Gets the preferred height of the dialog in device-independent pixels.
+    /// When not specified, the dialog auto-sizes to fit content within reasonable limits.
+    /// </summary>
+    public double? Height { get; init; }
+
+    /// <summary>
+    /// Gets the minimum width of the dialog in device-independent pixels.
+    /// Defaults to 320 if not specified.
+    /// </summary>
+    public double? MinWidth { get; init; }
+
+    /// <summary>
+    /// Gets the minimum height of the dialog in device-independent pixels.
+    /// Defaults to 150 if not specified.
+    /// </summary>
+    public double? MinHeight { get; init; }
+
+    /// <summary>
+    /// Gets the maximum width of the dialog in device-independent pixels.
+    /// Defaults to 800 if not specified to prevent dialogs from becoming too wide.
+    /// </summary>
+    public double? MaxWidth { get; init; }
+
+    /// <summary>
+    /// Gets the maximum height of the dialog in device-independent pixels.
+    /// Defaults to 600 if not specified to prevent dialogs from becoming too tall.
+    /// </summary>
+    public double? MaxHeight { get; init; }
+
+    /// <summary>
+    /// Gets the custom title bar background color.
+    /// When not specified, uses the theme's default title bar color.
+    /// </summary>
+    public System.Windows.Media.Color? TitleBarColor { get; init; }
+
+    #endregion
+
     #region Native Dialog Features
 
     /// <summary>
