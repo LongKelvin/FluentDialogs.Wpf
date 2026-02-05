@@ -73,7 +73,14 @@ public partial class MessageBoxWindow : Window
     {
         if (e.ChangedButton == MouseButton.Left)
         {
-            DragMove();
+            try
+            {
+                DragMove();
+            }
+            catch
+            {
+                // DragMove can throw if window state changes during drag
+            }
         }
     }
 
