@@ -42,7 +42,7 @@ if (-not (Test-Path $ArtifactsDir)) {
     exit 1
 }
 
-$packages = Get-ChildItem -Path $ArtifactsDir -Filter "*.nupkg" -Exclude "*.symbols.nupkg"
+$packages = Get-ChildItem -Path $ArtifactsDir -Filter "*.nupkg" | Where-Object { $_.Name -notlike "*.snupkg" }
 
 if ($packages.Count -eq 0) {
     Write-Error "No .nupkg files found in $ArtifactsDir"
