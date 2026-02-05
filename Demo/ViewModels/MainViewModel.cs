@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentDialogs.Abstractions;
@@ -663,5 +664,236 @@ public partial class MainViewModel : ObservableObject
     }
 
     #endregion
-}
 
+    #region Native Dialog Commands
+
+    /// <summary>
+    /// Shows the native checkbox dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeCheckboxAsync()
+    {
+        var dialogResult = await _messageBoxService.ConfirmWithCheckboxAsync(
+            "Do you want to save changes before closing?",
+            "Don't ask me again",
+            "Save Changes"
+        );
+
+        LastResult = $"Checkbox dialog: Result={dialogResult.Result}, Checked={dialogResult.IsChecked}";
+    }
+
+    /// <summary>
+    /// Shows the native input dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeInputAsync()
+    {
+        var dialogResult = await _messageBoxService.InputAsync(
+            "Please enter your name:",
+            "Enter name here...",
+            string.Empty,
+            "User Input"
+        );
+
+        LastResult = $"Input dialog: Result={dialogResult.Result}, Text=\"{dialogResult.InputText}\"";
+    }
+
+    /// <summary>
+    /// Shows the native password input dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativePasswordAsync()
+    {
+        var dialogResult = await _messageBoxService.InputAsync(
+            "Please enter your password:",
+            "Password",
+            string.Empty,
+            "Authentication",
+            isPassword: true
+        );
+
+        LastResult = $"Password dialog: Result={dialogResult.Result}, Length={dialogResult.InputText?.Length ?? 0}";
+    }
+
+    /// <summary>
+    /// Shows the native selection dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeSelectionAsync()
+    {
+        var items = new[] { "Option A", "Option B", "Option C", "Option D" };
+        var dialogResult = await _messageBoxService.SelectAsync(
+            "Please select an option:",
+            items,
+            defaultIndex: 1,
+            title: "Selection"
+        );
+
+        LastResult = $"Selection dialog: Result={dialogResult.Result}, Selected=\"{dialogResult.SelectedItem}\", Index={dialogResult.SelectedIndex}";
+    }
+
+    /// <summary>
+    /// Shows the native license dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeLicenseAsync()
+    {
+        const string licenseText = """
+            SOFTWARE LICENSE AGREEMENT
+            
+            This Software License Agreement ("Agreement") is entered into as of the date of acceptance by the user ("Licensee") and the software provider ("Licensor").
+            
+            1. GRANT OF LICENSE
+            Subject to the terms of this Agreement, Licensor grants to Licensee a non-exclusive, non-transferable, limited license to use the software.
+            
+            2. RESTRICTIONS
+            Licensee shall not: (a) modify, translate, adapt, or create derivative works based upon the software; (b) reverse engineer, disassemble, decompile, or otherwise attempt to derive the source code of the software.
+            
+            3. INTELLECTUAL PROPERTY
+            The software is protected by copyright and other intellectual property laws. Licensor retains all rights not expressly granted.
+            
+            4. DISCLAIMER OF WARRANTIES
+            THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+            
+            5. LIMITATION OF LIABILITY
+            IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
+            
+            6. TERMINATION
+            This Agreement is effective until terminated. Licensor may terminate this Agreement immediately if Licensee breaches any provision.
+            
+            7. GENERAL PROVISIONS
+            This Agreement constitutes the entire agreement between the parties concerning the subject matter hereof.
+            
+            By clicking "OK", you acknowledge that you have read and agree to the terms of this license agreement.
+            
+            --- END OF LICENSE ---
+            """;
+
+        var dialogResult = await _messageBoxService.LicenseAsync(
+            "License Agreement",
+            "Please read and scroll to the bottom to accept the license agreement:",
+            licenseText,
+            requireScrollToBottom: true
+        );
+
+        LastResult = $"License dialog: Result={dialogResult.Result} (accepted={dialogResult.Result == MessageBoxResult.OK})";
+    }
+
+    /// <summary>
+    /// Shows the native timeout dialog.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeTimeoutAsync()
+    {
+        var dialogResult = await _messageBoxService.TimeoutAsync(
+            "This dialog will automatically close in 5 seconds unless you click OK.",
+            timeoutSeconds: 5,
+            timeoutResult: MessageBoxResult.Cancel,
+            title: "Auto-Close Demo"
+        );
+
+        LastResult = $"Timeout dialog: Result={dialogResult.Result}, TimedOut={dialogResult.TimedOut}";
+    }
+
+    /// <summary>
+    /// Shows a warning dialog using the convenience method.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowWarningAsync()
+    {
+        var result = await _messageBoxService.WarningAsync(
+            "This action may have unintended consequences. Please proceed with caution.",
+            "Warning"
+        );
+
+        LastResult = $"WarningAsync returned: {result}";
+    }
+
+    /// <summary>
+    /// Shows a dialog with custom sizing.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowCustomSizedDialogAsync()
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = "Custom Sized Dialog",
+            Message = "This dialog demonstrates custom width, height, and title bar color. The dialog is wider and taller than the default size.",
+            Icon = MessageBoxIcon.Info,
+            Buttons = MessageBoxButtons.OK,
+            Width = 600,
+            Height = 400,
+            TitleBarColor = Colors.DarkBlue
+        };
+
+        var result = await _messageBoxService.ShowAsync(options);
+        LastResult = $"Custom sized dialog returned: {result}";
+    }
+
+    /// <summary>
+    /// Shows a license dialog with improved layout.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowImprovedLicenseAsync()
+    {
+        const string improvedLicense = """
+            SOFTWARE LICENSE AGREEMENT
+            ========================
+            
+            This Software License Agreement ("Agreement") is entered into as of the date of acceptance by the user ("Licensee") and the software provider ("Licensor").
+            
+            1. GRANT OF LICENSE
+            -------------------
+            Subject to the terms and conditions of this Agreement, Licensor hereby grants to Licensee a non-exclusive, non-transferable, limited license to use, install, and operate the software solely for Licensee's internal business purposes.
+            
+            2. RESTRICTIONS
+            ---------------
+            Licensee shall not, and shall not permit any third party to: 
+            (a) modify, translate, adapt, or create derivative works based upon the software; 
+            (b) reverse engineer, disassemble, decompile, or otherwise attempt to derive the source code of the software; 
+            (c) distribute, sublicense, rent, lease, or lend the software to any third party.
+            
+            3. INTELLECTUAL PROPERTY RIGHTS
+            --------------------------------
+            The software and all intellectual property rights therein are and shall remain the exclusive property of Licensor. Licensor retains all rights not expressly granted to Licensee under this Agreement.
+            
+            4. DISCLAIMER OF WARRANTIES
+            ---------------------------
+            THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+            
+            5. LIMITATION OF LIABILITY
+            --------------------------
+            IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY.
+            
+            6. TERMINATION
+            --------------
+            This Agreement is effective until terminated. Licensor may terminate this Agreement immediately upon notice if Licensee breaches any provision of this Agreement.
+            
+            7. GENERAL PROVISIONS
+            ---------------------
+            This Agreement constitutes the entire agreement between the parties concerning the subject matter hereof and supersedes all prior or contemporaneous agreements.
+            
+            By clicking "Accept", you acknowledge that you have read and understand the terms of this license agreement and agree to be bound by its terms and conditions.
+            
+            --- END OF LICENSE AGREEMENT ---
+            """;
+
+        var options = new MessageBoxOptions
+        {
+            Title = "Software License Agreement",
+            Message = "Please read the license agreement carefully. You must scroll to the bottom before accepting.",
+            DetailedText = improvedLicense,
+            RequireScrollToBottom = true,
+            Buttons = MessageBoxButtons.OKCancel,
+            Icon = MessageBoxIcon.Info,
+            Width = 700,
+            Height = 500,
+            TitleBarColor = Colors.DarkGreen
+        };
+
+        var result = await _messageBoxService.ShowExtendedAsync(options);
+        LastResult = $"Improved license dialog: Result={result.Result}, Accepted={result.Result == MessageBoxResult.OK}";
+    }
+
+    #endregion
+}

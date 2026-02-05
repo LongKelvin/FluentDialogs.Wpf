@@ -506,6 +506,46 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Native Dialog Features (NEW) -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Native Dialog Features" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="Built-in support for common dialog patterns: input, checkbox, selection, license, and timeout dialogs" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <WrapPanel>
+                            <Button Content="Native Checkbox" 
+                                    Command="{Binding ShowNativeCheckboxCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Native Input" 
+                                    Command="{Binding ShowNativeInputCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Password Input" 
+                                    Command="{Binding ShowNativePasswordCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Selection Dialog" 
+                                    Command="{Binding ShowNativeSelectionCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="License Agreement" 
+                                    Command="{Binding ShowNativeLicenseCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Timeout Dialog" 
+                                    Command="{Binding ShowNativeTimeoutCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Warning" 
+                                    Command="{Binding ShowWarningCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Custom Sizing" 
+                                    Command="{Binding ShowCustomSizedDialogCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Improved License" 
+                                    Command="{Binding ShowImprovedLicenseCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Custom Content -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
