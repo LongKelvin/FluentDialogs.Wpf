@@ -18,7 +18,7 @@ namespace FluentDialogs.Models;
 /// };
 /// </code>
 /// </example>
-public sealed class MessageBoxOptions
+public class MessageBoxOptions
 {
     /// <summary>
     /// Gets the title text displayed in the dialog title bar.
