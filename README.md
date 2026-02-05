@@ -1,17 +1,10 @@
 # FluentDialogs.Wpf
 
-A modern, injectable WPF dialog library for .NET 9 that replaces `System.Windows.MessageBox` with a fully themeable, MVVM-first approach aligned with Windows 11 Fluent Design.
+Injectable WPF dialog library for .NET 9. Replaces `System.Windows.MessageBox` with async, MVVM-compatible dialogs styled for Windows 11 Fluent Design.
 
-## Features
+## What This Library Is
 
-- **Injectable via DI** - No static methods, fully testable
-- **Async-first API** - All methods return `Task<MessageBoxResult>`
-- **MVVM Compatible** - Works seamlessly with any MVVM framework
-- **Windows 11 Fluent Design** - Modern rounded corners, shadows, and animations
-- **Light/Dark Theme Support** - Runtime theme switching
-- **Custom Buttons** - Define your own buttons with custom styles and commands
-- **Exception Display** - Built-in expandable exception details for error dialogs
-- **Custom Content** - Add checkboxes, hyperlinks, or any WPF content to dialogs
+A dependency-injectable message box replacement for WPF applications. Provides async dialog methods, custom buttons, theming (light/dark), and extended dialog types (input, selection, license, timeout). All dialogs are modal, respect owner windows, and return strongly-typed results.
 
 ## Installation
 
@@ -19,255 +12,356 @@ A modern, injectable WPF dialog library for .NET 9 that replaces `System.Windows
 dotnet add package FluentDialogs.Wpf
 ```
 
-Or via Package Manager Console:
+**Requirements:** .NET 9.0+, Windows Desktop Runtime
 
-```powershell
-Install-Package FluentDialogs.Wpf
-```
+## Basic Setup
 
-## Quick Start
-
-### 1. Register Services
+### DI Registration
 
 ```csharp
-// In App.xaml.cs or your DI configuration
 using FluentDialogs;
+using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
 services.AddFluentDialogs();
-
-// Build the service provider
-var serviceProvider = services.BuildServiceProvider();
+var provider = services.BuildServiceProvider();
 ```
 
-### 2. Inject and Use
+This registers:
+- `IMessageBoxService` - Main dialog service
+- `IMessageBoxThemeService` - Theme switching
+
+For manual theme management:
+```csharp
+services.AddFluentDialogsWithoutTheme();
+```
+
+### Required Resources
+
+Merge theme resources in `App.xaml`:
+
+```xml
+<Application.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
+            <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+## Basic Usage
+
+Inject `IMessageBoxService` into your ViewModel:
 
 ```csharp
 public class MainViewModel
 {
-    private readonly IMessageBoxService _messageBoxService;
+    private readonly IMessageBoxService _messageBox;
 
-    public MainViewModel(IMessageBoxService messageBoxService)
+    public MainViewModel(IMessageBoxService messageBox)
     {
-        _messageBoxService = messageBoxService;
+        _messageBox = messageBox;
     }
 
     public async Task ShowInfoAsync()
     {
-        await _messageBoxService.InfoAsync(
-            "Operation completed successfully.",
-            "Success"
-        );
+        await _messageBox.InfoAsync("Operation completed.", "Info");
     }
 
-    public async Task<bool> ConfirmDeleteAsync()
+    public async Task<bool> ConfirmAsync()
     {
-        var result = await _messageBoxService.ConfirmAsync(
-            "Are you sure you want to delete this item?",
-            "Confirm Delete"
-        );
-
+        var result = await _messageBox.ConfirmAsync("Delete this item?", "Confirm");
         return result == MessageBoxResult.Yes;
     }
 
     public async Task ShowErrorAsync(Exception ex)
     {
-        await _messageBoxService.ErrorAsync(
-            "An error occurred while processing your request.",
-            ex
-        );
+        await _messageBox.ErrorAsync("Operation failed.", ex);
     }
 }
 ```
 
-## API Reference
+### Available Methods
 
-### IMessageBoxService
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `ShowAsync(options)` | `MessageBoxResult` | Full customization via options |
+| `ShowExtendedAsync(options)` | `DialogResult` | Returns extended data (checkbox, input, etc.) |
+| `InfoAsync(message, title?)` | `MessageBoxResult` | Info dialog, OK button |
+| `ConfirmAsync(message, title?)` | `MessageBoxResult` | Yes/No dialog |
+| `WarningAsync(message, title?)` | `MessageBoxResult` | Warning dialog, OK button |
+| `ErrorAsync(message, exception?)` | `MessageBoxResult` | Error with expandable exception |
+| `InputAsync(...)` | `DialogResult` | Text input dialog |
+| `SelectAsync<T>(...)` | `DialogResult` | Selection list dialog |
+| `ConfirmWithCheckboxAsync(...)` | `DialogResult` | Confirm with checkbox |
+| `LicenseAsync(...)` | `DialogResult` | Scrollable license text |
+| `TimeoutAsync(...)` | `DialogResult` | Auto-closing dialog |
 
-The main service interface for displaying dialogs.
+## Custom Buttons
 
-| Method | Description |
-|--------|-------------|
-| `ShowAsync(MessageBoxOptions)` | Display a dialog with full customization |
-| `InfoAsync(message, title?)` | Display an info dialog with OK button |
-| `ConfirmAsync(message, title?)` | Display a confirmation dialog with Yes/No buttons |
-| `ErrorAsync(message, exception?)` | Display an error dialog with optional exception details |
-
-### MessageBoxOptions
-
-Full customization options for dialogs.
-
-```csharp
-var options = new MessageBoxOptions
-{
-    Title = "Custom Dialog",
-    Message = "This is a custom message.",
-    Icon = MessageBoxIcon.Question,
-    Buttons = MessageBoxButtons.YesNoCancel,
-    Owner = Application.Current.MainWindow
-};
-
-var result = await _messageBoxService.ShowAsync(options);
-```
-
-#### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `Title` | `string` | Dialog title text |
-| `Message` | `string` | Main message content |
-| `Icon` | `MessageBoxIcon` | Icon to display (None, Info, Warning, Error, Success, Question) |
-| `Buttons` | `MessageBoxButtons?` | Standard button configuration |
-| `CustomButtons` | `IReadOnlyList<MessageBoxButtonDefinition>?` | Custom button definitions |
-| `Content` | `object?` | Custom WPF content below the message |
-| `Owner` | `Window?` | Owner window for modal behavior |
-| `Exception` | `Exception?` | Exception to display with expandable details |
-
-### Custom Buttons
-
-Create dialogs with custom buttons and behaviors:
+Define buttons with custom text, styles, and behavior:
 
 ```csharp
-var customButtons = new List<MessageBoxButtonDefinition>
+var buttons = new List<MessageBoxButtonDefinition>
 {
-    new()
-    {
-        Text = "Save",
-        Result = MessageBoxResult.Yes,
-        Style = ButtonStyle.Primary,
-        IsDefault = true
-    },
-    new()
-    {
-        Text = "Don't Save",
-        Result = MessageBoxResult.No,
-        Style = ButtonStyle.Danger
-    },
-    new()
-    {
-        Text = "Cancel",
-        Result = MessageBoxResult.Cancel,
-        Style = ButtonStyle.Default,
-        IsCancel = true
-    }
+    new() { Text = "Save", Result = MessageBoxResult.Yes, Style = ButtonStyle.Primary, IsDefault = true },
+    new() { Text = "Discard", Result = MessageBoxResult.No, Style = ButtonStyle.Danger },
+    new() { Text = "Cancel", Result = MessageBoxResult.Cancel, IsCancel = true }
 };
 
 var options = new MessageBoxOptions
 {
     Title = "Unsaved Changes",
-    Message = "Do you want to save changes before closing?",
+    Message = "Save before closing?",
     Icon = MessageBoxIcon.Warning,
-    CustomButtons = customButtons
+    CustomButtons = buttons
 };
 
-var result = await _messageBoxService.ShowAsync(options);
+var result = await _messageBox.ShowAsync(options);
 ```
 
-#### Button Styles
+### Button Properties
 
-| Style | Description |
-|-------|-------------|
-| `Default` | Standard button appearance |
-| `Primary` | Highlighted primary action (blue) |
-| `Secondary` | Subtle secondary action |
-| `Danger` | Destructive action (red) |
+| Property | Type | Description |
+|----------|------|-------------|
+| `Text` | `string` | Button label |
+| `Result` | `MessageBoxResult` | Return value when clicked |
+| `Style` | `ButtonStyle` | Visual style (Default, Primary, Secondary, Danger) |
+| `IsDefault` | `bool` | Activated on Enter key |
+| `IsCancel` | `bool` | Activated on Escape key |
+| `Command` | `ICommand?` | Execute before dialog closes |
 
-### Theme Support
+**Constraint:** Use either `Buttons` or `CustomButtons`, not both.
 
-Switch between light and dark themes at runtime:
+## Custom Content
+
+Inject any WPF content below the message:
+
+```csharp
+var options = new MessageBoxOptions
+{
+    Title = "Settings",
+    Message = "Apply changes?",
+    Buttons = MessageBoxButtons.OKCancel,
+    Content = new CheckBox { Content = "Remember choice" }
+};
+
+var result = await _messageBox.ShowAsync(options);
+```
+
+The `Content` property accepts any `object` renderable by WPF ContentPresenter.
+
+### Built-in Native Features
+
+Use options properties instead of custom content for common scenarios:
+
+```csharp
+// Checkbox
+var result = await _messageBox.ConfirmWithCheckboxAsync(
+    "Continue?", "Do not ask again", "Confirm");
+// result.IsChecked contains checkbox state
+
+// Input
+var result = await _messageBox.InputAsync(
+    "Enter name:", "Name", defaultValue: "User");
+// result.InputText contains input
+
+// Password
+var result = await _messageBox.InputAsync(
+    "Enter password:", "Password", isPassword: true);
+
+// Selection
+var result = await _messageBox.SelectAsync(
+    "Choose option:", new[] { "A", "B", "C" });
+// result.SelectedItem, result.SelectedIndex
+
+// Hyperlink (via options)
+var options = new MessageBoxOptions
+{
+    Message = "Click link for help.",
+    HyperlinkText = "Documentation",
+    HyperlinkUrl = "https://example.com"
+};
+```
+
+## Dialog Sizing
+
+Dialogs auto-size by default. Override with explicit dimensions:
+
+```csharp
+var options = new MessageBoxOptions
+{
+    Title = "Large Content",
+    Message = longText,
+    Width = 600,
+    Height = 400,
+    MinWidth = 400,
+    MaxHeight = 800
+};
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Width` | auto | Fixed width in pixels |
+| `Height` | auto | Fixed height in pixels |
+| `MinWidth` | 320 | Minimum width |
+| `MinHeight` | 150 | Minimum height |
+| `MaxWidth` | 800 | Maximum width |
+| `MaxHeight` | 600 | Maximum height |
+
+When `Width` or `Height` is set, auto-sizing is disabled for that dimension.
+
+## Theming
+
+### Light/Dark Switching
 
 ```csharp
 public class SettingsViewModel
 {
-    private readonly IMessageBoxThemeService _themeService;
+    private readonly IMessageBoxThemeService _theme;
 
-    public SettingsViewModel(IMessageBoxThemeService themeService)
+    public SettingsViewModel(IMessageBoxThemeService theme) => _theme = theme;
+
+    public void SetDarkMode(bool dark)
     {
-        _themeService = themeService;
-    }
-
-    public void ToggleTheme()
-    {
-        var newTheme = _themeService.CurrentTheme == MessageBoxTheme.Light
-            ? MessageBoxTheme.Dark
-            : MessageBoxTheme.Light;
-
-        _themeService.SetTheme(newTheme);
+        _theme.SetTheme(dark ? MessageBoxTheme.Dark : MessageBoxTheme.Light);
     }
 }
 ```
 
-### Custom Content
-
-Add custom WPF content to dialogs:
+### Custom Title Bar Color
 
 ```csharp
-var checkBox = new CheckBox
-{
-    Content = "Don't show this message again",
-    Margin = new Thickness(0, 8, 0, 0)
-};
+using System.Windows.Media;
 
 var options = new MessageBoxOptions
 {
-    Title = "Notice",
-    Message = "This action will modify your settings.",
-    Icon = MessageBoxIcon.Info,
-    Buttons = MessageBoxButtons.OKCancel,
-    Content = checkBox
+    Title = "Custom Header",
+    Message = "Title bar uses custom color.",
+    TitleBarColor = Colors.DarkBlue
 };
+```
 
-var result = await _messageBoxService.ShowAsync(options);
+Title text color adjusts automatically for contrast.
 
-if (result == MessageBoxResult.OK && checkBox.IsChecked == true)
+### Resource Overrides
+
+Override colors by redefining keys after merging base resources:
+
+```xml
+<ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
+</ResourceDictionary.MergedDictionaries>
+
+<!-- Override primary button color -->
+<Color x:Key="PrimaryButtonBackgroundColor">#00A86B</Color>
+```
+
+Key color resources: `DialogBackgroundColor`, `DialogForegroundColor`, `PrimaryButtonBackgroundColor`, `DangerButtonBackgroundColor`, etc.
+
+## Common Scenarios
+
+### Error with Exception Details
+
+```csharp
+try
 {
-    // User clicked OK and checked "Don't show again"
+    await SomeOperationAsync();
+}
+catch (Exception ex)
+{
+    await _messageBox.ErrorAsync("Operation failed.", ex);
 }
 ```
 
-## Icon Types
+Shows expandable stack trace.
 
-| Icon | Usage |
-|------|-------|
-| `None` | No icon displayed |
-| `Info` | Informational messages |
-| `Warning` | Warning messages |
-| `Error` | Error messages |
-| `Success` | Success confirmations |
-| `Question` | Questions requiring user decision |
+### License Agreement
 
-## Button Configurations
+```csharp
+var result = await _messageBox.LicenseAsync(
+    title: "License Agreement",
+    message: "Please read and accept:",
+    detailedText: licenseText,
+    requireScrollToBottom: true);
 
-| Configuration | Buttons |
-|---------------|---------|
-| `OK` | OK |
-| `OKCancel` | OK, Cancel |
-| `YesNo` | Yes, No |
-| `YesNoCancel` | Yes, No, Cancel |
-| `RetryCancel` | Retry, Cancel |
-| `AbortRetryIgnore` | Abort, Retry, Ignore |
+if (result.Result == MessageBoxResult.OK)
+{
+    // User accepted
+}
+```
 
-## Best Practices
+Accept button is disabled until user scrolls to bottom.
 
-1. **Always use async/await** - Never call `.Result` or `.Wait()` on dialog methods
-2. **Inject services** - Use constructor injection for testability
-3. **Set Owner** - When possible, set the Owner property for proper modal behavior
-4. **Handle all results** - Always handle the returned `MessageBoxResult`
+### Auto-Closing Dialog
 
-## Requirements
+```csharp
+var result = await _messageBox.TimeoutAsync(
+    message: "Session expires in 10 seconds.",
+    timeoutSeconds: 10,
+    timeoutResult: MessageBoxResult.Cancel);
 
-- .NET 9.0 or later
-- Windows Desktop Runtime
+if (result.TimedOut)
+{
+    // Dialog auto-closed
+}
+```
 
-## License
+## DialogResult Properties
 
-MIT License - see [LICENSE](LICENSE) for details.
+Extended dialogs return `DialogResult` with additional data:
 
-## Contributing
+| Property | Type | Description |
+|----------|------|-------------|
+| `Result` | `MessageBoxResult` | Button clicked |
+| `IsChecked` | `bool` | Checkbox state |
+| `InputText` | `string?` | Text input value |
+| `SelectedItem` | `object?` | Selected list item |
+| `SelectedIndex` | `int` | Selected index (-1 if none) |
+| `TimedOut` | `bool` | True if closed by timeout |
 
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+`DialogResult` implicitly converts to `MessageBoxResult`.
+
+## Rules and Limitations
+
+### Intended For
+- Modal confirmation dialogs
+- User notifications (info, warning, error)
+- Simple input collection
+- License/disclaimer acceptance
+
+### Not Intended For
+- Complex forms (use dedicated windows)
+- Non-blocking notifications (use toast/snackbar)
+- File/folder selection (use system dialogs)
+- Long-running progress (use progress windows)
+
+### Constraints
+- All methods are async; do not block with `.Result` or `.Wait()`
+- Dialogs are always modal
+- Cannot specify both `Buttons` and `CustomButtons`
+- At most one `IsDefault` and one `IsCancel` button allowed
+- `Owner` should be set for proper modal behavior when possible
 
 ## Screenshots
 
-![Light Theme](docs/screenshot-light.png)
-![Dark Theme](docs/screenshot-dark.png)
+### Light Theme
+![Light Theme Demo](docs/screenshots/demo-light.png)
+
+### Dark Theme
+![Dark Theme Demo](docs/screenshots/demo-dark.png)
+
+### Dialog Examples
+| Info | Confirm | Error |
+|------|---------|-------|
+| ![Info](docs/screenshots/dialog-info.png) | ![Confirm](docs/screenshots/dialog-confirm.png) | ![Error](docs/screenshots/dialog-error.png) |
+
+| Custom Buttons | Input | Selection |
+|----------------|-------|-----------|
+| ![Custom](docs/screenshots/dialog-custom-buttons.png) | ![Input](docs/screenshots/dialog-input.png) | ![Selection](docs/screenshots/dialog-selection.png) |
+
+## License
+
+MIT
