@@ -1,4 +1,5 @@
 using FluentDialogs.Enums;
+using FluentDialogs.Models;
 
 namespace FluentDialogs.Abstractions;
 
@@ -39,4 +40,21 @@ public interface IMessageBoxThemeService
     /// </summary>
     /// <param name="theme">The theme to apply.</param>
     void SetTheme(MessageBoxTheme theme);
+
+    /// <summary>
+    /// Occurs when the theme is changed.
+    /// </summary>
+    /// <remarks>
+    /// Subscribe to this event to respond to theme changes across the application,
+    /// such as updating UI elements or persisting the theme preference.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// _themeService.ThemeChanged += (sender, e) =>
+    /// {
+    ///     Console.WriteLine($"Theme changed from {e.OldTheme} to {e.NewTheme}");
+    /// };
+    /// </code>
+    /// </example>
+    event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
 }
