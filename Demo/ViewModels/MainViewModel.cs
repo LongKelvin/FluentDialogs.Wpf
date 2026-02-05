@@ -17,29 +17,63 @@ namespace FluentDialogs.Demo.ViewModels;
 /// Main ViewModel demonstrating all FluentDialogs.Wpf features.
 /// </summary>
 /// <remarks>
+/// <para>
 /// This ViewModel showcases the recommended patterns for using FluentDialogs
-/// in an MVVM application with dependency injection.
+/// in an MVVM application with dependency injection, including:
+/// </para>
+/// <list type="bullet">
+/// <item><description>Message box dialogs with various button and icon configurations</description></item>
+/// <item><description>Progress dialogs with cancellation support</description></item>
+/// <item><description>Toast notifications for non-blocking feedback</description></item>
+/// <item><description>Fluent builder API for readable dialog construction</description></item>
+/// <item><description>Theme switching with ThemeChanged event subscription</description></item>
+/// </list>
 /// </remarks>
 public partial class MainViewModel : ObservableObject
 {
     private readonly IMessageBoxService _messageBoxService;
     private readonly IMessageBoxThemeService _themeService;
+    private readonly IToastService _toastService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
     /// <param name="messageBoxService">The message box service for displaying dialogs.</param>
     /// <param name="themeService">The theme service for managing dialog themes.</param>
+    /// <param name="toastService">The toast service for displaying non-blocking notifications.</param>
     /// <remarks>
-    /// Both services are injected via constructor injection.
+    /// All services are injected via constructor injection.
     /// This is the recommended pattern for FluentDialogs integration.
     /// </remarks>
     public MainViewModel(
         IMessageBoxService messageBoxService,
-        IMessageBoxThemeService themeService)
+        IMessageBoxThemeService themeService,
+        IToastService toastService)
     {
         _messageBoxService = messageBoxService;
         _themeService = themeService;
+        _toastService = toastService;
+
+        // Subscribe to theme changes to react when theme is updated
+        _themeService.ThemeChanged += OnThemeChanged;
+    }
+
+    /// <summary>
+    /// Handles the ThemeChanged event from the theme service.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments containing old and new theme.</param>
+    /// <remarks>
+    /// This demonstrates how to subscribe to theme changes and react accordingly.
+    /// Useful for updating UI elements or showing notifications when theme changes.
+    /// </remarks>
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        // Update the current theme display
+        CurrentTheme = e.NewTheme.ToString();
+
+        // Show a toast notification about the theme change
+        _toastService.ShowInfo($"Theme changed to {e.NewTheme}");
     }
 
     /// <summary>
@@ -893,6 +927,365 @@ public partial class MainViewModel : ObservableObject
 
         var result = await _messageBoxService.ShowExtendedAsync(options);
         LastResult = $"Improved license dialog: Result={result.Result}, Accepted={result.Result == MessageBoxResult.OK}";
+    }
+
+    #endregion
+
+    #region Progress Dialog Commands
+
+    /// <summary>
+    /// Shows an indeterminate progress dialog.
+    /// </summary>
+    /// <remarks>
+    /// Demonstrates the ShowProgressAsync method for displaying
+    /// a progress dialog without knowing the total work amount.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowProgressIndeterminateAsync()
+    {
+        var options = new ProgressOptions
+        {
+            Title = "Processing",
+            Message = "Please wait while we process your request...",
+            IsIndeterminate = true,
+            IsCancellable = true
+        };
+
+        var progress = await _messageBoxService.ShowProgressAsync(options);
+
+        try
+        {
+            // Simulate work with cancellation support
+            for (int i = 0; i < 50; i++)
+            {
+                if (progress.IsCancellationRequested)
+                {
+                    LastResult = "Progress dialog: Cancelled by user";
+                    return;
+                }
+
+                await Task.Delay(100, progress.CancellationToken);
+            }
+
+            LastResult = "Progress dialog: Completed successfully";
+        }
+        catch (OperationCanceledException)
+        {
+            LastResult = "Progress dialog: Cancelled by user";
+        }
+        finally
+        {
+            await progress.CloseAsync();
+        }
+    }
+
+    /// <summary>
+    /// Shows a determinate progress dialog with percentage display.
+    /// </summary>
+    /// <remarks>
+    /// Demonstrates progress reporting with percentage updates
+    /// and dynamic message changes.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowProgressDeterminateAsync()
+    {
+        var options = new ProgressOptions
+        {
+            Title = "Downloading Files",
+            Message = "Preparing download...",
+            IsIndeterminate = false,
+            IsCancellable = true,
+            ShowPercentage = true,
+            InitialProgress = 0
+        };
+
+        var progress = await _messageBoxService.ShowProgressAsync(options);
+
+        try
+        {
+            var files = new[] { "Document.pdf", "Image.png", "Data.xlsx", "Report.docx", "Archive.zip" };
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (progress.IsCancellationRequested)
+                {
+                    LastResult = "Progress dialog: Download cancelled";
+                    return;
+                }
+
+                progress.SetMessage($"Downloading {files[i]}...");
+                progress.SetProgress((i + 1) * 20);
+
+                // Simulate download time
+                await Task.Delay(800, progress.CancellationToken);
+            }
+
+            LastResult = $"Progress dialog: Downloaded {files.Length} files successfully";
+        }
+        catch (OperationCanceledException)
+        {
+            LastResult = "Progress dialog: Download cancelled";
+        }
+        finally
+        {
+            await progress.CloseAsync();
+        }
+    }
+
+    /// <summary>
+    /// Demonstrates RunWithProgressAsync for automatic progress management.
+    /// </summary>
+    /// <remarks>
+    /// This is the simplest way to show progress for a long-running task.
+    /// The dialog opens automatically and closes when the task completes.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowProgressAutoAsync()
+    {
+        var options = new ProgressOptions
+        {
+            Title = "Analyzing",
+            Message = "Running analysis...",
+            IsIndeterminate = false,
+            IsCancellable = true,
+            ShowPercentage = true
+        };
+
+        try
+        {
+            // RunWithProgressAsync handles the dialog lifecycle automatically
+            // The operation receives IProgress<double> for reporting (0-100) and CancellationToken
+            var result = await _messageBoxService.RunWithProgressAsync(
+                async (progress, cancellationToken) =>
+                {
+                    // Simulate complex analysis with progress reporting
+                    for (int i = 0; i <= 100; i += 10)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        progress.Report(i);
+                        await Task.Delay(300, cancellationToken);
+                    }
+
+                    // Return a result from the operation
+                    return "Analysis completed: 42 items processed";
+                },
+                options
+            );
+
+            LastResult = $"Progress dialog: {result ?? "Cancelled"}";
+        }
+        catch (OperationCanceledException)
+        {
+            LastResult = "Progress dialog: Cancelled by user";
+        }
+        catch (Exception ex)
+        {
+            LastResult = $"Progress dialog: Error - {ex.Message}";
+        }
+    }
+
+    #endregion
+
+    #region Toast Notification Commands
+
+    /// <summary>
+    /// Shows an info toast notification.
+    /// </summary>
+    /// <remarks>
+    /// Toast notifications are non-blocking and don't require user interaction.
+    /// They automatically disappear after a configurable duration.
+    /// </remarks>
+    [RelayCommand]
+    private void ShowToastInfo()
+    {
+        _toastService.ShowInfo("This is an informational toast notification.");
+        LastResult = "Toast: Info notification shown";
+    }
+
+    /// <summary>
+    /// Shows a success toast notification.
+    /// </summary>
+    [RelayCommand]
+    private void ShowToastSuccess()
+    {
+        _toastService.ShowSuccess("Operation completed successfully!");
+        LastResult = "Toast: Success notification shown";
+    }
+
+    /// <summary>
+    /// Shows a warning toast notification.
+    /// </summary>
+    [RelayCommand]
+    private void ShowToastWarning()
+    {
+        _toastService.ShowWarning("Please review your settings before proceeding.");
+        LastResult = "Toast: Warning notification shown";
+    }
+
+    /// <summary>
+    /// Shows an error toast notification.
+    /// </summary>
+    [RelayCommand]
+    private void ShowToastError()
+    {
+        _toastService.ShowError("Failed to save changes. Please try again.");
+        LastResult = "Toast: Error notification shown";
+    }
+
+    /// <summary>
+    /// Shows a custom toast with advanced options.
+    /// </summary>
+    /// <remarks>
+    /// Demonstrates full customization including title, duration,
+    /// click handler, and close callback.
+    /// </remarks>
+    [RelayCommand]
+    private void ShowToastCustom()
+    {
+        var options = new ToastOptions
+        {
+            Title = "File Saved",
+            Message = "Document.pdf has been saved. Click to open.",
+            Type = ToastType.Success,
+            Duration = TimeSpan.FromSeconds(8),
+            IsClickToClose = true,
+            OnClick = () => Debug.WriteLine("Toast clicked - would open file"),
+            OnClose = () => Debug.WriteLine("Toast closed")
+        };
+
+        _toastService.Show(options);
+        LastResult = "Toast: Custom notification shown (click to dismiss, 8s duration)";
+    }
+
+    /// <summary>
+    /// Shows multiple toasts to demonstrate stacking behavior.
+    /// </summary>
+    [RelayCommand]
+    private void ShowToastMultiple()
+    {
+        _toastService.ShowInfo("First notification");
+        _toastService.ShowSuccess("Second notification");
+        _toastService.ShowWarning("Third notification");
+        _toastService.ShowError("Fourth notification");
+        LastResult = "Toast: 4 stacked notifications shown";
+    }
+
+    /// <summary>
+    /// Closes all active toast notifications.
+    /// </summary>
+    [RelayCommand]
+    private void CloseAllToasts()
+    {
+        _toastService.CloseAll();
+        LastResult = "Toast: All notifications closed";
+    }
+
+    #endregion
+
+    #region Fluent Builder Commands
+
+    /// <summary>
+    /// Shows a simple dialog using the fluent builder API.
+    /// </summary>
+    /// <remarks>
+    /// The fluent builder provides a readable, chainable API for
+    /// constructing dialogs without creating MessageBoxOptions manually.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowBuilderSimpleAsync()
+    {
+        // Using the fluent builder with extension method shorthand
+        var result = await _messageBoxService
+            .Info("This dialog was created using the fluent builder API!", "Welcome")
+            .ShowAsync();
+
+        LastResult = $"Builder (simple): {result.Result}";
+    }
+
+    /// <summary>
+    /// Shows a confirmation dialog using the builder with callbacks.
+    /// </summary>
+    /// <remarks>
+    /// Callbacks allow you to execute code when specific buttons are clicked,
+    /// providing a cleaner alternative to switch statements on the result.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowBuilderWithCallbacksAsync()
+    {
+        string actionTaken = "None";
+
+        // Using MessageBoxBuilder.Create() with callbacks
+        await MessageBoxBuilder
+            .Create(_messageBoxService)
+            .WithTitle("Save Document")
+            .WithMessage("Do you want to save changes before closing?")
+            .WithIcon(MessageBoxIcon.Question)
+            .WithButtons(MessageBoxButtons.YesNoCancel)
+            .OnYes(() => actionTaken = "Saved")
+            .OnNo(() => actionTaken = "Discarded")
+            .OnCancel(() => actionTaken = "Cancelled")
+            .ShowAsync();
+
+        LastResult = $"Builder (callbacks): Action = {actionTaken}";
+    }
+
+    /// <summary>
+    /// Shows a dialog using the static builder shorthand.
+    /// </summary>
+    /// <remarks>
+    /// MessageBoxBuilder.Create() provides a static entry point
+    /// when dependency injection is not available or preferred.
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowBuilderStaticAsync()
+    {
+        var result = await MessageBoxBuilder
+            .Create(_messageBoxService)
+            .WithTitle("Quick Question")
+            .WithMessage("Are you enjoying the FluentDialogs library?")
+            .WithIcon(MessageBoxIcon.Question)
+            .WithButtons(MessageBoxButtons.YesNo)
+            .OnYes(() => _toastService.ShowSuccess("Thank you! 🎉"))
+            .OnNo(() => _toastService.ShowInfo("We'd love to hear your feedback!"))
+            .ShowAsync();
+
+        LastResult = $"Builder (static): {result}";
+    }
+
+    #endregion
+
+    #region Type Alias Demo Commands
+
+    /// <summary>
+    /// Demonstrates using the FluentMessageBoxOptions type alias.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// FluentMessageBoxOptions is a type alias for MessageBoxOptions that
+    /// provides a distinct type name to avoid conflicts with other libraries
+    /// that define MessageBoxOptions (e.g., System.Windows.Forms).
+    /// </para>
+    /// <para>
+    /// Both types are functionally identical and interchangeable.
+    /// </para>
+    /// </remarks>
+    [RelayCommand]
+    private async Task ShowFluentAliasAsync()
+    {
+        // Using the Fluent-prefixed alias instead of MessageBoxOptions
+        // This avoids naming conflicts with System.Windows.Forms.MessageBoxOptions
+        var options = new FluentMessageBoxOptions
+        {
+            Title = "Type Alias Demo",
+            Message = "This dialog uses FluentMessageBoxOptions - a type alias that avoids namespace conflicts with System.Windows.Forms.",
+            Icon = MessageBoxIcon.Info,
+            Buttons = MessageBoxButtons.OK
+        };
+
+        // ShowExtendedAsync returns DialogResult, which is the base of FluentDialogResult
+        var result = await _messageBoxService.ShowExtendedAsync(options);
+
+        LastResult = $"FluentMessageBoxOptions: Result={result.Result}";
     }
 
     #endregion

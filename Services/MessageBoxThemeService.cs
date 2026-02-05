@@ -1,6 +1,7 @@
 using System.Windows;
 using FluentDialogs.Abstractions;
 using FluentDialogs.Enums;
+using FluentDialogs.Models;
 
 namespace FluentDialogs.Services;
 
@@ -23,6 +24,9 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
 
     /// <inheritdoc/>
     public MessageBoxTheme CurrentTheme => _currentTheme;
+
+    /// <inheritdoc/>
+    public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
 
     /// <inheritdoc/>
     public void SetTheme(MessageBoxTheme theme)
@@ -56,8 +60,12 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
 
         appResources.MergedDictionaries.Add(newThemeDictionary);
         _currentThemeDictionary = newThemeDictionary;
+
+        var oldTheme = _currentTheme;
         _currentTheme = theme;
         _isInitialized = true;
+
+        ThemeChanged?.Invoke(this, new ThemeChangedEventArgs(oldTheme, theme));
     }
 
     /// <summary>

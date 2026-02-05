@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Threading;
 using FluentDialogs.Abstractions;
 using FluentDialogs.Enums;
+using FluentDialogs.Models;
 using FluentDialogs.ViewModels;
 using FluentDialogs.Views;
 using MessageBoxOptions = FluentDialogs.Models.MessageBoxOptions;
@@ -338,5 +339,120 @@ public sealed class MessageBoxService : IMessageBoxService
             .FirstOrDefault(w => w.IsActive);
 
         return activeWindow ?? application.MainWindow;
+    }
+
+    /// <inheritdoc/>
+    public Task<IProgressController> ShowProgressAsync(ProgressOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        return ShowProgressOnUiThreadAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public async Task<T?> RunWithProgressAsync<T>(Func<IProgress<double>, CancellationToken, Task<T>> operation, ProgressOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        ArgumentNullException.ThrowIfNull(options);
+
+        var controller = await ShowProgressAsync(options);
+        var progress = new Progress<double>(value => controller.SetProgress(value));
+
+        try
+        {
+            return await operation(progress, controller.CancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            return default;
+        }
+        finally
+        {
+            await controller.CloseAsync();
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task RunWithProgressAsync(Func<IProgress<double>, CancellationToken, Task> operation, ProgressOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        ArgumentNullException.ThrowIfNull(options);
+
+        var controller = await ShowProgressAsync(options);
+        var progress = new Progress<double>(value => controller.SetProgress(value));
+
+        try
+        {
+            await operation(progress, controller.CancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // Operation was cancelled, which is expected
+        }
+        finally
+        {
+            await controller.CloseAsync();
+        }
+    }
+
+    private Task<IProgressController> ShowProgressOnUiThreadAsync(ProgressOptions options)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+
+        if (dispatcher == null)
+        {
+            throw new InvalidOperationException(
+                "Cannot show dialog: Application.Current is null. " +
+                "Ensure the WPF application is running before displaying dialogs.");
+        }
+
+        if (dispatcher.CheckAccess())
+        {
+            return Task.FromResult(ShowProgressInternal(options));
+        }
+
+        var taskCompletionSource = new TaskCompletionSource<IProgressController>();
+
+        dispatcher.BeginInvoke(
+            DispatcherPriority.Normal,
+            () =>
+            {
+                try
+                {
+                    var controller = ShowProgressInternal(options);
+                    taskCompletionSource.SetResult(controller);
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
+            });
+
+        return taskCompletionSource.Task;
+    }
+
+    private IProgressController ShowProgressInternal(ProgressOptions options)
+    {
+        var window = new ProgressWindow();
+        window.Initialize(options);
+
+        ApplyThemeToProgressWindow(window);
+        SetWindowOwner(window, options.Owner);
+
+        // Show non-modal so we can return control
+        window.Show();
+
+        return window;
+    }
+
+    private void ApplyThemeToProgressWindow(ProgressWindow window)
+    {
+        if (_themeService == null)
+        {
+            return;
+        }
+
+        var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
+        window.Resources.MergedDictionaries.Add(themeResources);
     }
 }

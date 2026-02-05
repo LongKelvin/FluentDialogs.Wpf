@@ -214,7 +214,7 @@
                                Foreground="{StaticResource TextSecondaryBrush}"
                                Margin="0,2,0,0"/>
                     <Border Style="{StaticResource BadgeStyle}" Margin="0,12,0,0">
-                        <TextBlock Text="v1.0.0" 
+                        <TextBlock Text="v1.1.0" 
                                    FontSize="11" 
                                    Foreground="White"
                                    FontWeight="SemiBold"/>
@@ -267,8 +267,8 @@
                             Padding="16"
                             Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
-                            <TextBlock Text="Button Configs" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="3" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                            <TextBlock Text="Core Services" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
                     
@@ -279,20 +279,20 @@
                             Padding="16"
                             Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text="Toast Types" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{StaticResource CardBackgroundBrush}"
+                            BorderBrush="{StaticResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
                             <TextBlock Text="Icon Types" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
-                        </StackPanel>
-                    </Border>
-                    
-                    <Border Background="{StaticResource CardBackgroundBrush}"
-                            BorderBrush="{StaticResource CardBorderBrush}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="16"
-                            Margin="0,0,0,8">
-                        <StackPanel>
-                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
-                            <TextBlock Text="Button Styles" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -567,6 +567,137 @@
                             <Button Content="With TextBox Input" 
                                     Command="{Binding ShowWithInputCommand}"
                                     Style="{StaticResource DemoButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- NEW: Progress Dialogs -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Progress Dialogs" Style="{StaticResource SectionHeaderStyle}"/>
+                                <TextBlock Text="Modal progress dialogs with determinate/indeterminate modes, cancellation support, and auto-managed lifecycle" 
+                                           Style="{StaticResource DescriptionStyle}"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="Indeterminate" 
+                                    Command="{Binding ShowProgressIndeterminateCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Determinate (5 files)" 
+                                    Command="{Binding ShowProgressDeterminateCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Auto-Managed" 
+                                    Command="{Binding ShowProgressAutoCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- NEW: Toast Notifications -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Toast Notifications" Style="{StaticResource SectionHeaderStyle}"/>
+                                <TextBlock Text="Non-blocking toast notifications that stack and auto-dismiss. Great for feedback that doesn't interrupt workflow" 
+                                           Style="{StaticResource DescriptionStyle}"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="Info" 
+                                    Command="{Binding ShowToastInfoCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Success" 
+                                    Command="{Binding ShowToastSuccessCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Warning" 
+                                    Command="{Binding ShowToastWarningCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Error" 
+                                    Command="{Binding ShowToastErrorCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Custom Options" 
+                                    Command="{Binding ShowToastCustomCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Multiple (Stack)" 
+                                    Command="{Binding ShowToastMultipleCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Close All" 
+                                    Command="{Binding CloseAllToastsCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- NEW: Fluent Builder API -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Fluent Builder API" Style="{StaticResource SectionHeaderStyle}"/>
+                                <TextBlock Text="Chain method calls for readable dialog construction. Includes button callbacks for cleaner result handling" 
+                                           Style="{StaticResource DescriptionStyle}"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="Simple Builder" 
+                                    Command="{Binding ShowBuilderSimpleCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="With Callbacks" 
+                                    Command="{Binding ShowBuilderWithCallbacksCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Static Create" 
+                                    Command="{Binding ShowBuilderStaticCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- NEW: Type Aliases -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Type Aliases" Style="{StaticResource SectionHeaderStyle}"/>
+                                <TextBlock Text="Use FluentMessageBoxOptions and FluentDialogResult to avoid namespace conflicts with System.Windows.Forms" 
+                                           Style="{StaticResource DescriptionStyle}"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Background="#F7630C" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="v1.1" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="FluentMessageBoxOptions Demo" 
+                                    Command="{Binding ShowFluentAliasCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    MinWidth="220"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
