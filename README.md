@@ -345,6 +345,23 @@ Extended dialogs return `DialogResult` with additional data:
 - At most one `IsDefault` and one `IsCancel` button allowed
 - `Owner` should be set for proper modal behavior when possible
 
+## Screenshots
+
+### Light Theme
+![Light Theme Demo](docs/screenshots/demo-light.png)
+
+### Dark Theme
+![Dark Theme Demo](docs/screenshots/demo-dark.png)
+
+### Dialog Examples
+| Info | Confirm | Error |
+|------|---------|-------|
+| ![Info](docs/screenshots/dialog-info.png) | ![Confirm](docs/screenshots/dialog-confirm.png) | ![Error](docs/screenshots/dialog-error.png) |
+
+| Custom Buttons | Input | Selection |
+|----------------|-------|-----------|
+| ![Custom](docs/screenshots/dialog-custom-buttons.png) | ![Input](docs/screenshots/dialog-input.png) | ![Selection](docs/screenshots/dialog-selection.png) |
+
 ## License
 
 MIT
