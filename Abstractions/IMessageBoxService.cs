@@ -1,4 +1,5 @@
 using System.Windows;
+using FluentDialogs.Models;
 using MessageBoxOptions = FluentDialogs.Models.MessageBoxOptions;
 using DialogResult = FluentDialogs.Models.DialogResult;
 
@@ -140,4 +141,74 @@ public interface IMessageBoxService
     /// <param name="title">The optional title for the dialog.</param>
     /// <returns>A task that represents the asynchronous operation. The task result includes whether the dialog timed out.</returns>
     Task<DialogResult> TimeoutAsync(string message, int timeoutSeconds, MessageBoxResult timeoutResult = MessageBoxResult.Cancel, string? title = null);
+
+    /// <summary>
+    /// Displays a progress dialog and returns a controller for updating progress.
+    /// </summary>
+    /// <param name="options">The options that configure the progress dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a controller for updating the progress.</returns>
+    /// <remarks>
+    /// The returned <see cref="IProgressController"/> allows you to update the progress value,
+    /// change the message, and check for user cancellation. You must call <see cref="IProgressController.CloseAsync"/>
+    /// when the operation is complete.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var controller = await _messageBoxService.ShowProgressAsync(new ProgressOptions
+    /// {
+    ///     Title = "Processing",
+    ///     Message = "Please wait...",
+    ///     IsCancellable = true
+    /// });
+    /// 
+    /// try
+    /// {
+    ///     for (int i = 0; i &lt;= 100; i++)
+    ///     {
+    ///         controller.CancellationToken.ThrowIfCancellationRequested();
+    ///         controller.SetProgress(i);
+    ///         await Task.Delay(50);
+    ///     }
+    /// }
+    /// finally
+    /// {
+    ///     await controller.CloseAsync();
+    /// }
+    /// </code>
+    /// </example>
+    Task<IProgressController> ShowProgressAsync(ProgressOptions options);
+
+    /// <summary>
+    /// Displays a progress dialog and executes the specified operation with progress reporting.
+    /// </summary>
+    /// <typeparam name="T">The type of the operation result.</typeparam>
+    /// <param name="operation">The async operation to execute. Receives an IProgress for reporting and a CancellationToken.</param>
+    /// <param name="options">The options that configure the progress dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the operation result or default if cancelled.</returns>
+    /// <example>
+    /// <code>
+    /// var result = await _messageBoxService.RunWithProgressAsync(
+    ///     async (progress, cancellationToken) =>
+    ///     {
+    ///         for (int i = 0; i &lt;= 100; i++)
+    ///         {
+    ///             cancellationToken.ThrowIfCancellationRequested();
+    ///             progress.Report(i);
+    ///             await Task.Delay(50);
+    ///         }
+    ///         return "Completed!";
+    ///     },
+    ///     new ProgressOptions { Title = "Processing" }
+    /// );
+    /// </code>
+    /// </example>
+    Task<T?> RunWithProgressAsync<T>(Func<IProgress<double>, CancellationToken, Task<T>> operation, ProgressOptions options);
+
+    /// <summary>
+    /// Displays a progress dialog and executes the specified operation with progress reporting.
+    /// </summary>
+    /// <param name="operation">The async operation to execute. Receives an IProgress for reporting and a CancellationToken.</param>
+    /// <param name="options">The options that configure the progress dialog.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    Task RunWithProgressAsync(Func<IProgress<double>, CancellationToken, Task> operation, ProgressOptions options);
 }
