@@ -1,0 +1,123 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:FluentDialogs.Converters">
+
+    <!-- Converters (must be defined before they're used in Window attributes) -->
+    <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    <converters:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+    <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+    <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    <converters:SizeToContentConverter x:Key="SizeToContentConverter"/>
+    <converters:ColorContrastConverter x:Key="ColorContrastConverter"/>
+
+    <!-- Base Color Definitions (to be overridden by theme files) -->
+    
+    <!-- Background Colors -->
+    <Color x:Key="DialogBackgroundColor">#F3F3F3</Color>
+    <Color x:Key="DialogOverlayColor">#20000000</Color>
+    
+    <!-- Foreground Colors -->
+    <Color x:Key="DialogForegroundColor">#000000</Color>
+    <Color x:Key="DialogSecondaryForegroundColor">#605E5C</Color>
+    
+    <!-- Border Colors -->
+    <Color x:Key="DialogBorderColor">#E1DFDD</Color>
+    <Color x:Key="DialogShadowColor">#40000000</Color>
+    
+    <!-- Button Colors -->
+    <Color x:Key="ButtonBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="ButtonForegroundColor">#000000</Color>
+    <Color x:Key="ButtonBorderColor">#8A8886</Color>
+    <Color x:Key="ButtonHoverBackgroundColor">#F3F2F1</Color>
+    <Color x:Key="ButtonHoverBorderColor">#323130</Color>
+    <Color x:Key="ButtonPressedBackgroundColor">#EDEBE9</Color>
+    
+    <!-- Primary Button Colors -->
+    <Color x:Key="PrimaryButtonBackgroundColor">#0078D4</Color>
+    <Color x:Key="PrimaryButtonForegroundColor">#FFFFFF</Color>
+    <Color x:Key="PrimaryButtonHoverBackgroundColor">#106EBE</Color>
+    <Color x:Key="PrimaryButtonPressedBackgroundColor">#005A9E</Color>
+    
+    <!-- Danger Button Colors -->
+    <Color x:Key="DangerButtonBackgroundColor">#D13438</Color>
+    <Color x:Key="DangerButtonForegroundColor">#FFFFFF</Color>
+    <Color x:Key="DangerButtonHoverBackgroundColor">#A4262C</Color>
+    <Color x:Key="DangerButtonPressedBackgroundColor">#8F1E22</Color>
+    
+    <!-- Icon Colors -->
+    <Color x:Key="InfoIconColor">#0078D4</Color>
+    <Color x:Key="WarningIconColor">#F7630C</Color>
+    <Color x:Key="ErrorIconColor">#D13438</Color>
+    <Color x:Key="SuccessIconColor">#107C10</Color>
+    <Color x:Key="QuestionIconColor">#0078D4</Color>
+    
+    <!-- Exception Display Colors -->
+    <Color x:Key="ExceptionBackgroundColor">#FEF6F6</Color>
+    <Color x:Key="ExceptionBorderColor">#F4ABAB</Color>
+    <Color x:Key="ExceptionForegroundColor">#A4262C</Color>
+    <Color x:Key="HyperlinkColor">#0078D4</Color>
+    <Color x:Key="HyperlinkHoverColor">#106EBE</Color>
+
+    <!-- Error Dialog Accent Colors -->
+    <Color x:Key="ErrorDialogBorderColor">#D13438</Color>
+    <Color x:Key="ErrorDialogAccentColor">#FDE7E9</Color>
+    
+    <!-- Warning Dialog Accent Colors -->
+    <Color x:Key="WarningDialogBorderColor">#F7630C</Color>
+    <Color x:Key="WarningDialogAccentColor">#FFF4CE</Color>
+
+    <!-- Convert Colors to Brushes using DynamicResource -->
+    
+    <!-- Background Brushes -->
+    <SolidColorBrush x:Key="DialogBackgroundBrush" Color="{DynamicResource DialogBackgroundColor}" />
+    <SolidColorBrush x:Key="DialogOverlayBrush" Color="{DynamicResource DialogOverlayColor}" />
+    
+    <!-- Foreground Brushes -->
+    <SolidColorBrush x:Key="DialogForegroundBrush" Color="{DynamicResource DialogForegroundColor}" />
+    <SolidColorBrush x:Key="DialogSecondaryForegroundBrush" Color="{DynamicResource DialogSecondaryForegroundColor}" />
+    
+    <!-- Border Brushes -->
+    <SolidColorBrush x:Key="DialogBorderBrush" Color="{DynamicResource DialogBorderColor}" />
+    <SolidColorBrush x:Key="DialogShadowBrush" Color="{DynamicResource DialogShadowColor}" />
+    
+    <!-- Button Brushes -->
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{DynamicResource ButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="{DynamicResource ButtonForegroundColor}" />
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="{DynamicResource ButtonBorderColor}" />
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="{DynamicResource ButtonHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="{DynamicResource ButtonHoverBorderColor}" />
+    <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="{DynamicResource ButtonPressedBackgroundColor}" />
+    
+    <!-- Primary Button Brushes -->
+    <SolidColorBrush x:Key="PrimaryButtonBackgroundBrush" Color="{DynamicResource PrimaryButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonForegroundBrush" Color="{DynamicResource PrimaryButtonForegroundColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonHoverBackgroundBrush" Color="{DynamicResource PrimaryButtonHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonPressedBackgroundBrush" Color="{DynamicResource PrimaryButtonPressedBackgroundColor}" />
+    
+    <!-- Danger Button Brushes -->
+    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="{DynamicResource DangerButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="DangerButtonForegroundBrush" Color="{DynamicResource DangerButtonForegroundColor}" />
+    <SolidColorBrush x:Key="DangerButtonHoverBackgroundBrush" Color="{DynamicResource DangerButtonHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="DangerButtonPressedBackgroundBrush" Color="{DynamicResource DangerButtonPressedBackgroundColor}" />
+    
+    <!-- Icon Brushes -->
+    <SolidColorBrush x:Key="InfoIconBrush" Color="{DynamicResource InfoIconColor}" />
+    <SolidColorBrush x:Key="WarningIconBrush" Color="{DynamicResource WarningIconColor}" />
+    <SolidColorBrush x:Key="ErrorIconBrush" Color="{DynamicResource ErrorIconColor}" />
+    <SolidColorBrush x:Key="SuccessIconBrush" Color="{DynamicResource SuccessIconColor}" />
+    <SolidColorBrush x:Key="QuestionIconBrush" Color="{DynamicResource QuestionIconColor}" />
+    
+    <!-- Exception Display Brushes -->
+    <SolidColorBrush x:Key="ExceptionBackgroundBrush" Color="{DynamicResource ExceptionBackgroundColor}" />
+    <SolidColorBrush x:Key="ExceptionBorderBrush" Color="{DynamicResource ExceptionBorderColor}" />
+    <SolidColorBrush x:Key="ExceptionForegroundBrush" Color="{DynamicResource ExceptionForegroundColor}" />
+    <SolidColorBrush x:Key="HyperlinkBrush" Color="{DynamicResource HyperlinkColor}" />
+    <SolidColorBrush x:Key="HyperlinkHoverBrush" Color="{DynamicResource HyperlinkHoverColor}" />
+
+    <!-- Error/Warning Dialog Accent Brushes -->
+    <SolidColorBrush x:Key="ErrorDialogBorderBrush" Color="{DynamicResource ErrorDialogBorderColor}" />
+    <SolidColorBrush x:Key="ErrorDialogAccentBrush" Color="{DynamicResource ErrorDialogAccentColor}" />
+    <SolidColorBrush x:Key="WarningDialogBorderBrush" Color="{DynamicResource WarningDialogBorderColor}" />
+    <SolidColorBrush x:Key="WarningDialogAccentBrush" Color="{DynamicResource WarningDialogAccentColor}" />
+
+</ResourceDictionary>
