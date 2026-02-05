@@ -1,0 +1,599 @@
+<Window x:Class="FluentDialogs.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FluentDialogs.Demo.ViewModels"
+        mc:Ignorable="d"
+        Title="FluentDialogs.Wpf - Demo Application"
+        Width="1100"
+        Height="800"
+        MinWidth="900"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBackgroundBrush}"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <!-- App Colors -->
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="CardBorderBrush" Color="#E0E0E0"/>
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#0078D4"/>
+            <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#106EBE"/>
+            <SolidColorBrush x:Key="PrimaryPressedBrush" Color="#005A9E"/>
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1A1A1A"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#666666"/>
+            <SolidColorBrush x:Key="TextTertiaryBrush" Color="#999999"/>
+            <SolidColorBrush x:Key="SuccessBrush" Color="#107C10"/>
+            <SolidColorBrush x:Key="WarningBrush" Color="#F7630C"/>
+            <SolidColorBrush x:Key="ErrorBrush" Color="#D13438"/>
+            <SolidColorBrush x:Key="InfoBrush" Color="#0078D4"/>
+            <SolidColorBrush x:Key="SidebarBrush" Color="#FAFAFA"/>
+            <SolidColorBrush x:Key="DividerBrush" Color="#E8E8E8"/>
+
+            <!-- Converters -->
+            <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+
+            <!-- Section Header Style -->
+            <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="Margin" Value="0,0,0,4"/>
+            </Style>
+
+            <!-- Section Description Style -->
+            <Style x:Key="DescriptionStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="LineHeight" Value="20"/>
+            </Style>
+
+            <!-- Card Style -->
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="20"/>
+                <Setter Property="Margin" Value="0,0,0,16"/>
+            </Style>
+
+            <!-- Demo Button Base Style -->
+            <Style x:Key="DemoButtonStyle" TargetType="Button">
+                <Setter Property="MinWidth" Value="120"/>
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="Padding" Value="16,0"/>
+                <Setter Property="Margin" Value="0,0,8,8"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6"
+                                    Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#F0F0F0"/>
+                                    <Setter Property="BorderBrush" Value="#C0C0C0"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="#E5E5E5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Primary Button Style -->
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource DemoButtonStyle}">
+                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6"
+                                    Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHoverBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource PrimaryPressedBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryPressedBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Toggle Switch Style -->
+            <Style x:Key="ToggleSwitchStyle" TargetType="ToggleButton">
+                <Setter Property="Width" Value="44"/>
+                <Setter Property="Height" Value="22"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Grid>
+                                <Border x:Name="track"
+                                        Background="#CCCCCC"
+                                        CornerRadius="11"
+                                        SnapsToDevicePixels="True"/>
+                                <Border x:Name="thumb"
+                                        Width="18"
+                                        Height="18"
+                                        Background="White"
+                                        CornerRadius="9"
+                                        HorizontalAlignment="Left"
+                                        Margin="2,0,0,0"
+                                        SnapsToDevicePixels="True">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.2"/>
+                                    </Border.Effect>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="track" Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter TargetName="thumb" Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter TargetName="thumb" Property="Margin" Value="0,0,2,0"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Badge Style -->
+            <Style x:Key="BadgeStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" 
+                Background="{StaticResource SidebarBrush}"
+                BorderBrush="{StaticResource DividerBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Logo and Title -->
+                <StackPanel Grid.Row="0" Margin="24,24,24,16">
+                    <TextBlock Text="FluentDialogs"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="for WPF"
+                               FontSize="14"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,2,0,0"/>
+                    <Border Style="{StaticResource BadgeStyle}" Margin="0,12,0,0">
+                        <TextBlock Text="v1.0.0" 
+                                   FontSize="11" 
+                                   Foreground="White"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Theme Toggle -->
+                <Border Grid.Row="1" 
+                        Background="{StaticResource CardBackgroundBrush}"
+                        BorderBrush="{StaticResource CardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Margin="16,0,16,16"
+                        Padding="16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Dark Mode"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="{Binding CurrentTheme, StringFormat='Current: {0}'}"
+                                       FontSize="12"
+                                       Foreground="{StaticResource TextTertiaryBrush}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <ToggleButton Grid.Column="1"
+                                      Style="{StaticResource ToggleSwitchStyle}"
+                                      IsChecked="{Binding IsDarkMode}"
+                                      Command="{Binding ToggleThemeCommand}"
+                                      VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Quick Stats -->
+                <StackPanel Grid.Row="2" Margin="16,0">
+                    <TextBlock Text="QUICK STATS"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextTertiaryBrush}"
+                               Margin="8,0,0,12"/>
+                    
+                    <Border Background="{StaticResource CardBackgroundBrush}"
+                            BorderBrush="{StaticResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                            <TextBlock Text="Button Configs" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{StaticResource CardBackgroundBrush}"
+                            BorderBrush="{StaticResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text="Icon Types" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{StaticResource CardBackgroundBrush}"
+                            BorderBrush="{StaticResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
+                            <TextBlock Text="Button Styles" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Footer -->
+                <StackPanel Grid.Row="3" Margin="24,16">
+                    <TextBlock Text="Built with .NET 9"
+                               FontSize="11"
+                               Foreground="{StaticResource TextTertiaryBrush}"/>
+                    <TextBlock FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" Margin="0,2,0,0">
+                        <Run Text="by "/><Run Text="Long Kelvin" FontWeight="SemiBold"/>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Column="1" 
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="0,0,8,0">
+            <StackPanel Margin="32,24,24,24">
+
+                <!-- Header -->
+                <StackPanel Margin="0,0,0,24">
+                    <TextBlock Text="Demo Application"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Explore all features of the FluentDialogs.Wpf library"
+                               FontSize="14"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Quick Actions -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}"/>
+                                <TextBlock Text="Common dialog patterns used in most applications" 
+                                           Style="{StaticResource DescriptionStyle}"/>
+                            </StackPanel>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="Show Info" 
+                                    Command="{Binding ShowInfoCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Ask Confirmation" 
+                                    Command="{Binding ShowConfirmCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Show Error" 
+                                    Command="{Binding ShowErrorCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="Error + Exception" 
+                                    Command="{Binding ShowErrorWithExceptionCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Button Configurations -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Button Configurations" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="All standard button layouts available out of the box" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <UniformGrid Columns="3" Rows="2">
+                            <Button Margin="0,0,8,8" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowOkCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="OK" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Single button" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,8" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowOkCancelCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="OK / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Confirm or cancel" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,0,8" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowYesNoCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="Yes / No" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Binary choice" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowYesNoCancelCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="Yes / No / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Three options" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowRetryCancelCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="Retry / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Error recovery" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowAbortRetryIgnoreCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="Abort / Retry / Ignore" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Batch operations" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Icon Types -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Icon Types" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="Vector-based icons that scale perfectly at any DPI" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <UniformGrid Columns="6">
+                            <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowNoIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="#E0E0E0" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource TextTertiaryBrush}"/>
+                                    </Border>
+                                    <TextBlock Text="None" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowInfoIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="{StaticResource InfoBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="i" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Info" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowWarningIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="{StaticResource WarningBrush}" CornerRadius="4" Margin="0,0,0,8">
+                                        <TextBlock Text="!" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Warning" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowErrorIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="{StaticResource ErrorBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="X" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Error" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowSuccessIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="{StaticResource SuccessBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="&#x2713;" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Success" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="0" Height="90" Style="{StaticResource DemoButtonStyle}"
+                                    Command="{Binding ShowQuestionIconCommand}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <Border Width="32" Height="32" Background="{StaticResource PrimaryBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="?" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Question" FontSize="12" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Custom Buttons -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Custom Buttons" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="Create dialogs with custom button text, styles (Primary, Secondary, Danger), and attached commands" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <WrapPanel>
+                            <Button Content="Save / Don't Save / Cancel" 
+                                    Command="{Binding ShowCustomButtonsCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"
+                                    MinWidth="200"/>
+                            <Button Content="Custom with Commands" 
+                                    Command="{Binding ShowCustomButtonsWithCommandsCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"
+                                    MinWidth="180"/>
+                            <Button Content="Delete Confirmation" 
+                                    Command="{Binding ShowDeleteConfirmationCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"
+                                    MinWidth="150"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Native Dialog Features (NEW) -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Native Dialog Features" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="Built-in support for common dialog patterns: input, checkbox, selection, license, and timeout dialogs" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <WrapPanel>
+                            <Button Content="Native Checkbox" 
+                                    Command="{Binding ShowNativeCheckboxCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Native Input" 
+                                    Command="{Binding ShowNativeInputCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Password Input" 
+                                    Command="{Binding ShowNativePasswordCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Selection Dialog" 
+                                    Command="{Binding ShowNativeSelectionCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="License Agreement" 
+                                    Command="{Binding ShowNativeLicenseCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Timeout Dialog" 
+                                    Command="{Binding ShowNativeTimeoutCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Warning" 
+                                    Command="{Binding ShowWarningCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Custom Sizing" 
+                                    Command="{Binding ShowCustomSizedDialogCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Improved License" 
+                                    Command="{Binding ShowImprovedLicenseCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Custom Content -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Custom Content" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="Embed any WPF content: checkboxes, hyperlinks, progress bars, or custom controls" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <WrapPanel>
+                            <Button Content="With Checkbox" 
+                                    Command="{Binding ShowWithCheckboxCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="With Hyperlink" 
+                                    Command="{Binding ShowWithHyperlinkCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="With Progress" 
+                                    Command="{Binding ShowWithProgressCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                            <Button Content="With TextBox Input" 
+                                    Command="{Binding ShowWithInputCommand}"
+                                    Style="{StaticResource DemoButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Result Display -->
+                <Border Style="{StaticResource CardStyle}" Margin="0">
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="Last Dialog Result" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="The MessageBoxResult returned from the most recent dialog" 
+                                       Style="{StaticResource DescriptionStyle}"/>
+                        </StackPanel>
+                        <Border Background="#F8F8F8" 
+                                BorderBrush="{StaticResource DividerBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6" 
+                                Padding="16">
+                            <TextBlock Text="{Binding LastResult}"
+                                       FontFamily="Cascadia Code, Consolas, Courier New"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

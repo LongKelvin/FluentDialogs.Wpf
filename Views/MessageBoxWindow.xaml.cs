@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using FluentDialogs.ViewModels;
 
@@ -17,12 +18,26 @@ public partial class MessageBoxWindow : Window
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        Loaded += OnWindowLoaded;
     }
 
     /// <summary>
     /// Gets or sets the result of the message box dialog.
     /// </summary>
     public MessageBoxResult Result { get; set; } = MessageBoxResult.None;
+
+    private void OnWindowLoaded(object sender, RoutedEventArgs e)
+    {
+        if (DetailedTextScroller != null)
+        {
+            DetailedTextScroller.ScrollChanged += OnDetailedTextScrollChanged;
+        }
+
+        if (PasswordBox != null && DataContext is MessageBoxViewModel vm && vm.InputIsPassword)
+        {
+            PasswordBox.PasswordChanged += OnPasswordChanged;
+        }
+    }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -39,6 +54,16 @@ public partial class MessageBoxWindow : Window
 
     private void OnCloseRequested(object? sender, MessageBoxResult result)
     {
+        if (DataContext is MessageBoxViewModel viewModel)
+        {
+            viewModel.StopTimeoutTimer();
+
+            if (PasswordBox != null && viewModel.InputIsPassword)
+            {
+                viewModel.InputText = PasswordBox.Password;
+            }
+        }
+
         Result = result;
         DialogResult = result != MessageBoxResult.None;
         Close();
@@ -48,15 +73,47 @@ public partial class MessageBoxWindow : Window
     {
         if (e.ChangedButton == MouseButton.Left)
         {
-            DragMove();
+            try
+            {
+                DragMove();
+            }
+            catch
+            {
+                // DragMove can throw if window state changes during drag
+            }
         }
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
+        if (DataContext is MessageBoxViewModel viewModel)
+        {
+            viewModel.StopTimeoutTimer();
+        }
+
         Result = MessageBoxResult.Cancel;
         DialogResult = false;
         Close();
+    }
+
+    private void OnDetailedTextScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        if (sender is ScrollViewer scrollViewer && DataContext is MessageBoxViewModel viewModel)
+        {
+            var isAtBottom = scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 10;
+            if (isAtBottom && viewModel.RequireScrollToBottom)
+            {
+                viewModel.HasScrolledToBottom = true;
+            }
+        }
+    }
+
+    private void OnPasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (sender is PasswordBox passwordBox && DataContext is MessageBoxViewModel viewModel)
+        {
+            viewModel.InputText = passwordBox.Password;
+        }
     }
 
     /// <inheritdoc/>
@@ -65,9 +122,21 @@ public partial class MessageBoxWindow : Window
         if (DataContext is MessageBoxViewModel viewModel)
         {
             viewModel.CloseRequested -= OnCloseRequested;
+            viewModel.StopTimeoutTimer();
+        }
+
+        if (DetailedTextScroller != null)
+        {
+            DetailedTextScroller.ScrollChanged -= OnDetailedTextScrollChanged;
+        }
+
+        if (PasswordBox != null)
+        {
+            PasswordBox.PasswordChanged -= OnPasswordChanged;
         }
 
         DataContextChanged -= OnDataContextChanged;
+        Loaded -= OnWindowLoaded;
         base.OnClosed(e);
     }
 }

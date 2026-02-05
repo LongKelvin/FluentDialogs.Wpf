@@ -53,4 +53,12 @@
     <Color x:Key="HyperlinkColor">#60CDFF</Color>
     <Color x:Key="HyperlinkHoverColor">#3AA0F3</Color>
 
+    <!-- Error Dialog Accent Colors (Dark Theme) -->
+    <Color x:Key="ErrorDialogBorderColor">#F1707B</Color>
+    <Color x:Key="ErrorDialogAccentColor">#3C2A2A</Color>
+    
+    <!-- Warning Dialog Accent Colors (Dark Theme) -->
+    <Color x:Key="WarningDialogBorderColor">#FCE100</Color>
+    <Color x:Key="WarningDialogAccentColor">#3C3520</Color>
+
 </ResourceDictionary>

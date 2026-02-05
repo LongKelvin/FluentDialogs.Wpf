@@ -19,6 +19,7 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
 
     private MessageBoxTheme _currentTheme = MessageBoxTheme.Light;
     private ResourceDictionary? _currentThemeDictionary;
+    private bool _isInitialized;
 
     /// <inheritdoc/>
     public MessageBoxTheme CurrentTheme => _currentTheme;
@@ -26,7 +27,7 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
     /// <inheritdoc/>
     public void SetTheme(MessageBoxTheme theme)
     {
-        if (_currentTheme == theme)
+        if (_isInitialized && _currentTheme == theme)
         {
             return;
         }
@@ -56,6 +57,7 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
         appResources.MergedDictionaries.Add(newThemeDictionary);
         _currentThemeDictionary = newThemeDictionary;
         _currentTheme = theme;
+        _isInitialized = true;
     }
 
     /// <summary>
@@ -66,7 +68,10 @@ public sealed class MessageBoxThemeService : IMessageBoxThemeService
     /// </remarks>
     public void Initialize()
     {
-        SetTheme(MessageBoxTheme.Light);
+        if (!_isInitialized)
+        {
+            SetTheme(MessageBoxTheme.Light);
+        }
     }
 
     /// <summary>

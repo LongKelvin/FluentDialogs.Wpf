@@ -1,5 +1,6 @@
 using System.Windows;
-using FluentDialogs.Models;
+using MessageBoxOptions = FluentDialogs.Models.MessageBoxOptions;
+using DialogResult = FluentDialogs.Models.DialogResult;
 
 namespace FluentDialogs.Abstractions;
 
@@ -45,7 +46,16 @@ public interface IMessageBoxService
     /// <returns>A task that represents the asynchronous operation. The task result contains the user's response.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown when the options configuration is invalid.</exception>
-    Task<MessageBoxResult> ShowAsync(Models.MessageBoxOptions options);
+    Task<MessageBoxResult> ShowAsync(MessageBoxOptions options);
+
+    /// <summary>
+    /// Displays a message box dialog with the specified options and returns extended result data.
+    /// </summary>
+    /// <param name="options">The options that configure the message box appearance and behavior.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the extended dialog result.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when the options configuration is invalid.</exception>
+    Task<DialogResult> ShowExtendedAsync(MessageBoxOptions options);
 
     /// <summary>
     /// Displays an informational message box with an OK button.
@@ -70,4 +80,64 @@ public interface IMessageBoxService
     /// <param name="exception">The optional exception to display. When provided, the dialog includes expandable exception details.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the user's response.</returns>
     Task<MessageBoxResult> ErrorAsync(string message, Exception? exception = null);
+
+    /// <summary>
+    /// Displays a warning message box with an OK button.
+    /// </summary>
+    /// <param name="message">The warning message to display.</param>
+    /// <param name="title">The optional title for the dialog. Defaults to "Warning" if not specified.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the user's response.</returns>
+    Task<MessageBoxResult> WarningAsync(string message, string? title = null);
+
+    /// <summary>
+    /// Displays a confirmation dialog with a checkbox (e.g., "Don't show again").
+    /// </summary>
+    /// <param name="message">The message to display.</param>
+    /// <param name="checkboxText">The text to display next to the checkbox.</param>
+    /// <param name="title">The optional title for the dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the button result and checkbox state.</returns>
+    Task<DialogResult> ConfirmWithCheckboxAsync(string message, string checkboxText, string? title = null);
+
+    /// <summary>
+    /// Displays an input dialog with a text box.
+    /// </summary>
+    /// <param name="message">The prompt message to display.</param>
+    /// <param name="placeholder">The placeholder text for the input field.</param>
+    /// <param name="defaultValue">The initial value in the input field.</param>
+    /// <param name="title">The optional title for the dialog.</param>
+    /// <param name="isPassword">Whether to mask the input as a password.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the input text.</returns>
+    Task<DialogResult> InputAsync(string message, string placeholder, string? defaultValue = null, string? title = null, bool isPassword = false);
+
+    /// <summary>
+    /// Displays a selection dialog with a list of items.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the selection list.</typeparam>
+    /// <param name="message">The prompt message to display.</param>
+    /// <param name="items">The items to display in the selection list.</param>
+    /// <param name="displayMemberPath">The property path to display for complex objects.</param>
+    /// <param name="defaultIndex">The initially selected index.</param>
+    /// <param name="title">The optional title for the dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the selected item.</returns>
+    Task<DialogResult> SelectAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null);
+
+    /// <summary>
+    /// Displays a license agreement or disclaimer dialog that requires scrolling to accept.
+    /// </summary>
+    /// <param name="title">The title for the dialog.</param>
+    /// <param name="message">The brief message or heading.</param>
+    /// <param name="detailedText">The full license or disclaimer text.</param>
+    /// <param name="requireScrollToBottom">Whether the user must scroll to the bottom before accepting.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains whether the user accepted.</returns>
+    Task<DialogResult> LicenseAsync(string title, string message, string detailedText, bool requireScrollToBottom = true);
+
+    /// <summary>
+    /// Displays a dialog with a timeout that auto-closes.
+    /// </summary>
+    /// <param name="message">The message to display.</param>
+    /// <param name="timeoutSeconds">The number of seconds before auto-close.</param>
+    /// <param name="timeoutResult">The result to return when the dialog times out.</param>
+    /// <param name="title">The optional title for the dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result includes whether the dialog timed out.</returns>
+    Task<DialogResult> TimeoutAsync(string message, int timeoutSeconds, MessageBoxResult timeoutResult = MessageBoxResult.Cancel, string? title = null);
 }
