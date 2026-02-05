@@ -24,6 +24,15 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
     private bool _isStackTraceVisible;
     private MessageBoxResult _result = MessageBoxResult.None;
 
+    // Sizing and appearance fields
+    private double? _dialogWidth;
+    private double? _dialogHeight;
+    private double? _dialogMinWidth;
+    private double? _dialogMinHeight;
+    private double? _dialogMaxWidth;
+    private double? _dialogMaxHeight;
+    private System.Windows.Media.Color? _titleBarColor;
+
     // Native feature fields
     private string? _checkboxText;
     private bool _isCheckboxChecked;
@@ -571,6 +580,128 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
 
     #endregion
 
+    #region Dialog Sizing and Appearance Properties
+
+    /// <summary>
+    /// Gets the preferred width of the dialog.
+    /// </summary>
+    public double? DialogWidth
+    {
+        get => _dialogWidth;
+        set
+        {
+            if (_dialogWidth != value)
+            {
+                _dialogWidth = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the preferred height of the dialog.
+    /// </summary>
+    public double? DialogHeight
+    {
+        get => _dialogHeight;
+        set
+        {
+            if (_dialogHeight != value)
+            {
+                _dialogHeight = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the minimum width of the dialog.
+    /// </summary>
+    public double DialogMinWidth
+    {
+        get => _dialogMinWidth ?? 320;
+        set
+        {
+            if (_dialogMinWidth != value)
+            {
+                _dialogMinWidth = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the minimum height of the dialog.
+    /// </summary>
+    public double DialogMinHeight
+    {
+        get => _dialogMinHeight ?? 150;
+        set
+        {
+            if (_dialogMinHeight != value)
+            {
+                _dialogMinHeight = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the maximum width of the dialog.
+    /// </summary>
+    public double DialogMaxWidth
+    {
+        get => _dialogMaxWidth ?? 800;
+        set
+        {
+            if (_dialogMaxWidth != value)
+            {
+                _dialogMaxWidth = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the maximum height of the dialog.
+    /// </summary>
+    public double DialogMaxHeight
+    {
+        get => _dialogMaxHeight ?? 600;
+        set
+        {
+            if (_dialogMaxHeight != value)
+            {
+                _dialogMaxHeight = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the custom title bar color.
+    /// </summary>
+    public System.Windows.Media.Color? TitleBarColor
+    {
+        get => _titleBarColor;
+        set
+        {
+            if (_titleBarColor != value)
+            {
+                _titleBarColor = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasCustomTitleBarColor));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether a custom title bar color is set.
+    /// </summary>
+    public bool HasCustomTitleBarColor => _titleBarColor.HasValue;
+
+    #endregion
+
     /// <summary>
     /// Gets the full exception text for copying.
     /// </summary>
@@ -625,6 +756,15 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
         TimeoutSeconds = options.TimeoutSeconds;
         RemainingSeconds = options.TimeoutSeconds;
         _timeoutResult = options.TimeoutResult;
+
+        // Initialize sizing and appearance properties
+        DialogWidth = options.Width;
+        DialogHeight = options.Height;
+        if (options.MinWidth.HasValue) DialogMinWidth = options.MinWidth.Value;
+        if (options.MinHeight.HasValue) DialogMinHeight = options.MinHeight.Value;
+        if (options.MaxWidth.HasValue) DialogMaxWidth = options.MaxWidth.Value;
+        if (options.MaxHeight.HasValue) DialogMaxHeight = options.MaxHeight.Value;
+        TitleBarColor = options.TitleBarColor;
 
         if (options.SelectionItems is { Count: > 0 })
         {
