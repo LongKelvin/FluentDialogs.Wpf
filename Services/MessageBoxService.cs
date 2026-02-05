@@ -4,6 +4,8 @@ using FluentDialogs.Abstractions;
 using FluentDialogs.Enums;
 using FluentDialogs.ViewModels;
 using FluentDialogs.Views;
+using MessageBoxOptions = FluentDialogs.Models.MessageBoxOptions;
+using DialogResult = FluentDialogs.Models.DialogResult;
 
 namespace FluentDialogs.Services;
 
@@ -36,7 +38,7 @@ public sealed class MessageBoxService : IMessageBoxService
     }
 
     /// <inheritdoc/>
-    public Task<MessageBoxResult> ShowAsync(Models.MessageBoxOptions options)
+    public Task<MessageBoxResult> ShowAsync(MessageBoxOptions options)
     {
         if (options == null)
         {
@@ -49,9 +51,22 @@ public sealed class MessageBoxService : IMessageBoxService
     }
 
     /// <inheritdoc/>
+    public async Task<DialogResult> ShowExtendedAsync(MessageBoxOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        options.Validate();
+
+        return await ShowExtendedDialogOnUiThreadAsync(options);
+    }
+
+    /// <inheritdoc/>
     public Task<MessageBoxResult> InfoAsync(string message, string? title = null)
     {
-        var options = new Models.MessageBoxOptions
+        var options = new MessageBoxOptions
         {
             Title = title ?? "Information",
             Message = message,
@@ -65,7 +80,7 @@ public sealed class MessageBoxService : IMessageBoxService
     /// <inheritdoc/>
     public Task<MessageBoxResult> ConfirmAsync(string message, string? title = null)
     {
-        var options = new Models.MessageBoxOptions
+        var options = new MessageBoxOptions
         {
             Title = title ?? "Confirm",
             Message = message,
@@ -79,7 +94,7 @@ public sealed class MessageBoxService : IMessageBoxService
     /// <inheritdoc/>
     public Task<MessageBoxResult> ErrorAsync(string message, Exception? exception = null)
     {
-        var options = new Models.MessageBoxOptions
+        var options = new MessageBoxOptions
         {
             Title = "Error",
             Message = message,
@@ -91,7 +106,138 @@ public sealed class MessageBoxService : IMessageBoxService
         return ShowAsync(options);
     }
 
-    private Task<MessageBoxResult> ShowDialogOnUiThreadAsync(Models.MessageBoxOptions options)
+    /// <inheritdoc/>
+    public Task<MessageBoxResult> WarningAsync(string message, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Warning",
+            Message = message,
+            Icon = MessageBoxIcon.Warning,
+            Buttons = MessageBoxButtons.OK
+        };
+
+        return ShowAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public Task<DialogResult> ConfirmWithCheckboxAsync(string message, string checkboxText, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Confirm",
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.YesNo,
+            CheckboxText = checkboxText
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public Task<DialogResult> InputAsync(string message, string placeholder, string? defaultValue = null, string? title = null, bool isPassword = false)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Input",
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.OKCancel,
+            InputPlaceholder = placeholder,
+            InputDefaultValue = defaultValue,
+            InputIsPassword = isPassword
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public Task<DialogResult> SelectAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Select",
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.OKCancel,
+            SelectionItems = items.Cast<object>().ToList().AsReadOnly(),
+            SelectionDisplayMemberPath = displayMemberPath,
+            SelectionDefaultIndex = defaultIndex
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public Task<DialogResult> LicenseAsync(string title, string message, string detailedText, bool requireScrollToBottom = true)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Info,
+            Buttons = MessageBoxButtons.OKCancel,
+            DetailedText = detailedText,
+            RequireScrollToBottom = requireScrollToBottom
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
+    public Task<DialogResult> TimeoutAsync(string message, int timeoutSeconds, MessageBoxResult timeoutResult = MessageBoxResult.Cancel, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Information",
+            Message = message,
+            Icon = MessageBoxIcon.Info,
+            Buttons = MessageBoxButtons.OK,
+            TimeoutSeconds = timeoutSeconds,
+            TimeoutResult = timeoutResult
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    private Task<MessageBoxResult> ShowDialogOnUiThreadAsync(MessageBoxOptions options)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+
+        if (dispatcher == null)
+        {
+            throw new InvalidOperationException(
+                "Cannot show dialog: Application.Current is null. " +
+                "Ensure the WPF application is running before displaying dialogs.");
+        }
+
+        if (dispatcher.CheckAccess())
+        {
+            return Task.FromResult(ShowDialogInternal(options).Result);
+        }
+
+        var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
+
+        dispatcher.BeginInvoke(
+            DispatcherPriority.Normal,
+            () =>
+            {
+                try
+                {
+                    var result = ShowDialogInternal(options);
+                    taskCompletionSource.SetResult(result.Result);
+                }
+                catch (Exception ex)
+                {
+                    taskCompletionSource.SetException(ex);
+                }
+            });
+
+        return taskCompletionSource.Task;
+    }
+
+    private Task<DialogResult> ShowExtendedDialogOnUiThreadAsync(MessageBoxOptions options)
     {
         var dispatcher = Application.Current?.Dispatcher;
 
@@ -107,7 +253,7 @@ public sealed class MessageBoxService : IMessageBoxService
             return Task.FromResult(ShowDialogInternal(options));
         }
 
-        var taskCompletionSource = new TaskCompletionSource<MessageBoxResult>();
+        var taskCompletionSource = new TaskCompletionSource<DialogResult>();
 
         dispatcher.BeginInvoke(
             DispatcherPriority.Normal,
@@ -127,7 +273,7 @@ public sealed class MessageBoxService : IMessageBoxService
         return taskCompletionSource.Task;
     }
 
-    private MessageBoxResult ShowDialogInternal(Models.MessageBoxOptions options)
+    private DialogResult ShowDialogInternal(MessageBoxOptions options)
     {
         var viewModel = new MessageBoxViewModel();
         viewModel.Initialize(options);
@@ -142,7 +288,15 @@ public sealed class MessageBoxService : IMessageBoxService
 
         window.ShowDialog();
 
-        return window.Result;
+        return new DialogResult
+        {
+            Result = window.Result,
+            IsChecked = viewModel.IsCheckboxChecked,
+            InputText = viewModel.InputText,
+            SelectedItem = viewModel.SelectedItem,
+            SelectedIndex = viewModel.SelectedIndex,
+            TimedOut = viewModel.TimedOut
+        };
     }
 
     private void ApplyThemeToWindow(MessageBoxWindow window)

@@ -1,6 +1,9 @@
 using System.Windows;
+using System.Threading;
+
 using FluentDialogs.Abstractions;
 using FluentDialogs.Demo.ViewModels;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentDialogs.Demo;
@@ -14,6 +17,9 @@ namespace FluentDialogs.Demo;
 /// </remarks>
 public partial class App : Application
 {
+    private static Mutex? _mutex;
+    private const string MutexName = "{8F6F0AC4-B9A1-4cfe-A545-E45A88F3C111}";
+
     /// <summary>
     /// Gets the application's service provider for dependency injection.
     /// </summary>
@@ -24,6 +30,31 @@ public partial class App : Application
     /// </summary>
     protected override void OnStartup(StartupEventArgs e)
     {
+        // Check for existing instance FIRST, before base.OnStartup
+        try
+        {
+            _mutex = new Mutex(true, MutexName, out bool createdNew);
+            
+            if (!createdNew)
+            {
+                // Another instance is already running
+                MessageBox.Show(
+                    "FluentDialogs Demo is already running. Only one instance is allowed.",
+                    "Already Running",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+                
+                // Shutdown this instance
+                Shutdown();
+                return;
+            }
+        }
+        catch
+        {
+            // If we can't create/check the mutex, continue anyway
+        }
+
         base.OnStartup(e);
 
         // Step 1: Configure the service collection
@@ -46,6 +77,16 @@ public partial class App : Application
             DataContext = Services.GetRequiredService<MainViewModel>()
         };
         mainWindow.Show();
+    }
+
+    /// <summary>
+    /// Cleanup when application exits.
+    /// </summary>
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _mutex?.ReleaseMutex();
+        _mutex?.Dispose();
+        base.OnExit(e);
     }
 
     /// <summary>

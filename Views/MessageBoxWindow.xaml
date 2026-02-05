@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:FluentDialogs.Controls"
         xmlns:enums="clr-namespace:FluentDialogs.Enums"
         xmlns:viewmodels="clr-namespace:FluentDialogs.ViewModels"
+        xmlns:converters="clr-namespace:FluentDialogs.Converters"
         Title="{Binding Title}"
         Width="420"
         MinWidth="320"
@@ -27,6 +28,9 @@
 
             <!-- Visibility Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+            <converters:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
 
             <!-- Theme-aware styles for custom content -->
             <Style TargetType="TextBlock" x:Key="DialogTextBlockStyle">
@@ -174,6 +178,98 @@
                                FontFamily="Segoe UI"
                                TextWrapping="Wrap"
                                Margin="0,4,0,0"/>
+
+                    <!-- Native Hyperlink -->
+                    <TextBlock Margin="0,12,0,0"
+                               Visibility="{Binding HasHyperlink, Converter={StaticResource BoolToVisConverter}}">
+                        <Hyperlink Command="{Binding OpenHyperlinkCommand}"
+                                   Foreground="{DynamicResource HyperlinkBrush}">
+                            <TextBlock Text="{Binding HyperlinkText}"/>
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <!-- Native Input Field -->
+                    <Grid Margin="0,16,0,0"
+                          Visibility="{Binding HasInput, Converter={StaticResource BoolToVisConverter}}">
+                        <TextBox x:Name="InputTextBox"
+                                 Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                                 Padding="8,6"
+                                 FontSize="14"
+                                 Background="{DynamicResource ButtonBackgroundBrush}"
+                                 Foreground="{DynamicResource DialogForegroundBrush}"
+                                 BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                 BorderThickness="1"
+                                 Visibility="{Binding InputIsPassword, Converter={StaticResource InverseBoolToVisConverter}, ConverterParameter=Inverse}"/>
+                        <PasswordBox x:Name="PasswordBox"
+                                     Padding="8,6"
+                                     FontSize="14"
+                                     Background="{DynamicResource ButtonBackgroundBrush}"
+                                     Foreground="{DynamicResource DialogForegroundBrush}"
+                                     BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                     BorderThickness="1"
+                                     Visibility="{Binding InputIsPassword, Converter={StaticResource BoolToVisConverter}}"/>
+                        <!-- Placeholder text -->
+                        <TextBlock Text="{Binding InputPlaceholder}"
+                                   Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
+                                   FontSize="14"
+                                   Margin="10,8,0,0"
+                                   IsHitTestVisible="False"
+                                   Visibility="{Binding InputText, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+                    </Grid>
+
+                    <!-- Native Selection List -->
+                    <ListBox Margin="0,16,0,0"
+                             MaxHeight="200"
+                             ItemsSource="{Binding SelectionItems}"
+                             SelectedItem="{Binding SelectedItem}"
+                             SelectedIndex="{Binding SelectedIndex}"
+                             DisplayMemberPath="{Binding SelectionDisplayMemberPath}"
+                             Background="{DynamicResource ButtonBackgroundBrush}"
+                             Foreground="{DynamicResource DialogForegroundBrush}"
+                             BorderBrush="{DynamicResource ButtonBorderBrush}"
+                             Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisConverter}}"/>
+
+                    <!-- Detailed Text (License/Disclaimer) -->
+                    <Border Margin="0,16,0,0"
+                            MaxHeight="200"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Visibility="{Binding HasDetailedText, Converter={StaticResource BoolToVisConverter}}">
+                        <ScrollViewer x:Name="DetailedTextScroller"
+                                      VerticalScrollBarVisibility="Auto"
+                                      Padding="12">
+                            <TextBlock Text="{Binding DetailedText}"
+                                       Foreground="{DynamicResource DialogForegroundBrush}"
+                                       FontSize="12"
+                                       FontFamily="Segoe UI"
+                                       TextWrapping="Wrap"/>
+                        </ScrollViewer>
+                    </Border>
+                    
+                    <!-- Scroll requirement hint -->
+                    <TextBlock Margin="0,8,0,0"
+                               Text="Please scroll to read the entire text above before accepting."
+                               Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
+                               FontSize="11"
+                               FontStyle="Italic"
+                               Visibility="{Binding RequireScrollToBottom, Converter={StaticResource BoolToVisConverter}}"/>
+
+                    <!-- Native Checkbox -->
+                    <CheckBox Margin="0,16,0,0"
+                              Content="{Binding CheckboxText}"
+                              IsChecked="{Binding IsCheckboxChecked}"
+                              Foreground="{DynamicResource DialogForegroundBrush}"
+                              Visibility="{Binding HasCheckbox, Converter={StaticResource BoolToVisConverter}}"/>
+
+                    <!-- Timeout Display -->
+                    <TextBlock Margin="0,12,0,0"
+                               Text="{Binding TimeoutDisplayText}"
+                               Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
+                               FontSize="12"
+                               FontStyle="Italic"
+                               Visibility="{Binding HasTimeout, Converter={StaticResource BoolToVisConverter}}"/>
 
                     <!-- Custom Content Area with theme-aware styling -->
                     <ContentControl Content="{Binding Content}"
