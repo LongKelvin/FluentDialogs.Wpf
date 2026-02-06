@@ -14,6 +14,14 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <returns>The same service collection for chaining.</returns>
+    /// <remarks>
+    /// This registers the following services:
+    /// <list type="bullet">
+    /// <item><see cref="IMessageBoxService"/> - Modal dialog service</item>
+    /// <item><see cref="IMessageBoxThemeService"/> - Theme management service</item>
+    /// <item><see cref="IToastService"/> - Non-modal toast notifications</item>
+    /// </list>
+    /// </remarks>
     /// <example>
     /// <code>
     /// var services = new ServiceCollection();
@@ -24,6 +32,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IMessageBoxThemeService, MessageBoxThemeService>();
         services.AddSingleton<IMessageBoxService, MessageBoxService>();
+        services.AddSingleton<IToastService, ToastService>();
 
         return services;
     }

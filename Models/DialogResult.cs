@@ -9,7 +9,7 @@ namespace FluentDialogs.Models;
 /// This class extends the standard MessageBoxResult to include additional
 /// information such as checkbox state, input text, or selected items.
 /// </remarks>
-public sealed class DialogResult
+public class DialogResult
 {
     /// <summary>
     /// Gets the button result (OK, Cancel, Yes, No, etc.).

@@ -120,4 +120,24 @@
     <SolidColorBrush x:Key="WarningDialogBorderBrush" Color="{DynamicResource WarningDialogBorderColor}" />
     <SolidColorBrush x:Key="WarningDialogAccentBrush" Color="{DynamicResource WarningDialogAccentColor}" />
 
+    <!-- Progress Bar Colors -->
+    <Color x:Key="ProgressBarBackgroundColor">#E1DFDD</Color>
+    <Color x:Key="ProgressBarForegroundColor">#0078D4</Color>
+
+    <!-- Progress Bar Brushes -->
+    <SolidColorBrush x:Key="ProgressBarBackground" Color="{DynamicResource ProgressBarBackgroundColor}" />
+    <SolidColorBrush x:Key="ProgressBarForeground" Color="{DynamicResource ProgressBarForegroundColor}" />
+
+    <!-- Toast Colors -->
+    <Color x:Key="ToastBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="ToastForegroundColor">#000000</Color>
+    <Color x:Key="ToastSecondaryForegroundColor">#605E5C</Color>
+    <Color x:Key="ToastBorderColor">#E1DFDD</Color>
+
+    <!-- Toast Brushes -->
+    <SolidColorBrush x:Key="ToastBackground" Color="{DynamicResource ToastBackgroundColor}" />
+    <SolidColorBrush x:Key="ToastForeground" Color="{DynamicResource ToastForegroundColor}" />
+    <SolidColorBrush x:Key="ToastSecondaryForeground" Color="{DynamicResource ToastSecondaryForegroundColor}" />
+    <SolidColorBrush x:Key="ToastBorderBrush" Color="{DynamicResource ToastBorderColor}" />
+
 </ResourceDictionary>

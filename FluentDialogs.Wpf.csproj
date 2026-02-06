@@ -12,7 +12,7 @@
 
   <PropertyGroup>
     <PackageId>FluentDialogs.Wpf</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Long Kelvin</Authors>
     <Company>Long Kelvin</Company>
     <Product>FluentDialogs.Wpf</Product>
@@ -23,6 +23,8 @@
     <RepositoryUrl>https://github.com/LongKelvin/FluentDialogs.Wpf</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
