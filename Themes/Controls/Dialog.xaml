@@ -1,0 +1,108 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        DIALOG STYLES — FluentDialogs.Wpf v2.0
+        ═══════════════════════════════════════════════════════════════
+        
+        Structural styles for the dialog window chrome, title bar,
+        content area text, exception display, and custom-content wrappers.
+        
+        Zero hardcoded colors — all via FDBrush* and FD layout tokens.
+    -->
+
+    <!-- ═══════ Title Bar Text ═══════ -->
+    <Style x:Key="FDTitleBarTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeTitleBar}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource FDTypeWeightSemiBold}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <!-- ═══════ Dialog Body Text ═══════ -->
+    <Style x:Key="FDDialogTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeMd}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <!-- ═══════ Dialog Secondary Text ═══════ -->
+    <Style x:Key="FDDialogSecondaryTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeSm}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <!-- ═══════ Dialog CheckBox ═══════ -->
+    <Style x:Key="FDDialogCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeMd}"/>
+    </Style>
+
+    <!-- ═══════ Exception Container ═══════ -->
+    <Style x:Key="FDExceptionBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource FDBrushStatusErrorSubtle}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource FDBrushOnStatusError}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource FDBorderThicknessDefault}"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource FDRadiusSm}"/>
+        <Setter Property="Padding" Value="{DynamicResource FDSpacingDialogExceptionPadding}"/>
+    </Style>
+
+    <!-- ═══════ Exception Message Text ═══════ -->
+    <Style x:Key="FDExceptionMessageStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnStatusError}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeSm}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <!-- ═══════ Stack Trace / Monospace Text ═══════ -->
+    <Style x:Key="FDStackTraceTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeXs}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamilyMono}"/>
+        <Setter Property="TextWrapping" Value="NoWrap"/>
+    </Style>
+
+    <!-- ═══════ Detailed Text Container ═══════ -->
+    <Style x:Key="FDDetailBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource FDBrushSurfaceSecondary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource FDBorderThicknessDefault}"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource FDRadiusMd}"/>
+        <Setter Property="MinHeight" Value="{DynamicResource FDSizeDetailPanelMinHeight}"/>
+        <Setter Property="MaxHeight" Value="{DynamicResource FDSizeDetailPanelMaxHeight}"/>
+    </Style>
+
+    <!-- ═══════ Content Area Wrapper (for custom hosted content) ═══════ -->
+    <Style x:Key="FDContentHostStyle" TargetType="{x:Type ContentControl}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+    </Style>
+
+    <!-- ═══════ Timeout / Hint Text ═══════ -->
+    <Style x:Key="FDHintTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeXs}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+    </Style>
+
+    <!-- ═══════ Placeholder Text ═══════ -->
+    <Style x:Key="FDPlaceholderTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeMd}"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+
+    <!-- ═══════════════ v1 Backward-Compatible Aliases ═══════════════ -->
+    <Style x:Key="DialogTextBlockStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource FDDialogTextBlockStyle}"/>
+    <Style x:Key="DialogCheckBoxStyle" TargetType="{x:Type CheckBox}" BasedOn="{StaticResource FDDialogCheckBoxStyle}"/>
+    <Style x:Key="ModernCloseButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource FDCloseButtonStyle}"/>
+
+</ResourceDictionary>
