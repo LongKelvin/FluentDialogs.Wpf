@@ -53,8 +53,14 @@
         <!-- Layer 8: Legacy v1 backward-compatible key aliases -->
         <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Legacy/v1-compat.xaml"/>
 
-        <!-- Layer 9: Default preset (MUST BE LAST — overrides semantic tokens) -->
-        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Presets/Light.xaml"/>
+        <!--
+            NOTE: No preset is included here.
+            _Semantics.xaml provides Light-theme defaults as fallback.
+            The active preset (Light/Dark/Custom) is injected at runtime
+            by IFluentDialogThemeService.EnsureThemeLoaded() into THIS
+            dictionary's MergedDictionaries, ensuring DynamicResource
+            expressions on brushes resolve within the same scope.
+        -->
 
     </ResourceDictionary.MergedDictionaries>
 
