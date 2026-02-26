@@ -21,6 +21,7 @@ namespace FluentDialogs.Services;
 public sealed class MessageBoxService : IMessageBoxService
 {
     private readonly IMessageBoxThemeService? _themeService;
+    private readonly IFluentDialogThemeService? _v2ThemeService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageBoxService"/> class.
@@ -36,6 +37,17 @@ public sealed class MessageBoxService : IMessageBoxService
     public MessageBoxService(IMessageBoxThemeService themeService)
     {
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageBoxService"/> class with v2 theme support.
+    /// </summary>
+    /// <param name="themeService">The v1 theme service (legacy adapter).</param>
+    /// <param name="v2ThemeService">The v2 theme service for advanced theming.</param>
+    public MessageBoxService(IMessageBoxThemeService themeService, IFluentDialogThemeService v2ThemeService)
+    {
+        _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
+        _v2ThemeService = v2ThemeService ?? throw new ArgumentNullException(nameof(v2ThemeService));
     }
 
     /// <inheritdoc/>
@@ -302,13 +314,19 @@ public sealed class MessageBoxService : IMessageBoxService
 
     private void ApplyThemeToWindow(MessageBoxWindow window)
     {
-        if (_themeService == null)
+        // v2 path: ensure theme is loaded at App level. Windows inherit via DynamicResource.
+        if (_v2ThemeService is not null)
         {
+            _v2ThemeService.EnsureThemeLoaded();
             return;
         }
 
-        var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
-        window.Resources.MergedDictionaries.Add(themeResources);
+        // v1 fallback: add theme dictionary directly to the window's resources
+        if (_themeService is not null)
+        {
+            var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
+            window.Resources.MergedDictionaries.Add(themeResources);
+        }
     }
 
     private static void SetWindowOwner(Window window, Window? ownerWindow)
@@ -447,12 +465,18 @@ public sealed class MessageBoxService : IMessageBoxService
 
     private void ApplyThemeToProgressWindow(ProgressWindow window)
     {
-        if (_themeService == null)
+        // v2 path: ensure theme is loaded at App level
+        if (_v2ThemeService is not null)
         {
+            _v2ThemeService.EnsureThemeLoaded();
             return;
         }
 
-        var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
-        window.Resources.MergedDictionaries.Add(themeResources);
+        // v1 fallback
+        if (_themeService is not null)
+        {
+            var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
+            window.Resources.MergedDictionaries.Add(themeResources);
+        }
     }
 }
