@@ -1,0 +1,105 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        LAYOUT TOKENS — FluentDialogs.Wpf v2.0
+        ═══════════════════════════════════════════════════════════════
+        
+        Spacing, corner radius, elevation (shadow), sizing, and animation tokens.
+        Override these to adjust density, roundness, and shadow behavior.
+    -->
+
+    <!-- ═══════ Spacing Scale ═══════ -->
+    <Thickness x:Key="FDSpacingNone">0</Thickness>
+    <Thickness x:Key="FDSpacingXxs">2</Thickness>
+    <Thickness x:Key="FDSpacingXs">4</Thickness>
+    <Thickness x:Key="FDSpacingSm">8</Thickness>
+    <Thickness x:Key="FDSpacingMd">12</Thickness>
+    <Thickness x:Key="FDSpacingLg">16</Thickness>
+    <Thickness x:Key="FDSpacingXl">24</Thickness>
+    <Thickness x:Key="FDSpacingXxl">32</Thickness>
+
+    <!-- ═══════ Component-Specific Spacing ═══════ -->
+    <Thickness x:Key="FDSpacingDialogContent">24,8,24,24</Thickness>
+    <Thickness x:Key="FDSpacingDialogButtonPanel">24,16</Thickness>
+    <Thickness x:Key="FDSpacingDialogShadowMargin">16</Thickness>
+    <Thickness x:Key="FDSpacingButtonContent">16,5</Thickness>
+    <Thickness x:Key="FDSpacingIconMargin">0,0,16,0</Thickness>
+    <Thickness x:Key="FDSpacingMessageMargin">0,4,0,0</Thickness>
+    <Thickness x:Key="FDSpacingSectionMargin">0,16,0,0</Thickness>
+    <Thickness x:Key="FDSpacingSmallSectionMargin">0,12,0,0</Thickness>
+    <Thickness x:Key="FDSpacingTitleMargin">16,0,0,0</Thickness>
+    <Thickness x:Key="FDSpacingButtonItemMargin">8,0,0,0</Thickness>
+    <Thickness x:Key="FDSpacingToastPadding">12</Thickness>
+    <Thickness x:Key="FDSpacingToastMargin">8</Thickness>
+    <Thickness x:Key="FDSpacingToastIconMargin">0,0,12,0</Thickness>
+    <Thickness x:Key="FDSpacingExceptionPadding">12</Thickness>
+    <Thickness x:Key="FDSpacingDetailedTextPadding">16</Thickness>
+    <Thickness x:Key="FDSpacingSmallGap">0,8,0,0</Thickness>
+    <Thickness x:Key="FDSpacingCopyButtonMargin">8,0,0,0</Thickness>
+    <Thickness x:Key="FDSpacingInputPadding">8,6</Thickness>
+
+    <!-- ═══════ Corner Radius ═══════ -->
+    <CornerRadius x:Key="FDRadiusNone">0</CornerRadius>
+    <CornerRadius x:Key="FDRadiusSm">4</CornerRadius>
+    <CornerRadius x:Key="FDRadiusMd">8</CornerRadius>
+    <CornerRadius x:Key="FDRadiusLg">12</CornerRadius>
+    <CornerRadius x:Key="FDRadiusXl">16</CornerRadius>
+    <CornerRadius x:Key="FDRadiusCircle">999</CornerRadius>
+
+    <!-- Asymmetric Radii -->
+    <CornerRadius x:Key="FDRadiusDialogTop">8,8,0,0</CornerRadius>
+    <CornerRadius x:Key="FDRadiusCloseButton">0,8,0,0</CornerRadius>
+
+    <!-- ═══════ Elevation / Shadow ═══════ -->
+    <sys:Double x:Key="FDElevationDialogBlur">16</sys:Double>
+    <sys:Double x:Key="FDElevationDialogDepth">4</sys:Double>
+    <sys:Double x:Key="FDElevationDialogOpacity">0.3</sys:Double>
+    <sys:Int32 x:Key="FDElevationDialogDirection">270</sys:Int32>
+
+    <sys:Double x:Key="FDElevationToastBlur">10</sys:Double>
+    <sys:Double x:Key="FDElevationToastDepth">2</sys:Double>
+    <sys:Double x:Key="FDElevationToastOpacity">0.3</sys:Double>
+    <sys:Int32 x:Key="FDElevationToastDirection">270</sys:Int32>
+
+    <!-- ═══════ Sizing ═══════ -->
+    <sys:Double x:Key="FDSizeButtonMinWidth">88</sys:Double>
+    <sys:Double x:Key="FDSizeButtonMinHeight">32</sys:Double>
+    <sys:Double x:Key="FDSizeCloseButtonWidth">46</sys:Double>
+    <sys:Double x:Key="FDSizeCloseButtonHeight">32</sys:Double>
+    <sys:Double x:Key="FDSizeTitleBarHeight">40</sys:Double>
+    <sys:Double x:Key="FDSizeIconDefault">48</sys:Double>
+    <sys:Double x:Key="FDSizeIconWidth">32</sys:Double>
+    <sys:Double x:Key="FDSizeIconHeight">32</sys:Double>
+    <sys:Double x:Key="FDSizeToastMinWidth">280</sys:Double>
+    <sys:Double x:Key="FDSizeToastMaxWidth">350</sys:Double>
+    <sys:Double x:Key="FDSizeToastIconSize">24</sys:Double>
+    <sys:Double x:Key="FDSizeToastCloseSize">20</sys:Double>
+    <sys:Double x:Key="FDSizeDialogDefaultWidth">420</sys:Double>
+    <sys:Double x:Key="FDSizeCopyButtonSize">24</sys:Double>
+    <sys:Double x:Key="FDSizeCopyIconSize">14</sys:Double>
+    <sys:Double x:Key="FDSizeProgressBarHeight">8</sys:Double>
+
+    <!-- ═══════ Border Thickness ═══════ -->
+    <Thickness x:Key="FDBorderThicknessDefault">1</Thickness>
+    <Thickness x:Key="FDBorderThicknessFocus">2</Thickness>
+    <Thickness x:Key="FDBorderThicknessAccentBottom">1,1,1,3</Thickness>
+
+    <!-- ═══════ Opacity ═══════ -->
+    <sys:Double x:Key="FDOpacityDisabled">0.5</sys:Double>
+
+    <!-- ═══════ Detail/Exception Panel Sizes ═══════ -->
+    <sys:Double x:Key="FDSizeDetailedTextMinHeight">150</sys:Double>
+    <sys:Double x:Key="FDSizeDetailedTextMaxHeight">300</sys:Double>
+    <sys:Double x:Key="FDSizeStackTraceMaxHeight">250</sys:Double>
+    <sys:Double x:Key="FDSizeStackTraceMinHeight">100</sys:Double>
+    <sys:Double x:Key="FDSizeSelectionListMaxHeight">200</sys:Double>
+
+    <!-- ═══════ Animation Durations ═══════ -->
+    <Duration x:Key="FDAnimDurationFast">0:0:0.15</Duration>
+    <Duration x:Key="FDAnimDurationMedium">0:0:0.3</Duration>
+    <Duration x:Key="FDAnimDurationSlow">0:0:0.5</Duration>
+
+</ResourceDictionary>

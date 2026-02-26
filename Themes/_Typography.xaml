@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        TYPOGRAPHY TOKENS — FluentDialogs.Wpf v2.0
+        ═══════════════════════════════════════════════════════════════
+        
+        Font families, sizes, weights, and line heights.
+        Override these to match your application's type system.
+    -->
+
+    <!-- ═══════ Font Families ═══════ -->
+    <FontFamily x:Key="FDTypeFontFamily">Segoe UI, Segoe UI Emoji, sans-serif</FontFamily>
+    <FontFamily x:Key="FDTypeFontFamilyMono">Cascadia Code, Consolas, Courier New</FontFamily>
+    <FontFamily x:Key="FDTypeFontFamilyIcon">Segoe UI Symbol</FontFamily>
+    <FontFamily x:Key="FDTypeFontFamilyMdl2">Segoe MDL2 Assets</FontFamily>
+
+    <!-- ═══════ Font Sizes ═══════ -->
+    <sys:Double x:Key="FDTypeSizeXs">10</sys:Double>
+    <sys:Double x:Key="FDTypeSizeSm">12</sys:Double>
+    <sys:Double x:Key="FDTypeSizeMd">14</sys:Double>
+    <sys:Double x:Key="FDTypeSizeLg">16</sys:Double>
+    <sys:Double x:Key="FDTypeSizeXl">18</sys:Double>
+    <sys:Double x:Key="FDTypeSizeXxl">24</sys:Double>
+
+    <!-- ═══════ Title Bar Font Size ═══════ -->
+    <sys:Double x:Key="FDTypeSizeTitleBar">12</sys:Double>
+
+    <!-- ═══════ Icon Symbol Font Sizes ═══════ -->
+    <sys:Double x:Key="FDTypeSizeIconSm">10</sys:Double>
+    <sys:Double x:Key="FDTypeSizeIconMd">14</sys:Double>
+    <sys:Double x:Key="FDTypeSizeIconLg">16</sys:Double>
+
+    <!-- ═══════ Font Weights ═══════ -->
+    <FontWeight x:Key="FDTypeWeightRegular">Normal</FontWeight>
+    <FontWeight x:Key="FDTypeWeightMedium">Medium</FontWeight>
+    <FontWeight x:Key="FDTypeWeightSemiBold">SemiBold</FontWeight>
+    <FontWeight x:Key="FDTypeWeightBold">Bold</FontWeight>
+
+    <!-- ═══════ Line Heights ═══════ -->
+    <sys:Double x:Key="FDTypeLineHeightSm">16</sys:Double>
+    <sys:Double x:Key="FDTypeLineHeightMd">20</sys:Double>
+    <sys:Double x:Key="FDTypeLineHeightLg">28</sys:Double>
+
+</ResourceDictionary>
