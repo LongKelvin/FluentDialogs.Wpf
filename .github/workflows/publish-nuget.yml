@@ -1,0 +1,126 @@
+# ──────────────────────────────────────────────────────────────
+# CD — Stage 2: Publish to NuGet
+#
+# Automatically triggered when a GitHub Release is PUBLISHED.
+# This ensures release notes are reviewed before the package
+# goes to NuGet.org.
+#
+# Can also be triggered manually to re-publish or retry a
+# failed NuGet push.
+#
+# Requires repository secret: NUGET_API_KEY
+# ──────────────────────────────────────────────────────────────
+name: Publish to NuGet
+
+on:
+  # Automatic: fires when owner clicks "Publish release" on a draft
+  release:
+    types: [published]
+
+  # Manual: retry or republish from Actions tab
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. v2.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: "9.0.x"
+
+jobs:
+  publish:
+    name: Publish NuGet Package
+    runs-on: windows-latest
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # ── Resolve tag / version ─────────────────────────────
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $tag = "${{ inputs.tag }}"
+          } else {
+            $tag = "${{ github.event.release.tag_name }}"
+          }
+          $ver = $tag -replace '^v', ''
+          if (-not $ver) { throw "Version could not be determined from tag: $tag" }
+          Write-Host "Tag: $tag  |  Version: $ver"
+          echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+          echo "TAG=$tag"     >> $env:GITHUB_OUTPUT
+
+      # ── Download .nupkg from GitHub Release ───────────────
+      - name: Download nupkg from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          $tag = "${{ steps.version.outputs.TAG }}"
+          $nupkg = "FluentDialogs.Wpf.$ver.nupkg"
+
+          New-Item -ItemType Directory -Path "packages" -Force | Out-Null
+
+          # Download the .nupkg asset from the GitHub Release
+          gh release download $tag `
+            --repo "${{ github.repository }}" `
+            --pattern "*.nupkg" `
+            --dir "packages"
+
+          $found = Get-ChildItem "packages" -Filter "*.nupkg"
+          if ($found.Count -eq 0) { throw "No .nupkg found in release $tag" }
+          Write-Host "Downloaded: $($found | ForEach-Object { $_.Name })"
+
+      # ── Publish to NuGet.org ──────────────────────────────
+      - name: Push to NuGet.org
+        shell: pwsh
+        run: |
+          $packages = Get-ChildItem "packages" -Filter "*.nupkg" | Where-Object { $_.Name -notlike "*.snupkg" }
+          foreach ($pkg in $packages) {
+            Write-Host "Pushing $($pkg.Name)..."
+            dotnet nuget push $pkg.FullName `
+              --api-key "${{ secrets.NUGET_API_KEY }}" `
+              --source "https://api.nuget.org/v3/index.json" `
+              --skip-duplicate
+            if ($LASTEXITCODE -ne 0) { throw "Failed to push $($pkg.Name)" }
+            Write-Host "Successfully pushed $($pkg.Name)"
+          }
+
+      # ── Push symbol package if present ────────────────────
+      - name: Push symbols to NuGet.org
+        shell: pwsh
+        run: |
+          $snupkgs = Get-ChildItem "packages" -Filter "*.snupkg" -ErrorAction SilentlyContinue
+          foreach ($pkg in $snupkgs) {
+            Write-Host "Pushing symbols $($pkg.Name)..."
+            dotnet nuget push $pkg.FullName `
+              --api-key "${{ secrets.NUGET_API_KEY }}" `
+              --source "https://api.nuget.org/v3/index.json" `
+              --skip-duplicate
+            # Symbol push failures are non-fatal
+            if ($LASTEXITCODE -ne 0) {
+              Write-Warning "Symbol push failed for $($pkg.Name) — non-fatal"
+            } else {
+              Write-Host "Successfully pushed $($pkg.Name)"
+            }
+          }
+
+      - name: Summary
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          Write-Host ""
+          Write-Host "=================================================="
+          Write-Host "  FluentDialogs.Wpf v$ver published to NuGet.org!"
+          Write-Host ""
+          Write-Host "  https://www.nuget.org/packages/FluentDialogs.Wpf/$ver"
+          Write-Host "=================================================="

@@ -1,41 +1,32 @@
 # ──────────────────────────────────────────────────────────────
-# CD — Release & Publish
-# Builds, creates GitHub Release, and publishes to NuGet.
+# CD — Stage 1: Build & Draft GitHub Release
+#
+# Creates a DRAFT GitHub Release with auto-generated release notes
+# and attached build artifacts. The owner then:
+#   1. Reviews and edits the release notes on GitHub
+#   2. Clicks "Publish release"
+#   3. → publish-nuget.yml fires automatically
 #
 # Triggers:
 #   1. AUTOMATIC — push a tag like v2.1.0
 #      git tag v2.1.0 && git push origin v2.1.0
 #
-#   2. MANUAL — Actions tab → "Release & Publish" → Run workflow
-#      Enter version (e.g. "2.1.0") and choose publish target.
-#
-# Requires repository secret: NUGET_API_KEY
+#   2. MANUAL — Actions tab → "Release" → Run workflow
+#      Enter version (e.g. "2.1.0"), optionally mark as prerelease.
 # ──────────────────────────────────────────────────────────────
-name: Release & Publish
+name: Release
 
 on:
-  # Automatic: triggered by pushing a version tag
   push:
     tags:
       - "v*"
 
-  # Manual: owner can trigger from the Actions tab
   workflow_dispatch:
     inputs:
       version:
         description: "Package version (e.g. 2.1.0 — without 'v' prefix)"
         required: true
         type: string
-      publish_nuget:
-        description: "Publish to NuGet.org?"
-        required: true
-        default: true
-        type: boolean
-      create_github_release:
-        description: "Create GitHub Release?"
-        required: true
-        default: true
-        type: boolean
       prerelease:
         description: "Mark as pre-release?"
         required: false
@@ -43,15 +34,15 @@ on:
         type: boolean
 
 permissions:
-  contents: write          # needed for creating releases
+  contents: write
 
 env:
   DOTNET_VERSION: "9.0.x"
   CONFIGURATION: Release
 
 jobs:
-  release:
-    name: Build, Release & Publish
+  build-and-draft:
+    name: Build, Pack & Draft Release
     runs-on: windows-latest
 
     steps:
@@ -59,7 +50,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # full history for changelog
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -74,7 +65,6 @@ jobs:
           if ("${{ github.event_name }}" -eq "workflow_dispatch") {
             $ver = "${{ inputs.version }}"
           } else {
-            # Extract from tag: refs/tags/v2.1.0 → 2.1.0
             $ver = "${{ github.ref_name }}" -replace '^v', ''
           }
           if (-not $ver) { throw "Version could not be determined" }
@@ -91,7 +81,7 @@ jobs:
           $content = Get-Content $file -Raw
           $content = $content -replace '<Version>[^<]+</Version>', "<Version>$ver</Version>"
           Set-Content $file $content -NoNewline
-          Write-Host "Patched $file to version $ver"
+          Write-Host "Patched $file → $ver"
 
       # ── Build & Pack ──────────────────────────────────────
       - name: Restore
@@ -103,82 +93,164 @@ jobs:
       - name: Pack
         run: dotnet pack FluentDialogs.Wpf.csproj -c ${{ env.CONFIGURATION }} --no-build -o artifacts /p:Version=${{ steps.version.outputs.VERSION }}
 
-      # ── Create zip for GitHub Release ─────────────────────
       - name: Create release zip
         shell: pwsh
         run: |
           $ver = "${{ steps.version.outputs.VERSION }}"
-          Compress-Archive -Path "artifacts\*.nupkg","artifacts\*.snupkg" -DestinationPath "artifacts\FluentDialogs.Wpf.$ver.zip"
+          Compress-Archive -Path "artifacts\*.nupkg","artifacts\*.snupkg" `
+            -DestinationPath "artifacts\FluentDialogs.Wpf.$ver.zip"
 
       # ── Generate release notes ────────────────────────────
       - name: Generate release notes
-        id: notes
+        shell: pwsh
+        run: |
+          $ver  = "${{ steps.version.outputs.VERSION }}"
+          $tag  = "${{ steps.version.outputs.TAG }}"
+
+          # Find previous tag
+          $prevTag = git tag --sort=-creatordate | Where-Object { $_ -ne $tag } | Select-Object -First 1
+          if (-not $prevTag) { $prevTag = (git rev-list --max-parents=0 HEAD | Select-Object -First 1) }
+
+          # Collect commits since previous tag
+          $commits = git log "$prevTag..$tag" --pretty=format:"- %s (%h)" 2>$null
+          if (-not $commits) {
+            $commits = git log "$prevTag..HEAD" --pretty=format:"- %s (%h)" 2>$null
+          }
+
+          # Categorize commits by conventional-commit prefix
+          $features    = @()
+          $fixes       = @()
+          $chores      = @()
+          $breaking    = @()
+          $other       = @()
+
+          foreach ($line in ($commits -split "`n")) {
+            if (-not $line) { continue }
+            if ($line -match 'BREAKING|breaking') { $breaking += $line }
+            elseif ($line -match '^\- feat')      { $features += $line }
+            elseif ($line -match '^\- fix')       { $fixes    += $line }
+            elseif ($line -match '^\- (ci|chore|build|docs|style|refactor|perf|test)') { $chores += $line }
+            else                                  { $other    += $line }
+          }
+
+          # Build release notes markdown
+          $notes = @()
+          $notes += "# FluentDialogs.Wpf v$ver"
+          $notes += ""
+          $notes += "## Highlights"
+          $notes += ""
+          $notes += "<!-- EDIT THIS — Write 3-5 bullet points about the key changes -->"
+          $notes += "<!-- Then delete these HTML comments before publishing       -->"
+          $notes += ""
+
+          if ($breaking.Count -gt 0) {
+            $notes += "## Breaking Changes"
+            $notes += ""
+            $breaking | ForEach-Object { $notes += $_ }
+            $notes += ""
+          }
+
+          if ($features.Count -gt 0) {
+            $notes += "## New Features"
+            $notes += ""
+            $features | ForEach-Object { $notes += $_ }
+            $notes += ""
+          }
+
+          if ($fixes.Count -gt 0) {
+            $notes += "## Bug Fixes"
+            $notes += ""
+            $fixes | ForEach-Object { $notes += $_ }
+            $notes += ""
+          }
+
+          if ($chores.Count -gt 0) {
+            $notes += "## Maintenance"
+            $notes += ""
+            $chores | ForEach-Object { $notes += $_ }
+            $notes += ""
+          }
+
+          if ($other.Count -gt 0) {
+            $notes += "## Other Changes"
+            $notes += ""
+            $other | ForEach-Object { $notes += $_ }
+            $notes += ""
+          }
+
+          $notes += "## Compatibility"
+          $notes += ""
+          $notes += "<!-- EDIT THIS — e.g. 'Fully backward compatible with v1.x' or list breaking changes -->"
+          $notes += ""
+
+          $notes += "## Install"
+          $notes += ""
+          $notes += '```'
+          $notes += "dotnet add package FluentDialogs.Wpf --version $ver"
+          $notes += '```'
+          $notes += ""
+          $notes += "Or install from a .nupkg file:"
+          $notes += '```'
+          $notes += 'dotnet nuget add source <FOLDER_CONTAINING_NUPKG> -n LocalPackages'
+          $notes += 'dotnet add package FluentDialogs.Wpf --source LocalPackages'
+          $notes += '```'
+          $notes += ""
+
+          if ($prevTag -and ($prevTag -match '^v')) {
+            $notes += "## Full Changelog"
+            $notes += "https://github.com/${{ github.repository }}/compare/$prevTag...$tag"
+            $notes += ""
+          }
+
+          $content = $notes -join "`n"
+          $content | Out-File -FilePath "release-notes.md" -Encoding utf8
+          Write-Host "--- Generated Release Notes ---"
+          Write-Host $content
+
+      # ── Create DRAFT GitHub Release ───────────────────────
+      - name: Create or push tag (manual dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.version.outputs.TAG }}"
+          git tag $tag 2>$null
+          git push origin $tag 2>$null
+
+      - name: Create DRAFT GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
           $ver = "${{ steps.version.outputs.VERSION }}"
           $tag = "${{ steps.version.outputs.TAG }}"
+          $pre = ""
+          if ("${{ inputs.prerelease }}" -eq "true") { $pre = "--prerelease" }
 
-          # Find previous tag for changelog link
-          $prevTag = git describe --tags --abbrev=0 "$tag^" 2>$null
-          if (-not $prevTag) { $prevTag = "" }
+          $args = @(
+            "release", "create", $tag,
+            "artifacts/FluentDialogs.Wpf.$ver.nupkg",
+            "artifacts/FluentDialogs.Wpf.$ver.snupkg",
+            "artifacts/FluentDialogs.Wpf.$ver.zip",
+            "--title", "FluentDialogs.Wpf v$ver",
+            "--notes-file", "release-notes.md",
+            "--draft"
+          )
+          if ($pre) { $args += $pre }
 
-          $notes = @"
-          ## FluentDialogs.Wpf v$ver
+          & gh @args
 
-          ### Install
-          ``````
-          dotnet add package FluentDialogs.Wpf --version $ver
-          ``````
+          Write-Host ""
+          Write-Host "=================================================="
+          Write-Host "  DRAFT release created for v$ver!"
+          Write-Host ""
+          Write-Host "  Next steps:"
+          Write-Host "  1. Go to: https://github.com/${{ github.repository }}/releases"
+          Write-Host "  2. Edit the draft release notes"
+          Write-Host "  3. Click 'Publish release'"
+          Write-Host "  4. NuGet publish will trigger automatically"
+          Write-Host "=================================================="
 
-          ### Assets
-          - **FluentDialogs.Wpf.$ver.nupkg** — NuGet package
-          - **FluentDialogs.Wpf.$ver.zip** — All packages bundled
-
-          "@
-
-          if ($prevTag) {
-            $notes += "`n### Full Changelog`nhttps://github.com/${{ github.repository }}/compare/$prevTag...$tag`n"
-          }
-
-          # Write to file for gh release
-          $notes | Out-File -FilePath "release-notes.md" -Encoding utf8
-          Write-Host $notes
-
-      # ── Create GitHub Release ─────────────────────────────
-      - name: Create GitHub Release
-        if: >-
-          (github.event_name == 'push') ||
-          (github.event_name == 'workflow_dispatch' && inputs.create_github_release == true)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          $ver  = "${{ steps.version.outputs.VERSION }}"
-          $tag  = "${{ steps.version.outputs.TAG }}"
-          $pre  = if ("${{ inputs.prerelease }}" -eq "true") { "--prerelease" } else { "" }
-
-          # Create tag if manual dispatch (tag may not exist yet)
-          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            git tag $tag 2>$null
-            git push origin $tag 2>$null
-          }
-
-          $cmd = "gh release create `"$tag`" `"artifacts/FluentDialogs.Wpf.$ver.nupkg`" `"artifacts/FluentDialogs.Wpf.$ver.zip`" --title `"FluentDialogs.Wpf v$ver`" --notes-file release-notes.md --latest"
-          if ($pre) { $cmd += " $pre" }
-          Invoke-Expression $cmd
-
-      # ── Publish to NuGet ──────────────────────────────────
-      - name: Publish to NuGet.org
-        if: >-
-          (github.event_name == 'push') ||
-          (github.event_name == 'workflow_dispatch' && inputs.publish_nuget == true)
-        run: >-
-          dotnet nuget push "artifacts\FluentDialogs.Wpf.${{ steps.version.outputs.VERSION }}.nupkg"
-          --api-key ${{ secrets.NUGET_API_KEY }}
-          --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
-
-      # ── Upload artifacts (always) ─────────────────────────
+      # ── Upload artifacts ──────────────────────────────────
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
