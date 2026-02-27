@@ -501,7 +501,7 @@
                     <StackPanel>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="Native Dialog Features" Style="{StaticResource SectionHeaderStyle}"/>
-                            <TextBlock Text="Built-in support for common dialog patterns: input, checkbox, selection, license, and timeout dialogs" 
+                            <TextBlock Text="Built-in support for common dialog patterns: input, checkbox, selection, dropdown, license, and timeout dialogs" 
                                        Style="{StaticResource DescriptionStyle}"/>
                         </StackPanel>
                         <WrapPanel>
@@ -516,6 +516,12 @@
                                     Style="{StaticResource PrimaryButtonStyle}"/>
                             <Button Content="Selection Dialog" 
                                     Command="{Binding ShowNativeSelectionCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Dropdown Dialog" 
+                                    Command="{Binding ShowNativeDropdownCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"/>
+                            <Button Content="Dropdown (Builder)" 
+                                    Command="{Binding ShowDropdownBuilderCommand}"
                                     Style="{StaticResource PrimaryButtonStyle}"/>
                             <Button Content="License Agreement" 
                                     Command="{Binding ShowNativeLicenseCommand}"

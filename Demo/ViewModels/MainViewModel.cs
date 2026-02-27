@@ -767,6 +767,38 @@ public partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Shows the native dropdown dialog with a ComboBox.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNativeDropdownAsync()
+    {
+        var items = new[] { "English", "French", "German", "Spanish", "Japanese", "Chinese" };
+        var dialogResult = await _messageBoxService.DropdownAsync(
+            "Select your preferred language:",
+            items,
+            defaultIndex: 0,
+            title: "Language Selection"
+        );
+
+        LastResult = $"Dropdown dialog: Result={dialogResult.Result}, Selected=\"{dialogResult.DropdownSelectedItem}\", Index={dialogResult.DropdownSelectedIndex}";
+    }
+
+    /// <summary>
+    /// Shows a dropdown dialog using the builder API.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowDropdownBuilderAsync()
+    {
+        var colors = new[] { "Red", "Green", "Blue", "Purple", "Orange" };
+        var result = await _messageBoxService.Dropdown("Choose a color:", colors, defaultIndex: 2, title: "Color Picker")
+            .OnOk(() => _toastService.ShowSuccess("Color selected!"))
+            .OnCancel(() => _toastService.ShowInfo("Selection cancelled"))
+            .ShowAsync();
+
+        LastResult = $"Builder dropdown: Result={result.Result}, Selected=\"{result.DropdownSelectedItem}\"";
+    }
+
+    /// <summary>
     /// Shows the native license dialog.
     /// </summary>
     [RelayCommand]
@@ -922,7 +954,8 @@ public partial class MainViewModel : ObservableObject
             Icon = MessageBoxIcon.Info,
             Width = 700,
             Height = 500,
-            TitleBarColor = Colors.DarkGreen
+            TitleBarColor = Colors.DarkGreen,
+            IsResizable = true
         };
 
         var result = await _messageBoxService.ShowExtendedAsync(options);
