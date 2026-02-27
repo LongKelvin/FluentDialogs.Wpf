@@ -11,27 +11,17 @@
         MinWidth="900"
         MinHeight="600"
         WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource AppBackgroundBrush}"
+        Background="{DynamicResource FDBrushSurfaceSecondary}"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}">
 
     <Window.Resources>
         <ResourceDictionary>
-            <!-- App Colors -->
-            <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F5F5F5"/>
-            <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="CardBorderBrush" Color="#E0E0E0"/>
-            <SolidColorBrush x:Key="PrimaryBrush" Color="#0078D4"/>
-            <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#106EBE"/>
-            <SolidColorBrush x:Key="PrimaryPressedBrush" Color="#005A9E"/>
-            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1A1A1A"/>
-            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#666666"/>
-            <SolidColorBrush x:Key="TextTertiaryBrush" Color="#999999"/>
-            <SolidColorBrush x:Key="SuccessBrush" Color="#107C10"/>
-            <SolidColorBrush x:Key="WarningBrush" Color="#F7630C"/>
-            <SolidColorBrush x:Key="ErrorBrush" Color="#D13438"/>
-            <SolidColorBrush x:Key="InfoBrush" Color="#0078D4"/>
-            <SolidColorBrush x:Key="SidebarBrush" Color="#FAFAFA"/>
-            <SolidColorBrush x:Key="DividerBrush" Color="#E8E8E8"/>
+            <!--
+                Demo UI references FDBrush* keys directly from the FluentDialogs theme system.
+                The lib's SyncBrushColors() updates each brush's Color property after every
+                theme mutation (preset swap, accent change, etc.), so all elements re-render.
+                No local brush aliases needed.
+            -->
 
             <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
@@ -40,22 +30,22 @@
             <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                 <Setter Property="Margin" Value="0,0,0,4"/>
             </Style>
 
             <!-- Section Description Style -->
             <Style x:Key="DescriptionStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="LineHeight" Value="20"/>
             </Style>
 
             <!-- Card Style -->
             <Style x:Key="CardStyle" TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource FDBrushSurfacePrimary}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="Padding" Value="20"/>
@@ -70,9 +60,9 @@
                 <Setter Property="Margin" Value="0,0,8,8"/>
                 <Setter Property="FontSize" Value="13"/>
                 <Setter Property="FontWeight" Value="Normal"/>
-                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource FDBrushSurfacePrimary}"/>
+                <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Template">
@@ -90,11 +80,11 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#F0F0F0"/>
-                                    <Setter Property="BorderBrush" Value="#C0C0C0"/>
+                                    <Setter Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderStrong}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#E5E5E5"/>
+                                    <Setter Property="Background" Value="{DynamicResource FDBrushNeutralPressed}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -104,9 +94,9 @@
 
             <!-- Primary Button Style -->
             <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource DemoButtonStyle}">
-                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+                <Setter Property="Foreground" Value="{DynamicResource FDBrushOnInteractive}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource FDBrushInteractiveDefault}"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -123,12 +113,12 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHoverBrush}"/>
+                                    <Setter Property="Background" Value="{DynamicResource FDBrushInteractiveHover}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource FDBrushInteractiveHover}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource PrimaryPressedBrush}"/>
-                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryPressedBrush}"/>
+                                    <Setter Property="Background" Value="{DynamicResource FDBrushInteractivePressed}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource FDBrushInteractivePressed}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -146,7 +136,7 @@
                         <ControlTemplate TargetType="ToggleButton">
                             <Grid>
                                 <Border x:Name="track"
-                                        Background="#CCCCCC"
+                                        Background="{DynamicResource FDBrushBorderDefault}"
                                         CornerRadius="11"
                                         SnapsToDevicePixels="True"/>
                                 <Border x:Name="thumb"
@@ -164,7 +154,7 @@
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="track" Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter TargetName="track" Property="Background" Value="{DynamicResource FDBrushInteractiveDefault}"/>
                                     <Setter TargetName="thumb" Property="HorizontalAlignment" Value="Right"/>
                                     <Setter TargetName="thumb" Property="Margin" Value="0,0,2,0"/>
                                 </Trigger>
@@ -176,7 +166,7 @@
 
             <!-- Badge Style -->
             <Style x:Key="BadgeStyle" TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource FDBrushInteractiveDefault}"/>
                 <Setter Property="CornerRadius" Value="4"/>
                 <Setter Property="Padding" Value="8,4"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -192,8 +182,8 @@
 
         <!-- Sidebar -->
         <Border Grid.Column="0" 
-                Background="{StaticResource SidebarBrush}"
-                BorderBrush="{StaticResource DividerBrush}"
+                Background="{DynamicResource FDBrushSurfacePrimary}"
+                BorderBrush="{DynamicResource FDBrushBorderDefault}"
                 BorderThickness="0,0,1,0">
             <Grid>
                 <Grid.RowDefinitions>
@@ -208,23 +198,23 @@
                     <TextBlock Text="FluentDialogs"
                                FontSize="24"
                                FontWeight="Bold"
-                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                               Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
                     <TextBlock Text="for WPF"
                                FontSize="14"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
                                Margin="0,2,0,0"/>
                     <Border Style="{StaticResource BadgeStyle}" Margin="0,12,0,0">
-                        <TextBlock Text="v1.1.0" 
+                        <TextBlock Text="v2.0" 
                                    FontSize="11" 
-                                   Foreground="White"
+                                   Foreground="{DynamicResource FDBrushOnInteractive}"
                                    FontWeight="SemiBold"/>
                     </Border>
                 </StackPanel>
 
                 <!-- Theme Toggle -->
                 <Border Grid.Row="1" 
-                        Background="{StaticResource CardBackgroundBrush}"
-                        BorderBrush="{StaticResource CardBorderBrush}"
+                        Background="{DynamicResource FDBrushSurfacePrimary}"
+                        BorderBrush="{DynamicResource FDBrushBorderDefault}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Margin="16,0,16,16"
@@ -238,10 +228,10 @@
                             <TextBlock Text="Dark Mode"
                                        FontSize="14"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
                             <TextBlock Text="{Binding CurrentTheme, StringFormat='Current: {0}'}"
                                        FontSize="12"
-                                       Foreground="{StaticResource TextTertiaryBrush}"
+                                       Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
                                        Margin="0,4,0,0"/>
                         </StackPanel>
                         <ToggleButton Grid.Column="1"
@@ -257,42 +247,42 @@
                     <TextBlock Text="QUICK STATS"
                                FontSize="11"
                                FontWeight="SemiBold"
-                               Foreground="{StaticResource TextTertiaryBrush}"
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
                                Margin="8,0,0,12"/>
                     
-                    <Border Background="{StaticResource CardBackgroundBrush}"
-                            BorderBrush="{StaticResource CardBorderBrush}"
+                    <Border Background="{DynamicResource FDBrushSurfacePrimary}"
+                            BorderBrush="{DynamicResource FDBrushBorderDefault}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="16"
                             Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="3" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
-                            <TextBlock Text="Core Services" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource FDBrushInteractiveDefault}"/>
+                            <TextBlock Text="Core Services" FontSize="12" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
                         </StackPanel>
                     </Border>
                     
-                    <Border Background="{StaticResource CardBackgroundBrush}"
-                            BorderBrush="{StaticResource CardBorderBrush}"
+                    <Border Background="{DynamicResource FDBrushSurfacePrimary}"
+                            BorderBrush="{DynamicResource FDBrushBorderDefault}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="16"
                             Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
-                            <TextBlock Text="Toast Types" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="4" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource FDBrushStatusSuccess}"/>
+                            <TextBlock Text="Toast Types" FontSize="12" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
                         </StackPanel>
                     </Border>
                     
-                    <Border Background="{StaticResource CardBackgroundBrush}"
-                            BorderBrush="{StaticResource CardBorderBrush}"
+                    <Border Background="{DynamicResource FDBrushSurfacePrimary}"
+                            BorderBrush="{DynamicResource FDBrushBorderDefault}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Padding="16"
                             Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
-                            <TextBlock Text="Icon Types" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="6" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource FDBrushStatusWarning}"/>
+                            <TextBlock Text="Icon Types" FontSize="12" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -301,8 +291,8 @@
                 <StackPanel Grid.Row="3" Margin="24,16">
                     <TextBlock Text="Built with .NET 9"
                                FontSize="11"
-                               Foreground="{StaticResource TextTertiaryBrush}"/>
-                    <TextBlock FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" Margin="0,2,0,0">
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                    <TextBlock FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" Margin="0,2,0,0">
                         <Run Text="by "/><Run Text="Long Kelvin" FontWeight="SemiBold"/>
                     </TextBlock>
                 </StackPanel>
@@ -321,10 +311,10 @@
                     <TextBlock Text="Demo Application"
                                FontSize="28"
                                FontWeight="Bold"
-                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                               Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
                     <TextBlock Text="Explore all features of the FluentDialogs.Wpf library"
                                FontSize="14"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
                                Margin="0,4,0,0"/>
                 </StackPanel>
 
@@ -372,42 +362,42 @@
                                     Command="{Binding ShowOkCommand}">
                                 <StackPanel>
                                     <TextBlock Text="OK" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Single button" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Single button" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Margin="0,0,8,8" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowOkCancelCommand}">
                                 <StackPanel>
                                     <TextBlock Text="OK / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Confirm or cancel" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Confirm or cancel" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Margin="0,0,0,8" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowYesNoCommand}">
                                 <StackPanel>
                                     <TextBlock Text="Yes / No" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Binary choice" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Binary choice" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Margin="0,0,8,0" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowYesNoCancelCommand}">
                                 <StackPanel>
                                     <TextBlock Text="Yes / No / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Three options" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Three options" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Margin="0,0,8,0" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowRetryCancelCommand}">
                                 <StackPanel>
                                     <TextBlock Text="Retry / Cancel" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Error recovery" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Error recovery" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button Margin="0" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowAbortRetryIgnoreCommand}">
                                 <StackPanel>
                                     <TextBlock Text="Abort / Retry / Ignore" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Batch operations" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Batch operations" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </UniformGrid>
@@ -426,8 +416,8 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowNoIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="#E0E0E0" CornerRadius="16" Margin="0,0,0,8">
-                                        <TextBlock Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource TextTertiaryBrush}"/>
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushBorderDefault}" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="--" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
                                     </Border>
                                     <TextBlock Text="None" FontSize="12" HorizontalAlignment="Center"/>
                                 </StackPanel>
@@ -435,7 +425,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowInfoIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{StaticResource InfoBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushInteractiveDefault}" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="i" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Info" FontSize="12" HorizontalAlignment="Center"/>
@@ -444,7 +434,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowWarningIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{StaticResource WarningBrush}" CornerRadius="4" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusWarning}" CornerRadius="4" Margin="0,0,0,8">
                                         <TextBlock Text="!" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Warning" FontSize="12" HorizontalAlignment="Center"/>
@@ -453,7 +443,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowErrorIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{StaticResource ErrorBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusError}" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="X" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Error" FontSize="12" HorizontalAlignment="Center"/>
@@ -462,7 +452,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowSuccessIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{StaticResource SuccessBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="&#x2713;" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Success" FontSize="12" HorizontalAlignment="Center"/>
@@ -471,7 +461,7 @@
                             <Button Margin="0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowQuestionIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{StaticResource PrimaryBrush}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushInteractiveDefault}" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="?" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Question" FontSize="12" HorizontalAlignment="Center"/>
@@ -584,8 +574,8 @@
                                 <TextBlock Text="Modal progress dialogs with determinate/indeterminate modes, cancellation support, and auto-managed lifecycle" 
                                            Style="{StaticResource DescriptionStyle}"/>
                             </StackPanel>
-                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
-                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="{DynamicResource FDBrushOnInteractive}" FontWeight="Bold"/>
                             </Border>
                         </Grid>
                         <WrapPanel>
@@ -615,8 +605,8 @@
                                 <TextBlock Text="Non-blocking toast notifications that stack and auto-dismiss. Great for feedback that doesn't interrupt workflow" 
                                            Style="{StaticResource DescriptionStyle}"/>
                             </StackPanel>
-                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
-                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="{DynamicResource FDBrushOnInteractive}" FontWeight="Bold"/>
                             </Border>
                         </Grid>
                         <WrapPanel>
@@ -658,8 +648,8 @@
                                 <TextBlock Text="Chain method calls for readable dialog construction. Includes button callbacks for cleaner result handling" 
                                            Style="{StaticResource DescriptionStyle}"/>
                             </StackPanel>
-                            <Border Grid.Column="1" Background="#107C10" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
-                                <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="NEW" FontSize="10" Foreground="{DynamicResource FDBrushOnInteractive}" FontWeight="Bold"/>
                             </Border>
                         </Grid>
                         <WrapPanel>
@@ -689,8 +679,8 @@
                                 <TextBlock Text="Use FluentMessageBoxOptions and FluentDialogResult to avoid namespace conflicts with System.Windows.Forms" 
                                            Style="{StaticResource DescriptionStyle}"/>
                             </StackPanel>
-                            <Border Grid.Column="1" Background="#F7630C" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
-                                <TextBlock Text="v1.1" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                            <Border Grid.Column="1" Background="{DynamicResource FDBrushStatusWarning}" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                                <TextBlock Text="v1.1" FontSize="10" Foreground="{DynamicResource FDBrushOnInteractive}" FontWeight="Bold"/>
                             </Border>
                         </Grid>
                         <WrapPanel>
@@ -710,15 +700,15 @@
                             <TextBlock Text="The MessageBoxResult returned from the most recent dialog" 
                                        Style="{StaticResource DescriptionStyle}"/>
                         </StackPanel>
-                        <Border Background="#F8F8F8" 
-                                BorderBrush="{StaticResource DividerBrush}"
+                        <Border Background="{DynamicResource FDBrushSurfaceSecondary}" 
+                                BorderBrush="{DynamicResource FDBrushBorderDefault}"
                                 BorderThickness="1"
                                 CornerRadius="6" 
                                 Padding="16">
                             <TextBlock Text="{Binding LastResult}"
                                        FontFamily="Cascadia Code, Consolas, Courier New"
                                        FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
                                        TextWrapping="Wrap"/>
                         </Border>
                     </StackPanel>
