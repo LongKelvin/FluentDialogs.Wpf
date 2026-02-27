@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:FluentDialogs.Demo.ViewModels"
+        xmlns:views="clr-namespace:FluentDialogs.Demo.Views"
         mc:Ignorable="d"
         Title="FluentDialogs.Wpf - Demo Application"
         Width="1100"
@@ -189,6 +190,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -242,8 +244,70 @@
                     </Grid>
                 </Border>
 
+                <!-- Navigation -->
+                <StackPanel Grid.Row="2" Margin="16,0,16,16">
+                    <TextBlock Text="NAVIGATION"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                               Margin="8,0,0,8"/>
+
+                    <Button x:Name="NavDialogsBtn" Click="NavDialogs_Click" Cursor="Hand"
+                            Margin="0,0,0,4" HorizontalContentAlignment="Left">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="navBorder" Background="{DynamicResource FDBrushInteractiveDefault}"
+                                        CornerRadius="6" Padding="12,10">
+                                    <TextBlock x:Name="navText" Text="Dialogs" FontWeight="SemiBold" FontSize="13"
+                                               Foreground="{DynamicResource FDBrushOnInteractive}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="Tag" Value="Inactive">
+                                        <Setter TargetName="navBorder" Property="Background" Value="Transparent"/>
+                                        <Setter TargetName="navText" Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                        <Setter TargetName="navText" Property="FontWeight" Value="Normal"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="navBorder" Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button x:Name="NavThemingBtn" Click="NavTheming_Click" Tag="Inactive" Cursor="Hand"
+                            HorizontalContentAlignment="Left">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="navBorder" Background="{DynamicResource FDBrushInteractiveDefault}"
+                                        CornerRadius="6" Padding="12,10">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="navText" Text="Theming &amp; Presets" FontWeight="SemiBold" FontSize="13"
+                                                   Foreground="{DynamicResource FDBrushOnInteractive}"/>
+                                        <Border Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="3" 
+                                                Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="NEW" FontSize="9" FontWeight="Bold"
+                                                       Foreground="{DynamicResource FDBrushOnInteractive}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="Tag" Value="Inactive">
+                                        <Setter TargetName="navBorder" Property="Background" Value="Transparent"/>
+                                        <Setter TargetName="navText" Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                        <Setter TargetName="navText" Property="FontWeight" Value="Normal"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="navBorder" Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+
                 <!-- Quick Stats -->
-                <StackPanel Grid.Row="2" Margin="16,0">
+                <StackPanel Grid.Row="3" Margin="16,0">
                     <TextBlock Text="QUICK STATS"
                                FontSize="11"
                                FontWeight="SemiBold"
@@ -288,7 +352,7 @@
                 </StackPanel>
 
                 <!-- Footer -->
-                <StackPanel Grid.Row="3" Margin="24,16">
+                <StackPanel Grid.Row="4" Margin="24,16">
                     <TextBlock Text="Built with .NET 9"
                                FontSize="11"
                                Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
@@ -300,7 +364,8 @@
         </Border>
 
         <!-- Main Content -->
-        <ScrollViewer Grid.Column="1" 
+        <Grid Grid.Column="1">
+            <ScrollViewer x:Name="DialogsContent"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0,0,8,0">
@@ -722,5 +787,8 @@
 
             </StackPanel>
         </ScrollViewer>
+
+            <views:ThemingPage x:Name="ThemingContent" Visibility="Collapsed"/>
+        </Grid>
     </Grid>
 </Window>

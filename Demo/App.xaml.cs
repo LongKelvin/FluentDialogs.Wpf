@@ -99,5 +99,6 @@ public partial class App : Application
 
         // Register ViewModels
         services.AddTransient<MainViewModel>();
+        services.AddTransient<ThemingViewModel>();
     }
 }
