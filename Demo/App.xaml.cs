@@ -64,12 +64,10 @@ public partial class App : Application
         // Step 2: Build the service provider
         Services = services.BuildServiceProvider();
 
-        // Step 3: Initialize the theme service (optional but recommended)
-        var themeService = Services.GetRequiredService<IMessageBoxThemeService>();
-        if (themeService is Services.MessageBoxThemeService concreteService)
-        {
-            concreteService.Initialize();
-        }
+        // Step 3: Initialize the v2 theme service — detects FluentDialogs.Theme.xaml
+        // already loaded via App.xaml and injects the default preset + SyncBrushColors
+        var themeService = Services.GetRequiredService<IFluentDialogThemeService>();
+        themeService.EnsureThemeLoaded();
 
         // Step 4: Create and show the main window with injected ViewModel
         var mainWindow = new MainWindow
@@ -101,5 +99,6 @@ public partial class App : Application
 
         // Register ViewModels
         services.AddTransient<MainViewModel>();
+        services.AddTransient<ThemingViewModel>();
     }
 }

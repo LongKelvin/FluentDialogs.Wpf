@@ -1,0 +1,70 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        LIGHT PRESET — FluentDialogs.Wpf v2.0
+        ═══════════════════════════════════════════════════════════════
+        
+        Overrides semantic tokens for light appearance.
+        This file MUST ONLY contain Color overrides for FDSem* keys.
+        It MUST NOT define brushes, styles, or templates.
+        
+        Each value is annotated with its corresponding primitive palette key.
+    -->
+
+    <!-- ═══════ Surface ═══════ -->
+    <Color x:Key="FDSemSurfacePrimary">#FFFFFF</Color>           <!-- Neutral1000 -->
+    <Color x:Key="FDSemSurfaceSecondary">#F3F3F3</Color>         <!-- Neutral900 -->
+    <Color x:Key="FDSemSurfaceOverlay">#20000000</Color>         <!-- OverlayLight -->
+
+    <!-- ═══════ On Surface ═══════ -->
+    <Color x:Key="FDSemOnSurfacePrimary">#201F1E</Color>         <!-- NeutralDark -->
+    <Color x:Key="FDSemOnSurfaceSecondary">#605E5C</Color>       <!-- Neutral400 -->
+
+    <!-- ═══════ Interactive (Accent) ═══════ -->
+    <Color x:Key="FDSemInteractiveDefault">#0078D4</Color>       <!-- Accent300 -->
+    <Color x:Key="FDSemInteractiveHover">#106EBE</Color>         <!-- Accent200 -->
+    <Color x:Key="FDSemInteractivePressed">#005A9E</Color>       <!-- Accent100 -->
+    <Color x:Key="FDSemOnInteractive">#FFFFFF</Color>            <!-- Neutral1000 -->
+
+    <!-- ═══════ Neutral Interactive ═══════ -->
+    <Color x:Key="FDSemNeutralDefault">#FFFFFF</Color>           <!-- Neutral1000 -->
+    <Color x:Key="FDSemNeutralHover">#F3F2F1</Color>             <!-- Neutral850 -->
+    <Color x:Key="FDSemNeutralPressed">#EDEBE9</Color>           <!-- Neutral800 -->
+
+    <!-- ═══════ Status: Error ═══════ -->
+    <Color x:Key="FDSemStatusError">#D13438</Color>              <!-- Red300 -->
+    <Color x:Key="FDSemStatusErrorSubtle">#FDE7E9</Color>        <!-- Red500 -->
+    <Color x:Key="FDSemOnStatusError">#A4262C</Color>            <!-- Red200 -->
+    <Color x:Key="FDSemStatusErrorHover">#A4262C</Color>         <!-- Red200 -->
+    <Color x:Key="FDSemStatusErrorPressed">#8F1E22</Color>       <!-- Red100 -->
+
+    <!-- ═══════ Status: Warning ═══════ -->
+    <Color x:Key="FDSemStatusWarning">#F7630C</Color>            <!-- Orange200 -->
+    <Color x:Key="FDSemStatusWarningSubtle">#FFF4CE</Color>      <!-- Orange500 -->
+
+    <!-- ═══════ Status: Success ═══════ -->
+    <Color x:Key="FDSemStatusSuccess">#107C10</Color>            <!-- Green200 -->
+    <Color x:Key="FDSemStatusSuccessSubtle">#DFF6DD</Color>      <!-- Green400 -->
+
+    <!-- ═══════ Status: Info ═══════ -->
+    <Color x:Key="FDSemStatusInfo">#0078D4</Color>               <!-- Accent300 -->
+
+    <!-- ═══════ Border ═══════ -->
+    <Color x:Key="FDSemBorderDefault">#E1DFDD</Color>            <!-- Neutral700 -->
+    <Color x:Key="FDSemBorderStrong">#323130</Color>             <!-- Neutral350 -->
+
+    <!-- ═══════ Elevation ═══════ -->
+    <Color x:Key="FDSemShadow">#40000000</Color>                 <!-- OverlayMedium -->
+
+    <!-- ═══════ Link ═══════ -->
+    <Color x:Key="FDSemLinkDefault">#0078D4</Color>              <!-- Accent300 -->
+    <Color x:Key="FDSemLinkHover">#106EBE</Color>                <!-- Accent200 -->
+
+    <!-- ═══════ Close Button (Windows convention — consistent across themes) ═══════ -->
+    <Color x:Key="FDSemCloseHover">#E81123</Color>
+    <Color x:Key="FDSemClosePressed">#C50E1F</Color>
+    <Color x:Key="FDSemOnClose">#FFFFFF</Color>
+
+</ResourceDictionary>

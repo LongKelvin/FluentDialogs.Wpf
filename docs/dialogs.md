@@ -150,6 +150,69 @@ if (result.Result == MessageBoxResult.OK)
 
 ---
 
+## Dropdown Dialogs
+
+### Simple Dropdown
+
+Display a ComboBox-style dropdown for item selection:
+
+```csharp
+var items = new[] { "English", "French", "German", "Spanish", "Japanese" };
+
+var result = await _messageBox.DropdownAsync(
+    message: "Select your preferred language:",
+    items: items,
+    defaultIndex: 0,
+    title: "Language Selection");
+
+if (result.Result == MessageBoxResult.OK)
+{
+    string selected = result.DropdownSelectedItem as string;
+    int index = result.DropdownSelectedIndex;
+}
+```
+
+### Complex Object Dropdown
+
+Select from complex objects with a display member path:
+
+```csharp
+public class Language
+{
+    public string Code { get; set; }
+    public string Name { get; set; }
+}
+
+var languages = new[]
+{
+    new Language { Code = "en", Name = "English" },
+    new Language { Code = "fr", Name = "French" },
+    new Language { Code = "de", Name = "German" }
+};
+
+var result = await _messageBox.DropdownAsync(
+    message: "Choose a language:",
+    items: languages,
+    displayMemberPath: "Name",
+    defaultIndex: 0,
+    title: "Language");
+
+if (result.Result == MessageBoxResult.OK)
+{
+    var language = result.DropdownSelectedItem as Language;
+}
+```
+
+### Dropdown vs Selection
+
+| Feature | `SelectAsync` | `DropdownAsync` |
+|---------|--------------|-----------------|
+| Control | ListBox (inline list) | ComboBox (dropdown) |
+| Best for | Short lists (2–6 items) | Longer lists (5+ items) |
+| Result property | `SelectedItem` / `SelectedIndex` | `DropdownSelectedItem` / `DropdownSelectedIndex` |
+
+---
+
 ## Checkbox Dialogs
 
 ### Confirmation with Checkbox
@@ -194,6 +257,30 @@ if (result.Result == MessageBoxResult.OK)
 ```
 
 The Accept button is disabled until the user scrolls to the bottom of the text.
+
+License dialogs are **resizable by default** — the user can drag the edges to expand the window, which is helpful for reading long agreements. This uses the `IsResizable` property internally.
+
+### Resizable Dialogs
+
+Any dialog can be made resizable by setting `IsResizable`:
+
+```csharp
+var options = new MessageBoxOptions
+{
+    Title = "Detailed Report",
+    Message = "Review the report below:",
+    DetailedText = longReportText,
+    Buttons = MessageBoxButtons.OKCancel,
+    IsResizable = true,
+    Width = 600,
+    MinHeight = 400,
+    MaxHeight = 800
+};
+
+var result = await _messageBox.ShowExtendedAsync(options);
+```
+
+When `IsResizable` is true, `WindowChrome` is applied with a 6px resize border so users can drag any edge to resize.
 
 ---
 

@@ -1,0 +1,104 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        BRUSH MAPPING LAYER — FluentDialogs.Wpf v2.0 (PUBLIC API)
+        ═══════════════════════════════════════════════════════════════
+        
+        All control styles reference ONLY these brush keys.
+        Each brush binds to a semantic color token via DynamicResource,
+        enabling runtime theme switching.
+        
+        RULES:
+        • Controls MUST ONLY reference FDBrush* keys.
+        • Each brush binds to an FDSem* color via DynamicResource.
+        • Do NOT Freeze() these brushes — they must remain mutable
+          for DynamicResource color propagation.
+    -->
+
+    <!-- ═══════════════ Surface Brushes ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushSurfacePrimary"
+                     Color="{DynamicResource FDSemSurfacePrimary}"/>
+    <SolidColorBrush x:Key="FDBrushSurfaceSecondary"
+                     Color="{DynamicResource FDSemSurfaceSecondary}"/>
+    <SolidColorBrush x:Key="FDBrushSurfaceOverlay"
+                     Color="{DynamicResource FDSemSurfaceOverlay}"/>
+
+    <!-- ═══════════════ On Surface Brushes (Text / Icons) ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushOnSurfacePrimary"
+                     Color="{DynamicResource FDSemOnSurfacePrimary}"/>
+    <SolidColorBrush x:Key="FDBrushOnSurfaceSecondary"
+                     Color="{DynamicResource FDSemOnSurfaceSecondary}"/>
+
+    <!-- ═══════════════ Interactive Brushes (Accent) ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushInteractiveDefault"
+                     Color="{DynamicResource FDSemInteractiveDefault}"/>
+    <SolidColorBrush x:Key="FDBrushInteractiveHover"
+                     Color="{DynamicResource FDSemInteractiveHover}"/>
+    <SolidColorBrush x:Key="FDBrushInteractivePressed"
+                     Color="{DynamicResource FDSemInteractivePressed}"/>
+    <SolidColorBrush x:Key="FDBrushOnInteractive"
+                     Color="{DynamicResource FDSemOnInteractive}"/>
+
+    <!-- ═══════════════ Neutral Interactive Brushes ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushNeutralDefault"
+                     Color="{DynamicResource FDSemNeutralDefault}"/>
+    <SolidColorBrush x:Key="FDBrushNeutralHover"
+                     Color="{DynamicResource FDSemNeutralHover}"/>
+    <SolidColorBrush x:Key="FDBrushNeutralPressed"
+                     Color="{DynamicResource FDSemNeutralPressed}"/>
+
+    <!-- ═══════════════ Status: Error ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushStatusError"
+                     Color="{DynamicResource FDSemStatusError}"/>
+    <SolidColorBrush x:Key="FDBrushStatusErrorSubtle"
+                     Color="{DynamicResource FDSemStatusErrorSubtle}"/>
+    <SolidColorBrush x:Key="FDBrushOnStatusError"
+                     Color="{DynamicResource FDSemOnStatusError}"/>
+    <SolidColorBrush x:Key="FDBrushStatusErrorHover"
+                     Color="{DynamicResource FDSemStatusErrorHover}"/>
+    <SolidColorBrush x:Key="FDBrushStatusErrorPressed"
+                     Color="{DynamicResource FDSemStatusErrorPressed}"/>
+
+    <!-- ═══════════════ Status: Warning ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushStatusWarning"
+                     Color="{DynamicResource FDSemStatusWarning}"/>
+    <SolidColorBrush x:Key="FDBrushStatusWarningSubtle"
+                     Color="{DynamicResource FDSemStatusWarningSubtle}"/>
+
+    <!-- ═══════════════ Status: Success ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushStatusSuccess"
+                     Color="{DynamicResource FDSemStatusSuccess}"/>
+    <SolidColorBrush x:Key="FDBrushStatusSuccessSubtle"
+                     Color="{DynamicResource FDSemStatusSuccessSubtle}"/>
+
+    <!-- ═══════════════ Status: Info ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushStatusInfo"
+                     Color="{DynamicResource FDSemStatusInfo}"/>
+
+    <!-- ═══════════════ Border Brushes ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushBorderDefault"
+                     Color="{DynamicResource FDSemBorderDefault}"/>
+    <SolidColorBrush x:Key="FDBrushBorderStrong"
+                     Color="{DynamicResource FDSemBorderStrong}"/>
+
+    <!-- ═══════════════ Shadow ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushShadow"
+                     Color="{DynamicResource FDSemShadow}"/>
+
+    <!-- ═══════════════ Link Brushes ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushLinkDefault"
+                     Color="{DynamicResource FDSemLinkDefault}"/>
+    <SolidColorBrush x:Key="FDBrushLinkHover"
+                     Color="{DynamicResource FDSemLinkHover}"/>
+
+    <!-- ═══════════════ Close Button Brushes ═══════════════ -->
+    <SolidColorBrush x:Key="FDBrushCloseHover"
+                     Color="{DynamicResource FDSemCloseHover}"/>
+    <SolidColorBrush x:Key="FDBrushClosePressed"
+                     Color="{DynamicResource FDSemClosePressed}"/>
+    <SolidColorBrush x:Key="FDBrushOnClose"
+                     Color="{DynamicResource FDSemOnClose}"/>
+
+</ResourceDictionary>

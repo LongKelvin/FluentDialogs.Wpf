@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        FOREST GREEN PRESET — Custom Brand Theme Demo
+        ═══════════════════════════════════════════════════════════════
+        
+        Inspired by Microsoft Excel green branding.
+        Demonstrates an app with green-themed dialogs.
+    -->
+
+    <!-- ═══════ Surface ═══════ -->
+    <Color x:Key="FDSemSurfacePrimary">#F0FAF0</Color>
+    <Color x:Key="FDSemSurfaceSecondary">#E0F5E0</Color>
+    <Color x:Key="FDSemSurfaceOverlay">#30006000</Color>
+
+    <!-- ═══════ On Surface ═══════ -->
+    <Color x:Key="FDSemOnSurfacePrimary">#0B3D0B</Color>
+    <Color x:Key="FDSemOnSurfaceSecondary">#3A6E3A</Color>
+
+    <!-- ═══════ Interactive (Brand Accent) ═══════ -->
+    <Color x:Key="FDSemInteractiveDefault">#217346</Color>
+    <Color x:Key="FDSemInteractiveHover">#1A5C38</Color>
+    <Color x:Key="FDSemInteractivePressed">#14472B</Color>
+    <Color x:Key="FDSemOnInteractive">#FFFFFF</Color>
+
+    <!-- ═══════ Neutral ═══════ -->
+    <Color x:Key="FDSemNeutralDefault">#FFFFFF</Color>
+    <Color x:Key="FDSemNeutralHover">#E0F5E0</Color>
+    <Color x:Key="FDSemNeutralPressed">#C5EAC5</Color>
+
+    <!-- ═══════ Status: Error ═══════ -->
+    <Color x:Key="FDSemStatusError">#C4314B</Color>
+    <Color x:Key="FDSemStatusErrorSubtle">#FCE4EC</Color>
+    <Color x:Key="FDSemOnStatusError">#FFFFFF</Color>
+    <Color x:Key="FDSemStatusErrorHover">#A52A3C</Color>
+    <Color x:Key="FDSemStatusErrorPressed">#8B1A2B</Color>
+
+    <!-- ═══════ Status: Warning ═══════ -->
+    <Color x:Key="FDSemStatusWarning">#E8780A</Color>
+    <Color x:Key="FDSemStatusWarningSubtle">#FFF3E0</Color>
+
+    <!-- ═══════ Status: Success ═══════ -->
+    <Color x:Key="FDSemStatusSuccess">#217346</Color>
+    <Color x:Key="FDSemStatusSuccessSubtle">#E2F6E2</Color>
+
+    <!-- ═══════ Status: Info ═══════ -->
+    <Color x:Key="FDSemStatusInfo">#217346</Color>
+
+    <!-- ═══════ Border ═══════ -->
+    <Color x:Key="FDSemBorderDefault">#A8D8A8</Color>
+    <Color x:Key="FDSemBorderStrong">#217346</Color>
+
+    <!-- ═══════ Elevation ═══════ -->
+    <Color x:Key="FDSemShadow">#30006000</Color>
+
+    <!-- ═══════ Link ═══════ -->
+    <Color x:Key="FDSemLinkDefault">#217346</Color>
+    <Color x:Key="FDSemLinkHover">#14472B</Color>
+
+    <!-- ═══════ Close Button ═══════ -->
+    <Color x:Key="FDSemCloseHover">#E81123</Color>
+    <Color x:Key="FDSemClosePressed">#C50E1F</Color>
+    <Color x:Key="FDSemOnClose">#FFFFFF</Color>
+
+</ResourceDictionary>

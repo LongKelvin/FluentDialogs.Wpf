@@ -21,6 +21,7 @@ namespace FluentDialogs.Services;
 public sealed class MessageBoxService : IMessageBoxService
 {
     private readonly IMessageBoxThemeService? _themeService;
+    private readonly IFluentDialogThemeService? _v2ThemeService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageBoxService"/> class.
@@ -36,6 +37,17 @@ public sealed class MessageBoxService : IMessageBoxService
     public MessageBoxService(IMessageBoxThemeService themeService)
     {
         _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageBoxService"/> class with v2 theme support.
+    /// </summary>
+    /// <param name="themeService">The v1 theme service (legacy adapter).</param>
+    /// <param name="v2ThemeService">The v2 theme service for advanced theming.</param>
+    public MessageBoxService(IMessageBoxThemeService themeService, IFluentDialogThemeService v2ThemeService)
+    {
+        _themeService = themeService ?? throw new ArgumentNullException(nameof(themeService));
+        _v2ThemeService = v2ThemeService ?? throw new ArgumentNullException(nameof(v2ThemeService));
     }
 
     /// <inheritdoc/>
@@ -171,6 +183,23 @@ public sealed class MessageBoxService : IMessageBoxService
     }
 
     /// <inheritdoc/>
+    public Task<DialogResult> DropdownAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Select",
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.OKCancel,
+            DropdownItems = items.Cast<object>().ToList().AsReadOnly(),
+            DropdownDisplayMemberPath = displayMemberPath,
+            DropdownDefaultIndex = defaultIndex
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
     public Task<DialogResult> LicenseAsync(string title, string message, string detailedText, bool requireScrollToBottom = true)
     {
         var options = new MessageBoxOptions
@@ -180,7 +209,11 @@ public sealed class MessageBoxService : IMessageBoxService
             Icon = MessageBoxIcon.Info,
             Buttons = MessageBoxButtons.OKCancel,
             DetailedText = detailedText,
-            RequireScrollToBottom = requireScrollToBottom
+            RequireScrollToBottom = requireScrollToBottom,
+            IsResizable = true,
+            Width = 560,
+            MinHeight = 400,
+            MaxHeight = 700
         };
 
         return ShowExtendedAsync(options);
@@ -296,19 +329,27 @@ public sealed class MessageBoxService : IMessageBoxService
             InputText = viewModel.InputText,
             SelectedItem = viewModel.SelectedItem,
             SelectedIndex = viewModel.SelectedIndex,
+            DropdownSelectedItem = viewModel.DropdownSelectedItem,
+            DropdownSelectedIndex = viewModel.DropdownSelectedIndex,
             TimedOut = viewModel.TimedOut
         };
     }
 
     private void ApplyThemeToWindow(MessageBoxWindow window)
     {
-        if (_themeService == null)
+        // v2 path: ensure theme is loaded at App level. Windows inherit via DynamicResource.
+        if (_v2ThemeService is not null)
         {
+            _v2ThemeService.EnsureThemeLoaded();
             return;
         }
 
-        var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
-        window.Resources.MergedDictionaries.Add(themeResources);
+        // v1 fallback: add theme dictionary directly to the window's resources
+        if (_themeService is not null)
+        {
+            var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
+            window.Resources.MergedDictionaries.Add(themeResources);
+        }
     }
 
     private static void SetWindowOwner(Window window, Window? ownerWindow)
@@ -447,12 +488,18 @@ public sealed class MessageBoxService : IMessageBoxService
 
     private void ApplyThemeToProgressWindow(ProgressWindow window)
     {
-        if (_themeService == null)
+        // v2 path: ensure theme is loaded at App level
+        if (_v2ThemeService is not null)
         {
+            _v2ThemeService.EnsureThemeLoaded();
             return;
         }
 
-        var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
-        window.Resources.MergedDictionaries.Add(themeResources);
+        // v1 fallback
+        if (_themeService is not null)
+        {
+            var themeResources = MessageBoxThemeService.GetThemeResources(_themeService.CurrentTheme);
+            window.Resources.MergedDictionaries.Add(themeResources);
+        }
     }
 }

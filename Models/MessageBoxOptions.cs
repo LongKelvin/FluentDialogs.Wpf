@@ -199,6 +199,30 @@ public class MessageBoxOptions
     /// </summary>
     public bool RequireScrollToBottom { get; init; }
 
+    /// <summary>
+    /// Gets the list of items for dropdown dialogs.
+    /// When set, a ComboBox-style dropdown will be shown.
+    /// </summary>
+    public IReadOnlyList<object>? DropdownItems { get; init; }
+
+    /// <summary>
+    /// Gets the display member path for dropdown items.
+    /// Used when DropdownItems contains complex objects.
+    /// </summary>
+    public string? DropdownDisplayMemberPath { get; init; }
+
+    /// <summary>
+    /// Gets the initially selected index for dropdown dialogs.
+    /// </summary>
+    public int DropdownDefaultIndex { get; init; } = -1;
+
+    /// <summary>
+    /// Gets a value indicating whether the dialog is resizable.
+    /// When true, the user can resize the dialog by dragging its edges.
+    /// Useful for license agreement or large content dialogs.
+    /// </summary>
+    public bool IsResizable { get; init; }
+
     #endregion
 
     /// <summary>

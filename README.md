@@ -7,13 +7,17 @@ Modern, injectable WPF dialog library with Windows 11 Fluent Design. Replaces `S
 
 ## Features
 
-- **Async-first** - All dialogs are async, no UI blocking
-- **Dependency Injection** - First-class DI support with `IMessageBoxService`
-- **MVVM-friendly** - Injectable, testable, mockable services
-- **Fluent Design** - Windows 11 styling with light/dark themes
-- **Comprehensive** - Info, confirm, error, input, selection, progress, toast notifications
-- **Fluent Builder** - Chainable API with result callbacks
-- **Extensible** - Custom buttons, content, and theming
+- **Async-first** — All dialogs are async, no UI blocking
+- **Dependency Injection** — First-class DI support with `IMessageBoxService`
+- **MVVM-friendly** — Injectable, testable, mockable services
+- **Fluent Design** — Windows 11 styling with light/dark themes and smooth open animation
+- **Token-based Theming** — Three-layer design token system (Primitives → Semantics → Brushes) with runtime switching, accent colors, and custom presets
+- **Comprehensive** — Info, confirm, error, input, selection, dropdown, progress, toast notifications
+- **Fluent Builder** — Chainable API with result callbacks
+- **Fluent Icons** — Composite circle-and-symbol icons matching Windows 11 design language
+- **Resizable Dialogs** — License and custom dialogs support edge-drag resizing
+- **Extensible** — Custom buttons, content, and theming
+- **Backward Compatible** — v1 resource keys still work via built-in compatibility layer
 
 ## Quick Start
 
@@ -26,15 +30,18 @@ dotnet add package FluentDialogs.Wpf
 ### Setup
 
 ```csharp
-// Register services
-services.AddFluentDialogs();
+// Register services with optional configuration
+services.AddFluentDialogs(options =>
+{
+    options.DefaultPreset = MessageBoxTheme.Light; // or .Dark
+    // options.AccentColor = Colors.Purple;        // optional brand color
+});
 ```
 
 ```xml
-<!-- App.xaml - Merge theme resources -->
+<!-- App.xaml — Single entry point for all theme resources -->
 <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
-    <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
+    <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentDialogs.Theme.xaml"/>
 </ResourceDictionary.MergedDictionaries>
 ```
 
@@ -64,6 +71,25 @@ public class MainViewModel
 }
 ```
 
+### Theme Switching
+
+```csharp
+public class SettingsViewModel
+{
+    private readonly IFluentDialogThemeService _theme;
+
+    public SettingsViewModel(IFluentDialogThemeService theme)
+    {
+        _theme = theme;
+    }
+
+    public void ToggleDarkMode(bool isDark)
+    {
+        _theme.ApplyPreset(isDark ? MessageBoxTheme.Dark : MessageBoxTheme.Light);
+    }
+}
+```
+
 ### Fluent Builder
 
 ```csharp
@@ -73,13 +99,40 @@ await _messageBox.Confirm("Delete item?")
     .ShowAsync();
 ```
 
+### Dropdown Selection
+
+```csharp
+var languages = new[] { "English", "French", "German", "Spanish" };
+var result = await _messageBox.DropdownAsync("Select language:", languages, title: "Language");
+
+if (result.Result == MessageBoxResult.OK)
+{
+    string selected = result.DropdownSelectedItem as string;
+}
+```
+
 ## Services
 
 | Service | Description |
 |---------|-------------|
-| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, selection, progress) |
+| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, selection, dropdown, progress) |
 | `IToastService` | Non-blocking toast notifications |
-| `IMessageBoxThemeService` | Theme management (light/dark) |
+| `IFluentDialogThemeService` | v2 theme management — presets, tokens, accent color |
+| `IMessageBoxThemeService` | Legacy v1 theme service (still works via adapter) |
+
+## Theming Architecture
+
+FluentDialogs uses a **three-layer design token** system:
+
+```
+Primitives (_Primitives.xaml)   — Raw color palette (never referenced by controls)
+    ↓
+Semantics  (_Semantics.xaml)    — Meaning-based aliases (THE customization layer)
+    ↓
+Brushes    (_Brushes.xaml)      — SolidColorBrush resources consumed by control styles
+```
+
+Override semantic tokens to customize every dialog without touching control templates. See the [Theming Guide](docs/theming.md) for full details.
 
 ## Avoiding Namespace Conflicts
 
@@ -99,7 +152,7 @@ FluentDialogResult result = await _messageBox.ShowExtendedAsync(options);
 - [Dialogs Guide](docs/dialogs.md)
 - [Progress Dialogs](docs/progress.md)
 - [Toast Notifications](docs/toasts.md)
-- [Theming](docs/theming.md)
+- [Theming Guide](docs/theming.md)
 - [Fluent Builder](docs/builder.md)
 
 ## Screenshots

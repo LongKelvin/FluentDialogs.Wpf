@@ -5,25 +5,12 @@
              MaxWidth="350"
              Cursor="Hand">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
     <Border x:Name="ToastBorder"
-            Background="{DynamicResource ToastBackground}"
-            BorderBrush="{DynamicResource ToastBorderBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Margin="8"
-            Padding="12">
+            Style="{DynamicResource FDToastBorderStyle}">
 
         <Border.Effect>
-            <DropShadowEffect BlurRadius="10" 
-                              ShadowDepth="2" 
+            <DropShadowEffect BlurRadius="{DynamicResource FDElevationToastBlur}" 
+                              ShadowDepth="{DynamicResource FDElevationToastDepth}" 
                               Opacity="0.3"
                               Direction="270"/>
         </Border.Effect>
@@ -54,52 +41,17 @@
             <!-- Content -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                 <TextBlock x:Name="TitleText"
-                           FontWeight="SemiBold"
-                           FontSize="13"
-                           Foreground="{DynamicResource ToastForeground}"
-                           TextWrapping="Wrap"
+                           Style="{DynamicResource FDToastTitleStyle}"
                            Visibility="Collapsed"/>
                 <TextBlock x:Name="MessageText"
-                           FontSize="12"
-                           Foreground="{DynamicResource ToastSecondaryForeground}"
-                           TextWrapping="Wrap"/>
+                           Style="{DynamicResource FDToastMessageStyle}"/>
             </StackPanel>
 
             <!-- Close Button -->
             <Button Grid.Column="2"
                     x:Name="CloseButton"
-                    Width="20"
-                    Height="20"
-                    Padding="0"
-                    VerticalAlignment="Top"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Content="×"
-                    FontSize="16"
-                    Foreground="{DynamicResource ToastSecondaryForeground}"
-                    Click="CloseButton_Click"
-                    Cursor="Hand">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}"
-                                            CornerRadius="10">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                          VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#20000000"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+                    Style="{DynamicResource FDToastCloseButtonStyle}"
+                    Click="CloseButton_Click"/>
         </Grid>
     </Border>
 </UserControl>
