@@ -1,5 +1,9 @@
 using System.Windows;
 
+using FluentDialogs.Demo.ViewModels;
+
+using Microsoft.Extensions.DependencyInjection;
+
 namespace FluentDialogs.Demo;
 
 /// <summary>
@@ -17,5 +21,32 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        // Wire up the ThemingPage DataContext via DI
+        ThemingContent.DataContext = App.Services.GetRequiredService<ThemingViewModel>();
+    }
+
+    /// <summary>
+    /// Navigate to the Dialogs page.
+    /// </summary>
+    private void NavDialogs_Click(object sender, RoutedEventArgs e)
+    {
+        DialogsContent.Visibility = Visibility.Visible;
+        ThemingContent.Visibility = Visibility.Collapsed;
+
+        NavDialogsBtn.Tag = null;
+        NavThemingBtn.Tag = "Inactive";
+    }
+
+    /// <summary>
+    /// Navigate to the Theming page.
+    /// </summary>
+    private void NavTheming_Click(object sender, RoutedEventArgs e)
+    {
+        DialogsContent.Visibility = Visibility.Collapsed;
+        ThemingContent.Visibility = Visibility.Visible;
+
+        NavDialogsBtn.Tag = "Inactive";
+        NavThemingBtn.Tag = null;
     }
 }

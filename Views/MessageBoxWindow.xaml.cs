@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shell;
 using FluentDialogs.ViewModels;
 
 namespace FluentDialogs.Views;
@@ -36,6 +37,20 @@ public partial class MessageBoxWindow : Window
         if (PasswordBox != null && DataContext is MessageBoxViewModel vm && vm.InputIsPassword)
         {
             PasswordBox.PasswordChanged += OnPasswordChanged;
+        }
+
+        // Enable resize for dialogs that request it (e.g. License Agreement)
+        if (DataContext is MessageBoxViewModel resizableVm && resizableVm.IsResizable)
+        {
+            ResizeMode = ResizeMode.CanResize;
+            // WindowChrome provides resize hit-testing for borderless windows
+            WindowChrome.SetWindowChrome(this, new WindowChrome
+            {
+                CaptionHeight = 0,
+                ResizeBorderThickness = new Thickness(6),
+                GlassFrameThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(0)
+            });
         }
     }
 

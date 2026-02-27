@@ -38,6 +38,17 @@ public class DialogResult
     public int SelectedIndex { get; init; } = -1;
 
     /// <summary>
+    /// Gets the selected dropdown item if a dropdown was displayed.
+    /// </summary>
+    public object? DropdownSelectedItem { get; init; }
+
+    /// <summary>
+    /// Gets the index of the selected dropdown item.
+    /// Returns -1 if no selection was made.
+    /// </summary>
+    public int DropdownSelectedIndex { get; init; } = -1;
+
+    /// <summary>
     /// Gets a value indicating whether the dialog was closed due to timeout.
     /// </summary>
     public bool TimedOut { get; init; }

@@ -1,0 +1,689 @@
+<UserControl x:Class="FluentDialogs.Demo.Views.ThemingPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:FluentDialogs.Demo.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ThemingViewModel, IsDesignTimeCreatable=False}">
+
+    <UserControl.Resources>
+        <!-- Card Style (matches MainWindow) -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource FDBrushSurfacePrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- Section Header -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <!-- Description -->
+        <Style x:Key="DescriptionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="20"/>
+        </Style>
+
+        <!-- Demo Button -->
+        <Style x:Key="DemoButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Background" Value="{DynamicResource FDBrushNeutralDefault}"/>
+            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource FDBrushBorderStrong}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushNeutralPressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Primary Button -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Background" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnInteractive}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushInteractiveHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushInteractivePressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Preset Card Button -->
+        <Style x:Key="PresetCardStyle" TargetType="Button">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,12,12"/>
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="MinHeight" Value="100"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{DynamicResource FDBrushSurfacePrimary}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="0"
+                                SnapsToDevicePixels="true"
+                                ClipToBounds="True">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource FDBrushInteractivePressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Color Swatch -->
+        <Style x:Key="SwatchStyle" TargetType="Border">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+        </Style>
+
+        <!-- Code Block -->
+        <Style x:Key="CodeBlockStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource FDBrushSurfaceSecondary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+        <StackPanel Margin="32,24,24,24">
+
+            <!-- Header -->
+            <StackPanel Margin="0,0,0,24">
+                <TextBlock Text="Custom Theming &amp; Presets"
+                           FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                <TextBlock Text="Demonstrates how to adapt FluentDialogs to match your application's brand identity"
+                           FontSize="14"
+                           Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Status Bar -->
+            <Border Style="{StaticResource CardStyle}" Padding="16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Active Preset:" FontWeight="SemiBold" Foreground="{DynamicResource FDBrushOnSurfacePrimary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding ActivePresetName}" Foreground="{DynamicResource FDBrushInteractiveDefault}" FontWeight="Bold"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding LastAction}" 
+                               Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" 
+                               FontSize="12" TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center" Margin="24,0,0,0"/>
+                    <Button Grid.Column="2" Content="Reset to Default" 
+                            Command="{Binding ResetToDefaultCommand}"
+                            Style="{StaticResource DemoButtonStyle}" Margin="0"/>
+                </Grid>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 1: Built-in Presets -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="1. Built-in Presets" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="FluentDialogs ships with Light and Dark presets. Switch with a single line of code."/>
+
+                    <Border Style="{StaticResource CodeBlockStyle}">
+                        <TextBlock FontFamily="Cascadia Code,Consolas,Courier New" FontSize="12.5"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}">
+                            <Run Text="// Switch to Dark theme — one line" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="_themeService.ApplyPreset(MessageBoxTheme.Dark);"/>
+                        </TextBlock>
+                    </Border>
+
+                    <WrapPanel Margin="0,16,0,0">
+                        <!-- Light preset card -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyLightPresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FFFFFF" Offset="0"/>
+                                            <GradientStop Color="#F3F3F3" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse Width="16" Height="16" Fill="#0078D4" Margin="0,0,4,0"/>
+                                        <Ellipse Width="16" Height="16" Fill="#107C10" Margin="0,0,4,0"/>
+                                        <Ellipse Width="16" Height="16" Fill="#D13438"/>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="Light" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Default" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Dark preset card -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyDarkPresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0" Background="#2D2D2D">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse Width="16" Height="16" Fill="#60CDFF" Margin="0,0,4,0"/>
+                                        <Ellipse Width="16" Height="16" Fill="#6CCB5F" Margin="0,0,4,0"/>
+                                        <Ellipse Width="16" Height="16" Fill="#F1707B"/>
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="Dark" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Built-in" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 2: Custom Presets -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="2. Custom Presets (Brand Themes)" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Border Grid.Column="1" Background="{DynamicResource FDBrushInteractiveDefault}" CornerRadius="4" Padding="8,4" VerticalAlignment="Top">
+                            <TextBlock Text="KEY FEATURE" FontSize="10" Foreground="{DynamicResource FDBrushOnInteractive}" FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="Create a XAML ResourceDictionary with all FDSem* color overrides, then load it at runtime. This is how your app adapts FluentDialogs to any brand identity — blue like Word, orange like PowerPoint, green like Excel, or any custom scheme."/>
+
+                    <Border Style="{StaticResource CodeBlockStyle}">
+                        <TextBlock FontFamily="Cascadia Code,Consolas,Courier New" FontSize="12.5"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}">
+                            <Run Text="// Load a custom preset XAML file at runtime" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="var uri = new Uri(&quot;pack://application:,,,/MyApp;component/Themes/MyBrand.xaml&quot;);"/><LineBreak/>
+                            <Run Text="_themeService.ApplyCustomPreset(uri, &quot;My Brand&quot;);"/>
+                        </TextBlock>
+                    </Border>
+
+                    <WrapPanel Margin="0,16,0,0">
+                        <!-- Ocean Blue -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyOceanBluePresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#E1EFFF" Offset="0"/>
+                                            <GradientStop Color="#0F6CBD" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="Aa" FontSize="22" FontWeight="Bold" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Ocean Blue" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Like Word" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Sunset Orange -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplySunsetOrangePresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FFF0E0" Offset="0"/>
+                                            <GradientStop Color="#D83B01" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="Aa" FontSize="22" FontWeight="Bold" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Sunset Orange" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Like PowerPoint" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Forest Green -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyForestGreenPresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#E0F5E0" Offset="0"/>
+                                            <GradientStop Color="#217346" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="Aa" FontSize="22" FontWeight="Bold" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Forest Green" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Like Excel" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Royal Purple -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyRoyalPurplePresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#EDE5FF" Offset="0"/>
+                                            <GradientStop Color="#7B2F8E" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="Aa" FontSize="22" FontWeight="Bold" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Royal Purple" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Like OneNote" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Midnight Teal -->
+                        <Button Style="{StaticResource PresetCardStyle}" Command="{Binding ApplyMidnightTealPresetCommand}">
+                            <StackPanel>
+                                <Border Height="50" CornerRadius="8,8,0,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#16213E" Offset="0"/>
+                                            <GradientStop Color="#0A9396" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="Aa" FontSize="22" FontWeight="Bold" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Midnight Teal" FontWeight="SemiBold" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Dark Custom" FontSize="11" HorizontalAlignment="Center" 
+                                           Margin="0,2,0,8" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 3: Accent Color -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="3. Accent / Brand Color" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="The simplest way to brand dialogs — provide your primary brand color. The service automatically derives hover (-15%) and pressed (-30%) states from it. Works with any active preset."/>
+
+                    <Border Style="{StaticResource CodeBlockStyle}">
+                        <TextBlock FontFamily="Cascadia Code,Consolas,Courier New" FontSize="12.5"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}">
+                            <Run Text="// Set brand color — hover/pressed auto-derived" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="_themeService.SetAccentColor(Color.FromRgb(0xD8, 0x3B, 0x01));"/>
+                        </TextBlock>
+                    </Border>
+
+                    <!-- Quick accent buttons -->
+                    <TextBlock Text="Quick Accent Colors:" FontWeight="SemiBold" Margin="0,16,0,8"
+                               Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource DemoButtonStyle}" Command="{Binding SetAccentBlueCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="16" Height="16" CornerRadius="8" Background="#0078D4" Margin="0,0,8,0"/>
+                                <TextBlock Text="Blue" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DemoButtonStyle}" Command="{Binding SetAccentOrangeCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="16" Height="16" CornerRadius="8" Background="#D83B01" Margin="0,0,8,0"/>
+                                <TextBlock Text="Orange" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DemoButtonStyle}" Command="{Binding SetAccentTealCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="16" Height="16" CornerRadius="8" Background="#008272" Margin="0,0,8,0"/>
+                                <TextBlock Text="Teal" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DemoButtonStyle}" Command="{Binding SetAccentRoseCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="16" Height="16" CornerRadius="8" Background="#E3008C" Margin="0,0,8,0"/>
+                                <TextBlock Text="Rose" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </WrapPanel>
+
+                    <!-- Custom hex input -->
+                    <TextBlock Text="Custom Hex Color:" FontWeight="SemiBold" Margin="0,12,0,8"
+                               Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Text="{Binding AccentColorHex, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="120" Height="32" FontSize="14" Padding="8,4"
+                                 VerticalContentAlignment="Center"
+                                 Background="{DynamicResource FDBrushSurfaceSecondary}"
+                                 Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
+                                 BorderBrush="{DynamicResource FDBrushBorderDefault}"/>
+                        <Button Content="Apply Accent" Command="{Binding ApplyAccentColorCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 4: Individual Token Overrides -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="4. Individual Token Overrides" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="Override any single semantic token at runtime. Overrides persist across preset switches until you call ClearOverrides(). Use ThemeTokenKeys constants to avoid magic strings."/>
+
+                    <Border Style="{StaticResource CodeBlockStyle}">
+                        <TextBlock FontFamily="Cascadia Code,Consolas,Courier New" FontSize="12.5"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}">
+                            <Run Text="// Override a single token" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="_themeService.SetToken(ThemeTokenKeys.InteractiveDefault, Colors.Purple);"/><LineBreak/><LineBreak/>
+                            <Run Text="// Clear all overrides" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="_themeService.ClearOverrides();"/>
+                        </TextBlock>
+                    </Border>
+
+                    <Grid Margin="0,16,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Token Key:" FontSize="12" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding TokenOverrideKey, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="32" FontSize="13" Padding="8,4"
+                                     VerticalContentAlignment="Center"
+                                     Background="{DynamicResource FDBrushSurfaceSecondary}"
+                                     Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
+                                     BorderBrush="{DynamicResource FDBrushBorderDefault}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,8,0">
+                            <TextBlock Text="Color:" FontSize="12" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding TokenOverrideValue, UpdateSourceTrigger=PropertyChanged}" 
+                                     Height="32" FontSize="13" Padding="8,4"
+                                     VerticalContentAlignment="Center"
+                                     Background="{DynamicResource FDBrushSurfaceSecondary}"
+                                     Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
+                                     BorderBrush="{DynamicResource FDBrushBorderDefault}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom">
+                            <Button Content="Apply Override" Command="{Binding ApplyTokenOverrideCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Common token quick-actions -->
+                    <TextBlock Text="Common Tokens:" FontWeight="SemiBold" Margin="0,16,0,8"
+                               Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                    <WrapPanel>
+                        <Border Style="{StaticResource CodeBlockStyle}" Margin="0,0,8,0" Padding="10,6">
+                            <TextBlock FontFamily="Cascadia Code,Consolas" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                       Text="FDSemSurfacePrimary ← dialog bg"/>
+                        </Border>
+                        <Border Style="{StaticResource CodeBlockStyle}" Margin="0,0,8,0" Padding="10,6">
+                            <TextBlock FontFamily="Cascadia Code,Consolas" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                       Text="FDSemInteractiveDefault ← accent"/>
+                        </Border>
+                        <Border Style="{StaticResource CodeBlockStyle}" Margin="0,0,8,0" Padding="10,6">
+                            <TextBlock FontFamily="Cascadia Code,Consolas" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                       Text="FDSemOnSurfacePrimary ← text"/>
+                        </Border>
+                        <Border Style="{StaticResource CodeBlockStyle}" Margin="0,0,8,0" Padding="10,6">
+                            <TextBlock FontFamily="Cascadia Code,Consolas" FontSize="11" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                       Text="FDSemStatusError ← error/danger"/>
+                        </Border>
+                    </WrapPanel>
+
+                    <Button Content="Clear All Overrides" Command="{Binding ClearAllOverridesCommand}"
+                            Style="{StaticResource DemoButtonStyle}" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 5: Live Token Preview -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="5. Live Token Preview" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="These swatches reflect the current resolved token values in real-time. Switch presets or apply overrides above and watch them update instantly."/>
+
+                    <UniformGrid Columns="4" Margin="0,16,0,0">
+                        <!-- Surface tokens -->
+                        <StackPanel Margin="0,0,12,12">
+                            <TextBlock Text="Surface" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8"
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushSurfacePrimary}"/>
+                                <TextBlock Text="Primary" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushSurfaceSecondary}"/>
+                                <TextBlock Text="Secondary" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Interactive tokens -->
+                        <StackPanel Margin="0,0,12,12">
+                            <TextBlock Text="Interactive (Accent)" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8"
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushInteractiveDefault}"/>
+                                <TextBlock Text="Default" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushInteractiveHover}"/>
+                                <TextBlock Text="Hover" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushInteractivePressed}"/>
+                                <TextBlock Text="Pressed" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Status tokens -->
+                        <StackPanel Margin="0,0,12,12">
+                            <TextBlock Text="Status Colors" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8"
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushStatusError}"/>
+                                <TextBlock Text="Error" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushStatusWarning}"/>
+                                <TextBlock Text="Warning" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushStatusSuccess}"/>
+                                <TextBlock Text="Success" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushStatusInfo}"/>
+                                <TextBlock Text="Info" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Neutral / Border tokens -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="Neutral &amp; Border" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8"
+                                       Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushNeutralDefault}"/>
+                                <TextBlock Text="Neutral" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushBorderDefault}"/>
+                                <TextBlock Text="Border" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SwatchStyle}" Background="{DynamicResource FDBrushOnSurfacePrimary}"/>
+                                <TextBlock Text="Text" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 6: Preview Themed Dialogs -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="6. Preview Themed Dialogs" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="Open actual dialogs to see the current theme in action. Every dialog inherits the active preset and any runtime overrides automatically."/>
+
+                    <WrapPanel Margin="0,16,0,0">
+                        <Button Content="Info Dialog" Command="{Binding PreviewInfoDialogCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Content="Confirm Dialog" Command="{Binding PreviewConfirmDialogCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Content="Error Dialog" Command="{Binding PreviewErrorDialogCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Warning Dialog" Command="{Binding PreviewWarningDialogCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="All Icons Tour" Command="{Binding PreviewAllIconsCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Custom Buttons" Command="{Binding PreviewCustomButtonsCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Builder Dialog" Command="{Binding PreviewBuilderDialogCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Input Dialog" Command="{Binding PreviewInputDialogCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                        <Button Content="Dropdown Dialog" Command="{Binding PreviewDropdownDialogCommand}" Style="{StaticResource DemoButtonStyle}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- Section 7: How to Create a Custom Preset -->
+            <!-- ═══════════════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="7. How to Create Your Own Preset" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Style="{StaticResource DescriptionStyle}"
+                               Text="Follow these steps to create a custom brand preset for your application:"/>
+
+                    <StackPanel Margin="0,12,0,0">
+                        <TextBlock Foreground="{DynamicResource FDBrushOnSurfacePrimary}" Margin="0,0,0,8" TextWrapping="Wrap">
+                            <Run FontWeight="Bold" Text="Step 1:"/> 
+                            <Run Text="Create a new XAML ResourceDictionary file in your project (e.g., Themes/MyBrand.xaml)"/>
+                        </TextBlock>
+                        <TextBlock Foreground="{DynamicResource FDBrushOnSurfacePrimary}" Margin="0,0,0,8" TextWrapping="Wrap">
+                            <Run FontWeight="Bold" Text="Step 2:"/>
+                            <Run Text="Define ALL FDSem* color keys. Copy Presets/Light.xaml as a template and change the colors to match your brand."/>
+                        </TextBlock>
+                        <TextBlock Foreground="{DynamicResource FDBrushOnSurfacePrimary}" Margin="0,0,0,8" TextWrapping="Wrap">
+                            <Run FontWeight="Bold" Text="Step 3:"/> 
+                            <Run Text="Set the file's Build Action to 'Resource' (default for XAML in WPF projects)."/>
+                        </TextBlock>
+                        <TextBlock Foreground="{DynamicResource FDBrushOnSurfacePrimary}" Margin="0,0,0,8" TextWrapping="Wrap">
+                            <Run FontWeight="Bold" Text="Step 4:"/> 
+                            <Run Text="Load at startup or at runtime:"/>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <Border Style="{StaticResource CodeBlockStyle}">
+                        <TextBlock FontFamily="Cascadia Code,Consolas,Courier New" FontSize="12.5"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}">
+                            <Run Text="// Option A: At startup via FluentDialogOptions" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="services.AddFluentDialogs(options =>"/><LineBreak/>
+                            <Run Text="{}{{"/><LineBreak/>
+                            <Run Text="    options.CustomPresetUri = new Uri("/><LineBreak/>
+                            <Run Text="        &quot;pack://application:,,,/MyApp;component/Themes/MyBrand.xaml&quot;);"/><LineBreak/>
+                            <Run Text="});"/><LineBreak/><LineBreak/>
+                            <Run Text="// Option B: At runtime via the theme service" Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"/><LineBreak/>
+                            <Run Text="_themeService.ApplyCustomPreset("/><LineBreak/>
+                            <Run Text="    new Uri(&quot;pack://application:,,,/MyApp;component/Themes/MyBrand.xaml&quot;),"/><LineBreak/>
+                            <Run Text="    &quot;My Brand&quot;);"/>
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

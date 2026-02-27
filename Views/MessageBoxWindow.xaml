@@ -22,134 +22,84 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/ButtonStyles.xaml"/>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Controls/IconPresenter.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
+            <!--
+                v2: NO theme dictionaries merged here.
+                Theme resources come from App-level FluentDialogs.Theme.xaml.
+                Only local resources that depend on ViewModel bindings live here.
+            -->
 
-            <!-- Converters are now defined in ThemeResources.xaml -->
-
-            <!-- Custom Title Bar Brush -->
+            <!-- Custom Title Bar Brush (bound to ViewModel) -->
             <SolidColorBrush x:Key="CustomTitleBarBrush" Color="{Binding TitleBarColor, TargetNullValue={x:Static Colors.Transparent}}"/>
-
-            <!-- Improved Close Button Style -->
-            <Style x:Key="ModernCloseButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="46"/>
-                <Setter Property="Height" Value="32"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
-                <Setter Property="FontSize" Value="10"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="border"
-                                    Background="{TemplateBinding Background}"
-                                    CornerRadius="0,8,0,0"
-                                    SnapsToDevicePixels="True">
-                                <TextBlock Text="&#xE106;"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Segoe UI Symbol"
-                                           FontSize="10"
-                                           Foreground="{TemplateBinding Foreground}"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#E81123"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="Background" Value="#C50E1F"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- Theme-aware styles for custom content -->
-            <Style TargetType="TextBlock" x:Key="DialogTextBlockStyle">
-                <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-            </Style>
-
-            <Style TargetType="CheckBox" x:Key="DialogCheckBoxStyle">
-                <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-            </Style>
-
-            <Style TargetType="TextBox" x:Key="DialogTextBoxStyle">
-                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
-                <Setter Property="FontFamily" Value="Segoe UI"/>
-            </Style>
-
-            <!-- Small icon button style for copy -->
-            <Style x:Key="IconButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Padding" Value="4"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Width" Value="24"/>
-                <Setter Property="Height" Value="24"/>
-                <Setter Property="ToolTip" Value="Copy to clipboard"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="4"
-                                    Padding="{TemplateBinding Padding}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- Main Window Content with Shadow -->
+    <!-- Main Window Content with Shadow + Open Animation -->
     <Border x:Name="MainBorder"
             Margin="16"
-            Background="{DynamicResource DialogBackgroundBrush}"
-            BorderBrush="{DynamicResource DialogBorderBrush}"
+            Background="{DynamicResource FDBrushSurfacePrimary}"
+            BorderBrush="{DynamicResource FDBrushBorderDefault}"
             BorderThickness="1"
-            CornerRadius="8">
+            CornerRadius="{DynamicResource FDRadiusMd}"
+            RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform x:Name="MainBorderScale" ScaleX="1" ScaleY="1"/>
+        </Border.RenderTransform>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <!-- Fade in -->
+                        <DoubleAnimation Storyboard.TargetName="MainBorder"
+                                         Storyboard.TargetProperty="Opacity"
+                                         From="0" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <!-- Scale up -->
+                        <DoubleAnimation Storyboard.TargetName="MainBorderScale"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         From="0.96" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="MainBorderScale"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         From="0.96" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
                     <!-- Error dialog gets red border accent -->
                     <DataTrigger Binding="{Binding IsErrorDialog}" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource ErrorDialogBorderBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource FDBrushStatusError}"/>
                         <Setter Property="BorderThickness" Value="1,1,1,3"/>
                     </DataTrigger>
                     <!-- Warning dialog gets orange/yellow border accent -->
                     <DataTrigger Binding="{Binding IsWarningDialog}" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource WarningDialogBorderBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource FDBrushStatusWarning}"/>
                         <Setter Property="BorderThickness" Value="1,1,1,3"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Border.Style>
         <Border.Effect>
-            <DropShadowEffect BlurRadius="16"
-                              ShadowDepth="4"
+            <DropShadowEffect BlurRadius="{DynamicResource FDElevationDialogBlur}"
+                              ShadowDepth="{DynamicResource FDElevationDialogDepth}"
                               Direction="270"
                               Opacity="0.3"
-                              Color="{DynamicResource DialogShadowColor}"/>
+                              Color="{DynamicResource FDSemShadow}"/>
         </Border.Effect>
 
         <Grid>
@@ -165,8 +115,8 @@
             <!-- Title Bar -->
             <Border Grid.Row="0"
                     x:Name="TitleBar"
-                    Height="40"
-                    CornerRadius="8,8,0,0"
+                    Height="{DynamicResource FDSizeTitleBarHeight}"
+                    CornerRadius="{DynamicResource FDRadiusTitleBar}"
                     MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Border.Style>
                     <Style TargetType="Border">
@@ -188,15 +138,15 @@
                     <!-- Title Text -->
                     <TextBlock Grid.Column="0"
                                Text="{Binding Title}"
-                               FontSize="12"
-                               FontFamily="Segoe UI"
-                               FontWeight="SemiBold"
+                               FontSize="{DynamicResource FDTypeSizeTitleBar}"
+                               FontFamily="{DynamicResource FDTypeFontFamily}"
+                               FontWeight="{DynamicResource FDTypeWeightSemiBold}"
                                VerticalAlignment="Center"
                                Margin="16,0,0,0"
                                TextTrimming="CharacterEllipsis">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                                 <Style.Triggers>
                                     <!-- Auto-adjust text color for custom title bar -->
                                     <DataTrigger Binding="{Binding HasCustomTitleBarColor}" Value="True">
@@ -213,7 +163,7 @@
                             Click="CloseButton_Click"
                             ToolTip="Close">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ModernCloseButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource FDCloseButtonStyle}">
                                 <Style.Triggers>
                                     <!-- Adjust close button for custom title bar -->
                                     <DataTrigger Binding="{Binding HasCustomTitleBarColor}" Value="True">
@@ -252,9 +202,9 @@
 
                         <!-- Message Text -->
                         <TextBlock Text="{Binding Message}"
-                                   Foreground="{DynamicResource DialogForegroundBrush}"
-                                   FontSize="14"
-                                   FontFamily="Segoe UI"
+                                   Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
+                                   FontSize="{DynamicResource FDTypeSizeMd}"
+                                   FontFamily="{DynamicResource FDTypeFontFamily}"
                                    TextWrapping="Wrap"
                                    Margin="0,4,0,0"/>
 
@@ -262,7 +212,7 @@
                         <TextBlock Margin="0,12,0,0"
                                    Visibility="{Binding HasHyperlink, Converter={StaticResource BoolToVisConverter}}">
                             <Hyperlink Command="{Binding OpenHyperlinkCommand}"
-                                       Foreground="{DynamicResource HyperlinkBrush}">
+                                       Foreground="{DynamicResource FDBrushLinkDefault}">
                                 <TextBlock Text="{Binding HyperlinkText}"/>
                             </Hyperlink>
                         </TextBlock>
@@ -272,27 +222,15 @@
                               Visibility="{Binding HasInput, Converter={StaticResource BoolToVisConverter}}">
                             <TextBox x:Name="InputTextBox"
                                      Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
-                                     Padding="8,6"
-                                     FontSize="14"
-                                     Background="{DynamicResource ButtonBackgroundBrush}"
-                                     Foreground="{DynamicResource DialogForegroundBrush}"
-                                     BorderBrush="{DynamicResource ButtonBorderBrush}"
-                                     BorderThickness="1"
+                                     Style="{DynamicResource FDTextBoxStyle}"
                                      Visibility="{Binding InputIsPassword, Converter={StaticResource InverseBoolToVisConverter}, ConverterParameter=Inverse}"/>
                             <PasswordBox x:Name="PasswordBox"
-                                         Padding="8,6"
-                                         FontSize="14"
-                                         Background="{DynamicResource ButtonBackgroundBrush}"
-                                         Foreground="{DynamicResource DialogForegroundBrush}"
-                                         BorderBrush="{DynamicResource ButtonBorderBrush}"
-                                         BorderThickness="1"
+                                         Style="{DynamicResource FDPasswordBoxStyle}"
                                          Visibility="{Binding InputIsPassword, Converter={StaticResource BoolToVisConverter}}"/>
                             <!-- Placeholder text -->
                             <TextBlock Text="{Binding InputPlaceholder}"
-                                       Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
-                                       FontSize="14"
+                                       Style="{DynamicResource FDPlaceholderTextStyle}"
                                        Margin="10,8,0,0"
-                                       IsHitTestVisible="False"
                                        Visibility="{Binding InputText, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
                         </Grid>
 
@@ -303,29 +241,31 @@
                                  SelectedItem="{Binding SelectedItem}"
                                  SelectedIndex="{Binding SelectedIndex}"
                                  DisplayMemberPath="{Binding SelectionDisplayMemberPath}"
-                                 Background="{DynamicResource ButtonBackgroundBrush}"
-                                 Foreground="{DynamicResource DialogForegroundBrush}"
-                                 BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                 Style="{DynamicResource FDListBoxStyle}"
                                  Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisConverter}}"/>
+
+                        <!-- Native Dropdown (ComboBox) -->
+                        <ComboBox Margin="0,16,0,0"
+                                  ItemsSource="{Binding DropdownItems}"
+                                  SelectedItem="{Binding DropdownSelectedItem}"
+                                  SelectedIndex="{Binding DropdownSelectedIndex}"
+                                  DisplayMemberPath="{Binding DropdownDisplayMemberPath}"
+                                  Style="{DynamicResource FDComboBoxStyle}"
+                                  Visibility="{Binding HasDropdown, Converter={StaticResource BoolToVisConverter}}"/>
 
                         <!-- Detailed Text (License/Disclaimer) -->
                         <Border Margin="0,16,0,0"
-                                MinHeight="150"
-                                MaxHeight="300"
-                                Background="{DynamicResource ButtonBackgroundBrush}"
-                                BorderBrush="{DynamicResource ButtonBorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="6"
+                                Style="{DynamicResource FDDetailBorderStyle}"
                                 Visibility="{Binding HasDetailedText, Converter={StaticResource BoolToVisConverter}}">
                             <ScrollViewer x:Name="DetailedTextScroller"
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled"
                                           Padding="16">
                                 <TextBlock Text="{Binding DetailedText}"
-                                           Foreground="{DynamicResource DialogForegroundBrush}"
-                                           FontSize="13"
-                                           FontFamily="Segoe UI"
-                                           LineHeight="20"
+                                           Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
+                                           FontSize="{DynamicResource FDTypeSizeSm}"
+                                           FontFamily="{DynamicResource FDTypeFontFamily}"
+                                           LineHeight="{DynamicResource FDTypeLineHeightRelaxed}"
                                            TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </Border>
@@ -333,24 +273,20 @@
                         <!-- Scroll requirement hint -->
                         <TextBlock Margin="0,8,0,0"
                                    Text="Please scroll to read the entire text above before accepting."
-                                   Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
-                                   FontSize="11"
-                                   FontStyle="Italic"
+                                   Style="{DynamicResource FDHintTextStyle}"
                                    Visibility="{Binding RequireScrollToBottom, Converter={StaticResource BoolToVisConverter}}"/>
 
                         <!-- Native Checkbox -->
                         <CheckBox Margin="0,16,0,0"
                                   Content="{Binding CheckboxText}"
                                   IsChecked="{Binding IsCheckboxChecked}"
-                                  Foreground="{DynamicResource DialogForegroundBrush}"
+                                  Foreground="{DynamicResource FDBrushOnSurfacePrimary}"
                                   Visibility="{Binding HasCheckbox, Converter={StaticResource BoolToVisConverter}}"/>
 
                         <!-- Timeout Display -->
                         <TextBlock Margin="0,12,0,0"
                                    Text="{Binding TimeoutDisplayText}"
-                                   Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
-                                   FontSize="12"
-                                   FontStyle="Italic"
+                                   Style="{DynamicResource FDHintTextStyle}"
                                    Visibility="{Binding HasTimeout, Converter={StaticResource BoolToVisConverter}}"/>
 
                         <!-- Custom Content Area with theme-aware styling -->
@@ -360,16 +296,16 @@
                             <ContentControl.Resources>
                                 <!-- Apply theme colors to common controls in custom content -->
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                                 </Style>
                                 <Style TargetType="CheckBox">
-                                    <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                                 </Style>
                                 <Style TargetType="RadioButton">
-                                    <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                                 </Style>
                                 <Style TargetType="Label">
-                                    <Setter Property="Foreground" Value="{DynamicResource DialogForegroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
@@ -377,10 +313,10 @@
                         <!-- Exception Display Area -->
                         <Border Margin="0,16,0,0"
                                 Padding="12"
-                                Background="{DynamicResource ExceptionBackgroundBrush}"
-                                BorderBrush="{DynamicResource ExceptionBorderBrush}"
+                                Background="{DynamicResource FDBrushStatusErrorSubtle}"
+                                BorderBrush="{DynamicResource FDBrushOnStatusError}"
                                 BorderThickness="1"
-                                CornerRadius="4"
+                                CornerRadius="{DynamicResource FDRadiusSm}"
                                 Visibility="{Binding HasException, Converter={StaticResource BoolToVisConverter}}">
                             <StackPanel>
                                 <!-- Exception Header with Copy Button -->
@@ -393,9 +329,9 @@
                                     <!-- Exception Message -->
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding ExceptionMessage}"
-                                               Foreground="{DynamicResource ExceptionForegroundBrush}"
-                                               FontSize="13"
-                                               FontFamily="Segoe UI"
+                                               Foreground="{DynamicResource FDBrushOnStatusError}"
+                                               FontSize="{DynamicResource FDTypeSizeSm}"
+                                               FontFamily="{DynamicResource FDTypeFontFamily}"
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center"/>
 
@@ -406,7 +342,7 @@
                                             ToolTip="Copy exception details"
                                             Margin="8,0,0,0">
                                         <Path Data="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
-                                              Fill="{DynamicResource DialogSecondaryForegroundBrush}"
+                                              Fill="{DynamicResource FDBrushOnSurfaceSecondary}"
                                               Width="14" Height="14"
                                               Stretch="Uniform"/>
                                     </Button>
@@ -421,10 +357,10 @@
 
                                 <!-- Stack Trace (Expandable) -->
                                 <Border Margin="0,8,0,0"
-                                        Background="{DynamicResource DialogBackgroundBrush}"
-                                        BorderBrush="{DynamicResource DialogBorderBrush}"
+                                        Background="{DynamicResource FDBrushSurfacePrimary}"
+                                        BorderBrush="{DynamicResource FDBrushBorderDefault}"
                                         BorderThickness="1"
-                                        CornerRadius="4"
+                                        CornerRadius="{DynamicResource FDRadiusSm}"
                                         Visibility="{Binding IsStackTraceVisible, Converter={StaticResource BoolToVisConverter}}">
                                     <ScrollViewer MaxHeight="250"
                                                   MinHeight="100"
@@ -432,9 +368,9 @@
                                                   VerticalScrollBarVisibility="Auto"
                                                   HorizontalScrollBarVisibility="Auto">
                                         <TextBlock Text="{Binding ExceptionStackTrace}"
-                                                   Foreground="{DynamicResource DialogSecondaryForegroundBrush}"
-                                                   FontSize="11"
-                                                   FontFamily="Cascadia Code, Consolas, Courier New"
+                                                   Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                                   FontSize="{DynamicResource FDTypeSizeXs}"
+                                                   FontFamily="{DynamicResource FDTypeFontFamilyMono}"
                                                    TextWrapping="NoWrap"/>
                                     </ScrollViewer>
                                 </Border>
@@ -447,9 +383,10 @@
 
             <!-- Button Panel -->
             <Border Grid.Row="2"
-                    Background="{DynamicResource DialogBackgroundBrush}"
-                    BorderBrush="{DynamicResource DialogBorderBrush}"
+                    Background="{DynamicResource FDBrushSurfacePrimary}"
+                    BorderBrush="{DynamicResource FDBrushBorderDefault}"
                     BorderThickness="0,1,0,0"
+                    CornerRadius="{DynamicResource FDRadiusButtonPanel}"
                     Padding="24,16">
 
                 <ItemsControl ItemsSource="{Binding Buttons}"

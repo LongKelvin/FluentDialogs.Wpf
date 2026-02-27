@@ -5,12 +5,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- 
-                    Load FluentDialogs theme resources.
-                    The library provides both Light and Dark themes.
-                    Theme switching is handled by IMessageBoxThemeService at runtime.
+                    v2 Theme System — single entry point.
+                    Contains all layers: Primitives → Semantics → Brushes → Typography → Layout → Controls → Legacy compat.
+                    Default preset is Light. Use IFluentDialogThemeService.ApplyPreset() to switch at runtime.
                 -->
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/ThemeResources.xaml"/>
-                <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/FluentLight.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentDialogs.Theme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

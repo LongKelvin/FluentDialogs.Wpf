@@ -20,8 +20,9 @@ Main service for displaying modal dialogs.
 | `ErrorAsync(message, exception?)` | `Task<MessageBoxResult>` | Error dialog with optional exception |
 | `InputAsync(message, placeholder, defaultValue?, title?, isPassword?)` | `Task<DialogResult>` | Text input dialog |
 | `SelectAsync<T>(message, items, displayMemberPath?, defaultIndex?, title?)` | `Task<DialogResult>` | Selection list dialog |
+| `DropdownAsync<T>(message, items, displayMemberPath?, defaultIndex?, title?)` | `Task<DialogResult>` | Dropdown (ComboBox) selection dialog |
 | `ConfirmWithCheckboxAsync(message, checkboxText, title?)` | `Task<DialogResult>` | Confirm with checkbox |
-| `LicenseAsync(title, message, detailedText, requireScrollToBottom?)` | `Task<DialogResult>` | License/disclaimer dialog |
+| `LicenseAsync(title, message, detailedText, requireScrollToBottom?)` | `Task<DialogResult>` | License/disclaimer dialog (resizable) |
 | `TimeoutAsync(message, timeoutSeconds, timeoutResult?, title?)` | `Task<DialogResult>` | Auto-closing dialog |
 | `ShowProgressAsync(ProgressOptions)` | `Task<IProgressController>` | Progress dialog |
 | `RunWithProgressAsync<T>(operation, options)` | `Task<T?>` | Execute operation with progress |
@@ -49,9 +50,36 @@ Service for displaying non-modal toast notifications.
 | `DefaultPosition` | `ToastPosition` | Default screen position |
 | `MaxToasts` | `int` | Maximum simultaneous toasts |
 
-### IMessageBoxThemeService
+### IFluentDialogThemeService
 
-Service for managing dialog themes.
+v2 theme service for preset switching, token overrides, and accent color management.
+
+#### Methods
+
+| Method | Description |
+|--------|-------------|
+| `ApplyPreset(MessageBoxTheme)` | Switch to a built-in preset (Light or Dark) |
+| `ApplyCustomPreset(Uri, string?)` | Load a custom preset from a ResourceDictionary URI |
+| `SetToken(string, Color)` | Override a single semantic token at runtime |
+| `SetAccentColor(Color)` | Set the accent/brand color (derives hover/pressed states) |
+| `ClearOverrides()` | Clear all runtime token overrides, reverting to preset values |
+| `EnsureThemeLoaded(ResourceDictionary?)` | Ensure theme resources are loaded into the target dictionary |
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `CurrentPreset` | `MessageBoxTheme` | Currently active preset |
+
+#### Events
+
+| Event | Type | Description |
+|-------|------|-------------|
+| `PresetChanged` | `EventHandler<ThemePresetChangedEventArgs>` | Raised after the active preset changes |
+
+### IMessageBoxThemeService (Legacy)
+
+> **Deprecated:** Use `IFluentDialogThemeService` instead. This interface is preserved for backward compatibility and routes through an internal adapter.
 
 #### Methods
 
@@ -131,6 +159,10 @@ Configuration for message box dialogs.
 | `TimeoutResult` | `MessageBoxResult` | `Cancel` | Result on timeout |
 | `DetailedText` | `string?` | `null` | Long-form content |
 | `RequireScrollToBottom` | `bool` | `false` | Require scroll for accept |
+| `DropdownItems` | `IReadOnlyList<object>?` | `null` | Dropdown (ComboBox) items |
+| `DropdownDisplayMemberPath` | `string?` | `null` | Display property for dropdown items |
+| `DropdownDefaultIndex` | `int` | `-1` | Initial dropdown selected index |
+| `IsResizable` | `bool` | `false` | Allow user to resize the dialog |
 
 ### DialogResult / FluentDialogResult
 
@@ -143,6 +175,8 @@ Extended result from dialog operations.
 | `InputText` | `string?` | Input field value |
 | `SelectedItem` | `object?` | Selected list item |
 | `SelectedIndex` | `int` | Selected index (-1 if none) |
+| `DropdownSelectedItem` | `object?` | Selected dropdown item |
+| `DropdownSelectedIndex` | `int` | Selected dropdown index (-1 if none) |
 | `TimedOut` | `bool` | Whether dialog timed out |
 
 ### MessageBoxButtonDefinition
@@ -189,14 +223,91 @@ Configuration for toast notifications.
 | `OnClick` | `Action?` | `null` | Click callback |
 | `OnClose` | `Action?` | `null` | Close callback |
 
-### ThemeChangedEventArgs
+### FluentDialogOptions
 
-Event data for theme changes.
+Configuration options for the v2 theming system. Passed to `AddFluentDialogs(Action<FluentDialogOptions>)`.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `DefaultPreset` | `MessageBoxTheme` | `Light` | Preset applied at startup |
+| `AccentColor` | `Color?` | `null` | Custom accent/brand color |
+| `CustomPresetUri` | `Uri?` | `null` | URI to a custom preset ResourceDictionary |
+| `TokenOverrides` | `Dictionary<string, Color>` | `{}` | Individual token overrides applied after preset |
+| `IncludeLegacyCompatibility` | `bool` | `true` | Include v1 backward-compat layer |
+
+### ThemePresetChangedEventArgs
+
+Event data for v2 preset changes.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `OldPreset` | `MessageBoxTheme` | Previous preset |
+| `NewPreset` | `MessageBoxTheme` | New preset |
+
+### ThemeChangedEventArgs (Legacy)
+
+Event data for v1 theme changes.
 
 | Property | Type | Description |
 |----------|------|-------------|
 | `OldTheme` | `MessageBoxTheme` | Previous theme |
 | `NewTheme` | `MessageBoxTheme` | New theme |
+
+---
+
+## Static Classes
+
+### ThemeTokenKeys
+
+String constants for all v2 theme token resource keys. Use these to avoid magic strings when calling `SetToken()` or `FindResource()`.
+
+#### Semantic Token Keys
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `SurfacePrimary` | `FDSemSurfacePrimary` | Dialog backgrounds |
+| `SurfaceSecondary` | `FDSemSurfaceSecondary` | Secondary panels |
+| `SurfaceOverlay` | `FDSemSurfaceOverlay` | Overlays |
+| `OnSurfacePrimary` | `FDSemOnSurfacePrimary` | Primary text |
+| `OnSurfaceSecondary` | `FDSemOnSurfaceSecondary` | Secondary text |
+| `InteractiveDefault` | `FDSemInteractiveDefault` | Primary accent |
+| `InteractiveHover` | `FDSemInteractiveHover` | Accent hover |
+| `InteractivePressed` | `FDSemInteractivePressed` | Accent pressed |
+| `OnInteractive` | `FDSemOnInteractive` | Text on accent |
+| `NeutralDefault` | `FDSemNeutralDefault` | Default button |
+| `NeutralHover` | `FDSemNeutralHover` | Default hover |
+| `NeutralPressed` | `FDSemNeutralPressed` | Default pressed |
+| `StatusError` | `FDSemStatusError` | Error/danger |
+| `StatusErrorSubtle` | `FDSemStatusErrorSubtle` | Error background |
+| `OnStatusError` | `FDSemOnStatusError` | Text on error |
+| `StatusErrorHover` | `FDSemStatusErrorHover` | Error hover |
+| `StatusErrorPressed` | `FDSemStatusErrorPressed` | Error pressed |
+| `StatusWarning` | `FDSemStatusWarning` | Warning |
+| `StatusWarningSubtle` | `FDSemStatusWarningSubtle` | Warning background |
+| `StatusSuccess` | `FDSemStatusSuccess` | Success |
+| `StatusSuccessSubtle` | `FDSemStatusSuccessSubtle` | Success background |
+| `StatusInfo` | `FDSemStatusInfo` | Info |
+| `BorderDefault` | `FDSemBorderDefault` | Standard border |
+| `BorderStrong` | `FDSemBorderStrong` | Emphasized border |
+| `Shadow` | `FDSemShadow` | Shadow color |
+| `LinkDefault` | `FDSemLinkDefault` | Link color |
+| `LinkHover` | `FDSemLinkHover` | Link hover |
+| `CloseHover` | `FDSemCloseHover` | Close hover background |
+| `ClosePressed` | `FDSemClosePressed` | Close pressed background |
+| `OnClose` | `FDSemOnClose` | Close text |
+
+#### ThemeTokenKeys.Brushes
+
+Nested class with brush resource key constants (e.g., `ThemeTokenKeys.Brushes.SurfacePrimary` = `"FDBrushSurfacePrimary"`). Same structure as the semantic keys but prefixed with `FDBrush` instead of `FDSem`.
+
+### ServiceCollectionExtensions
+
+DI registration extension methods.
+
+| Method | Description |
+|--------|-------------|
+| `AddFluentDialogs(Action<FluentDialogOptions>?)` | Register all services with optional v2 theme configuration |
+| `AddFluentDialogsWithoutTheme()` | Register dialog services without theme support |
 
 ---
 
@@ -241,7 +352,7 @@ Button visual styles.
 
 ### MessageBoxTheme
 
-Available themes.
+Available themes / presets.
 
 | Value | Description |
 |-------|-------------|
@@ -305,6 +416,8 @@ await MessageBoxBuilder.Create(_messageBoxService)
 | `WithContent(object)` | Set custom content |
 | `WithCheckbox(text, checked?)` | Add checkbox |
 | `WithInput(placeholder, default?, password?)` | Add input |
+| `WithDropdown<T>(items, displayMemberPath?, defaultIndex?)` | Add dropdown (ComboBox) selection |
+| `WithResizable(resizable?)` | Make dialog resizable |
 | `WithTitleBarColor(Color)` | Set title bar color |
 | `WithSize(width?, height?)` | Set dimensions |
 | `OnYes(Action)` | Yes button callback |
@@ -323,4 +436,5 @@ _messageBoxService.Info("Done!").ShowAsync();
 _messageBoxService.Warning("Careful!").ShowAsync();
 _messageBoxService.Error("Failed!").ShowAsync();
 _messageBoxService.Input("Name:", "Enter name").ShowAsync();
+_messageBoxService.Dropdown("Pick one:", items).ShowAsync();
 ```

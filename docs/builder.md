@@ -108,6 +108,23 @@ if (result.Result == MessageBoxResult.OK)
 }
 ```
 
+### Dropdown
+
+```csharp
+var colors = new[] { "Red", "Green", "Blue", "Purple" };
+
+var result = await _messageBox.Dropdown("Choose a color:", colors, defaultIndex: 1)
+    .OnOk(() => Console.WriteLine("Selected!"))
+    .OnCancel(() => Console.WriteLine("Cancelled"))
+    .ShowAsync();
+
+if (result.Result == MessageBoxResult.OK)
+{
+    string color = result.DropdownSelectedItem as string;
+    int index = result.DropdownSelectedIndex;
+}
+```
+
 ---
 
 ## Builder Methods
@@ -168,6 +185,20 @@ MessageBoxBuilder.Create(_messageBox)
     text: "Don't show this again",
     isChecked: false
 )
+```
+
+### Dropdown
+
+```csharp
+var items = new[] { "Option A", "Option B", "Option C" };
+.WithDropdown(items, displayMemberPath: null, defaultIndex: 0)
+```
+
+### Resizable
+
+```csharp
+// Make the dialog resizable (user can drag edges)
+.WithResizable()
 ```
 
 ### Custom Content

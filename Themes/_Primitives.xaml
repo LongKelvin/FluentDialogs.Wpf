@@ -1,0 +1,87 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+        ═══════════════════════════════════════════════════════════════
+        PRIMITIVE COLOR PALETTE — FluentDialogs.Wpf v2.0
+        ═══════════════════════════════════════════════════════════════
+        
+        Raw color values forming the foundational palette.
+        
+        RULES:
+        • Do NOT reference these from control styles or templates.
+        • These are consumed ONLY by _Semantics.xaml and Presets.
+        • To customize colors, override semantic tokens (FDSem*) instead.
+        • Override these in Presets/Light.xaml or Presets/Dark.xaml.
+    -->
+
+    <!-- ═══════════════ Neutral Scale ═══════════════ -->
+    <Color x:Key="FDColorNeutral000">#000000</Color>
+    <Color x:Key="FDColorNeutral050">#1E1E1E</Color>
+    <Color x:Key="FDColorNeutral100">#2D2D2D</Color>
+    <Color x:Key="FDColorNeutral150">#3B3B3B</Color>
+    <Color x:Key="FDColorNeutral200">#3E3E3E</Color>
+    <Color x:Key="FDColorNeutral250">#323232</Color>
+    <Color x:Key="FDColorNeutral300">#4A4A4A</Color>
+    <Color x:Key="FDColorNeutral350">#323130</Color>
+    <Color x:Key="FDColorNeutral400">#605E5C</Color>
+    <Color x:Key="FDColorNeutral500">#8A8886</Color>
+    <Color x:Key="FDColorNeutral600">#C8C6C4</Color>
+    <Color x:Key="FDColorNeutral700">#E1DFDD</Color>
+    <Color x:Key="FDColorNeutral800">#EDEBE9</Color>
+    <Color x:Key="FDColorNeutral850">#F3F2F1</Color>
+    <Color x:Key="FDColorNeutral900">#F3F3F3</Color>
+    <Color x:Key="FDColorNeutral950">#FAFAFA</Color>
+    <Color x:Key="FDColorNeutral1000">#FFFFFF</Color>
+
+    <!-- ═══════════════ Brand / Accent Scale ═══════════════ -->
+    <Color x:Key="FDColorAccent100">#005A9E</Color>
+    <Color x:Key="FDColorAccent200">#106EBE</Color>
+    <Color x:Key="FDColorAccent300">#0078D4</Color>
+    <Color x:Key="FDColorAccent400">#60CDFF</Color>
+    <Color x:Key="FDColorAccent500">#99DCFF</Color>
+    <Color x:Key="FDColorAccent600">#3AA0F3</Color>
+
+    <!-- ═══════════════ Status: Red (Error / Danger) ═══════════════ -->
+    <Color x:Key="FDColorRed100">#8F1E22</Color>
+    <Color x:Key="FDColorRed200">#A4262C</Color>
+    <Color x:Key="FDColorRed300">#D13438</Color>
+    <Color x:Key="FDColorRed400">#F1707B</Color>
+    <Color x:Key="FDColorRed500">#FDE7E9</Color>
+    <Color x:Key="FDColorRed600">#FEF6F6</Color>
+    <Color x:Key="FDColorRed700">#F4ABAB</Color>
+    <Color x:Key="FDColorRedDark100">#3C2A2A</Color>
+    <Color x:Key="FDColorRedDark200">#8B4A4A</Color>
+
+    <!-- ═══════════════ Status: Orange (Warning) ═══════════════ -->
+    <Color x:Key="FDColorOrange100">#C45500</Color>
+    <Color x:Key="FDColorOrange200">#F7630C</Color>
+    <Color x:Key="FDColorOrange300">#FF8C00</Color>
+    <Color x:Key="FDColorOrange400">#FCE100</Color>
+    <Color x:Key="FDColorOrange500">#FFF4CE</Color>
+    <Color x:Key="FDColorOrangeDark100">#3C3520</Color>
+
+    <!-- ═══════════════ Status: Green (Success) ═══════════════ -->
+    <Color x:Key="FDColorGreen100">#0B6A0B</Color>
+    <Color x:Key="FDColorGreen200">#107C10</Color>
+    <Color x:Key="FDColorGreen300">#6CCB5F</Color>
+    <Color x:Key="FDColorGreen400">#DFF6DD</Color>
+    <Color x:Key="FDColorGreenDark100">#1F3D1F</Color>
+
+    <!-- ═══════════════ Overlay / Alpha Colors ═══════════════ -->
+    <Color x:Key="FDColorOverlayLight">#20000000</Color>
+    <Color x:Key="FDColorOverlayMedium">#40000000</Color>
+    <Color x:Key="FDColorOverlayHeavy">#60000000</Color>
+    <Color x:Key="FDColorOverlaySubtle">#10000000</Color>
+
+    <!-- ═══════════════ Special / Fixed Colors ═══════════════ -->
+    <Color x:Key="FDColorTransparent">#00000000</Color>
+    <Color x:Key="FDColorCloseHover">#E81123</Color>
+    <Color x:Key="FDColorClosePressed">#C50E1F</Color>
+    <Color x:Key="FDColorWhite">#FFFFFF</Color>
+    <Color x:Key="FDColorBlack">#000000</Color>
+
+    <!-- Near-black used in light theme foregrounds -->
+    <Color x:Key="FDColorNeutralDark">#201F1E</Color>
+
+</ResourceDictionary>

@@ -123,6 +123,18 @@ public interface IMessageBoxService
     Task<DialogResult> SelectAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null);
 
     /// <summary>
+    /// Displays a dropdown dialog with a ComboBox-style selection.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the dropdown.</typeparam>
+    /// <param name="message">The prompt message to display.</param>
+    /// <param name="items">The items to display in the dropdown.</param>
+    /// <param name="displayMemberPath">The property path to display for complex objects.</param>
+    /// <param name="defaultIndex">The initially selected index.</param>
+    /// <param name="title">The optional title for the dialog.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the selected item.</returns>
+    Task<DialogResult> DropdownAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null);
+
+    /// <summary>
     /// Displays a license agreement or disclaimer dialog that requires scrolling to accept.
     /// </summary>
     /// <param name="title">The title for the dialog.</param>

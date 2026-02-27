@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ═══════════════════════════════════════════════════════════════
+        FLUENT DIALOGS THEME — SINGLE ENTRY POINT
+        ═══════════════════════════════════════════════════════════════
+        
+        Host applications merge ONLY this dictionary.
+        Order matters — later dictionaries can override earlier ones.
+        
+        USAGE (App.xaml):
+            <Application.Resources>
+                <ResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/FluentDialogs.Wpf;component/Themes/FluentDialogs.Theme.xaml"/>
+                    </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary>
+            </Application.Resources>
+        
+        Default preset is Light. Use IFluentDialogThemeService.ApplyPreset()
+        to switch to Dark or a custom preset at runtime.
+    -->
+
+    <ResourceDictionary.MergedDictionaries>
+
+        <!-- Layer 1: Raw color palette -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Primitives.xaml"/>
+
+        <!-- Layer 2: Semantic meaning (light defaults baked in) -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Semantics.xaml"/>
+
+        <!-- Layer 3: Brush mapping (public API for controls) -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Brushes.xaml"/>
+
+        <!-- Layer 4: Typography (font families, sizes, weights) -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Typography.xaml"/>
+
+        <!-- Layer 5: Layout (spacing, radius, elevation, sizing) -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Layout.xaml"/>
+
+        <!-- Layer 6: Infrastructure (converters — structural, not themed) -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/_Infrastructure.xaml"/>
+
+        <!-- Layer 7: Control Styles -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Buttons.xaml"/>
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Dialog.xaml"/>
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Progress.xaml"/>
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Toast.xaml"/>
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Inputs.xaml"/>
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Controls/Icons.xaml"/>
+
+        <!-- Layer 8: Legacy v1 backward-compatible key aliases -->
+        <ResourceDictionary Source="/FluentDialogs.Wpf;component/Themes/Legacy/v1-compat.xaml"/>
+
+        <!--
+            NOTE: No preset is included here.
+            _Semantics.xaml provides Light-theme defaults as fallback.
+            The active preset (Light/Dark/Custom) is injected at runtime
+            by IFluentDialogThemeService.EnsureThemeLoaded() into THIS
+            dictionary's MergedDictionaries, ensuring DynamicResource
+            expressions on brushes resolve within the same scope.
+        -->
+
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>
