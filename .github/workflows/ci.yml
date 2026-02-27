@@ -1,0 +1,52 @@
+# ──────────────────────────────────────────────────────────────
+# CI — Continuous Integration
+# Runs on every push/PR to develop and main.
+# Builds the library and demo, creates NuGet package as artifact.
+# ──────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    name: Build & Pack
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore FluentDialogs.Wpf.sln
+
+      - name: Build library
+        run: dotnet build FluentDialogs.Wpf.csproj -c ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Build demo app
+        run: dotnet build Demo/FluentDialogs.Demo.csproj -c ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Pack NuGet package
+        run: dotnet pack FluentDialogs.Wpf.csproj -c ${{ env.CONFIGURATION }} --no-build -o artifacts
+
+      - name: Upload NuGet artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
+          retention-days: 30

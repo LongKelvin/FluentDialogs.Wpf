@@ -1,0 +1,190 @@
+# ──────────────────────────────────────────────────────────────
+# CD — Release & Publish
+# Builds, creates GitHub Release, and publishes to NuGet.
+#
+# Triggers:
+#   1. AUTOMATIC — push a tag like v2.1.0
+#      git tag v2.1.0 && git push origin v2.1.0
+#
+#   2. MANUAL — Actions tab → "Release & Publish" → Run workflow
+#      Enter version (e.g. "2.1.0") and choose publish target.
+#
+# Requires repository secret: NUGET_API_KEY
+# ──────────────────────────────────────────────────────────────
+name: Release & Publish
+
+on:
+  # Automatic: triggered by pushing a version tag
+  push:
+    tags:
+      - "v*"
+
+  # Manual: owner can trigger from the Actions tab
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version (e.g. 2.1.0 — without 'v' prefix)"
+        required: true
+        type: string
+      publish_nuget:
+        description: "Publish to NuGet.org?"
+        required: true
+        default: true
+        type: boolean
+      create_github_release:
+        description: "Create GitHub Release?"
+        required: true
+        default: true
+        type: boolean
+      prerelease:
+        description: "Mark as pre-release?"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write          # needed for creating releases
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  CONFIGURATION: Release
+
+jobs:
+  release:
+    name: Build, Release & Publish
+    runs-on: windows-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # full history for changelog
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # ── Resolve version ───────────────────────────────────
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $ver = "${{ inputs.version }}"
+          } else {
+            # Extract from tag: refs/tags/v2.1.0 → 2.1.0
+            $ver = "${{ github.ref_name }}" -replace '^v', ''
+          }
+          if (-not $ver) { throw "Version could not be determined" }
+          Write-Host "Version: $ver"
+          echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+          echo "TAG=v$ver"    >> $env:GITHUB_OUTPUT
+
+      # ── Patch version in csproj ───────────────────────────
+      - name: Update csproj version
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          $file = "FluentDialogs.Wpf.csproj"
+          $content = Get-Content $file -Raw
+          $content = $content -replace '<Version>[^<]+</Version>', "<Version>$ver</Version>"
+          Set-Content $file $content -NoNewline
+          Write-Host "Patched $file to version $ver"
+
+      # ── Build & Pack ──────────────────────────────────────
+      - name: Restore
+        run: dotnet restore FluentDialogs.Wpf.csproj
+
+      - name: Build
+        run: dotnet build FluentDialogs.Wpf.csproj -c ${{ env.CONFIGURATION }} --no-restore /p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Pack
+        run: dotnet pack FluentDialogs.Wpf.csproj -c ${{ env.CONFIGURATION }} --no-build -o artifacts /p:Version=${{ steps.version.outputs.VERSION }}
+
+      # ── Create zip for GitHub Release ─────────────────────
+      - name: Create release zip
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          Compress-Archive -Path "artifacts\*.nupkg","artifacts\*.snupkg" -DestinationPath "artifacts\FluentDialogs.Wpf.$ver.zip"
+
+      # ── Generate release notes ────────────────────────────
+      - name: Generate release notes
+        id: notes
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.VERSION }}"
+          $tag = "${{ steps.version.outputs.TAG }}"
+
+          # Find previous tag for changelog link
+          $prevTag = git describe --tags --abbrev=0 "$tag^" 2>$null
+          if (-not $prevTag) { $prevTag = "" }
+
+          $notes = @"
+          ## FluentDialogs.Wpf v$ver
+
+          ### Install
+          ``````
+          dotnet add package FluentDialogs.Wpf --version $ver
+          ``````
+
+          ### Assets
+          - **FluentDialogs.Wpf.$ver.nupkg** — NuGet package
+          - **FluentDialogs.Wpf.$ver.zip** — All packages bundled
+
+          "@
+
+          if ($prevTag) {
+            $notes += "`n### Full Changelog`nhttps://github.com/${{ github.repository }}/compare/$prevTag...$tag`n"
+          }
+
+          # Write to file for gh release
+          $notes | Out-File -FilePath "release-notes.md" -Encoding utf8
+          Write-Host $notes
+
+      # ── Create GitHub Release ─────────────────────────────
+      - name: Create GitHub Release
+        if: >-
+          (github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && inputs.create_github_release == true)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ver  = "${{ steps.version.outputs.VERSION }}"
+          $tag  = "${{ steps.version.outputs.TAG }}"
+          $pre  = if ("${{ inputs.prerelease }}" -eq "true") { "--prerelease" } else { "" }
+
+          # Create tag if manual dispatch (tag may not exist yet)
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            git tag $tag 2>$null
+            git push origin $tag 2>$null
+          }
+
+          $cmd = "gh release create `"$tag`" `"artifacts/FluentDialogs.Wpf.$ver.nupkg`" `"artifacts/FluentDialogs.Wpf.$ver.zip`" --title `"FluentDialogs.Wpf v$ver`" --notes-file release-notes.md --latest"
+          if ($pre) { $cmd += " $pre" }
+          Invoke-Expression $cmd
+
+      # ── Publish to NuGet ──────────────────────────────────
+      - name: Publish to NuGet.org
+        if: >-
+          (github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish_nuget == true)
+        run: >-
+          dotnet nuget push "artifacts\FluentDialogs.Wpf.${{ steps.version.outputs.VERSION }}.nupkg"
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      # ── Upload artifacts (always) ─────────────────────────
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+            artifacts/*.zip
+          retention-days: 90
