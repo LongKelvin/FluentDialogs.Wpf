@@ -45,6 +45,11 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
     private object? _selectedItem;
     private int _selectedIndex = -1;
     private string? _selectionDisplayMemberPath;
+    private ObservableCollection<object>? _dropdownItems;
+    private object? _dropdownSelectedItem;
+    private int _dropdownSelectedIndex = -1;
+    private string? _dropdownDisplayMemberPath;
+    private bool _isResizable;
     private int _timeoutSeconds;
     private int _remainingSeconds;
     private string? _detailedText;
@@ -468,6 +473,94 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
         }
     }
 
+    // ═══════════════ Dropdown Properties ═══════════════
+
+    /// <summary>
+    /// Gets or sets the dropdown items.
+    /// </summary>
+    public ObservableCollection<object>? DropdownItems
+    {
+        get => _dropdownItems;
+        set
+        {
+            if (_dropdownItems != value)
+            {
+                _dropdownItems = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasDropdown));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether a dropdown should be shown.
+    /// </summary>
+    public bool HasDropdown => _dropdownItems is { Count: > 0 };
+
+    /// <summary>
+    /// Gets or sets the dropdown selected item.
+    /// </summary>
+    public object? DropdownSelectedItem
+    {
+        get => _dropdownSelectedItem;
+        set
+        {
+            if (_dropdownSelectedItem != value)
+            {
+                _dropdownSelectedItem = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the dropdown selected index.
+    /// </summary>
+    public int DropdownSelectedIndex
+    {
+        get => _dropdownSelectedIndex;
+        set
+        {
+            if (_dropdownSelectedIndex != value)
+            {
+                _dropdownSelectedIndex = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the display member path for dropdown items.
+    /// </summary>
+    public string? DropdownDisplayMemberPath
+    {
+        get => _dropdownDisplayMemberPath;
+        set
+        {
+            if (_dropdownDisplayMemberPath != value)
+            {
+                _dropdownDisplayMemberPath = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the dialog is resizable.
+    /// </summary>
+    public bool IsResizable
+    {
+        get => _isResizable;
+        set
+        {
+            if (_isResizable != value)
+            {
+                _isResizable = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     /// <summary>
     /// Gets or sets the timeout in seconds.
     /// </summary>
@@ -750,6 +843,8 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
         InputText = options.InputDefaultValue ?? string.Empty;
         InputIsPassword = options.InputIsPassword;
         SelectionDisplayMemberPath = options.SelectionDisplayMemberPath;
+        DropdownDisplayMemberPath = options.DropdownDisplayMemberPath;
+        IsResizable = options.IsResizable;
         DetailedText = options.DetailedText;
         RequireScrollToBottom = options.RequireScrollToBottom;
         HasScrolledToBottom = !options.RequireScrollToBottom;
@@ -773,6 +868,16 @@ public sealed class MessageBoxViewModel : INotifyPropertyChanged
             {
                 SelectedIndex = options.SelectionDefaultIndex;
                 SelectedItem = options.SelectionItems[options.SelectionDefaultIndex];
+            }
+        }
+
+        if (options.DropdownItems is { Count: > 0 })
+        {
+            DropdownItems = new ObservableCollection<object>(options.DropdownItems);
+            if (options.DropdownDefaultIndex >= 0 && options.DropdownDefaultIndex < options.DropdownItems.Count)
+            {
+                DropdownSelectedIndex = options.DropdownDefaultIndex;
+                DropdownSelectedItem = options.DropdownItems[options.DropdownDefaultIndex];
             }
         }
 

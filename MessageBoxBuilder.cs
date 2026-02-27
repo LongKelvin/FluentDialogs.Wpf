@@ -43,6 +43,10 @@ public sealed class MessageBoxBuilder
     private Color? _titleBarColor;
     private double? _width;
     private double? _height;
+    private IReadOnlyList<object>? _dropdownItems;
+    private string? _dropdownDisplayMemberPath;
+    private int _dropdownDefaultIndex = -1;
+    private bool _isResizable;
 
     private Action? _onYes;
     private Action? _onNo;
@@ -194,6 +198,33 @@ public sealed class MessageBoxBuilder
     }
 
     /// <summary>
+    /// Adds a dropdown (ComboBox) to the dialog.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the dropdown.</typeparam>
+    /// <param name="items">The items to display in the dropdown.</param>
+    /// <param name="displayMemberPath">The property path to display for each item.</param>
+    /// <param name="defaultIndex">The initially selected index.</param>
+    /// <returns>The builder for chaining.</returns>
+    public MessageBoxBuilder WithDropdown<T>(IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0)
+    {
+        _dropdownItems = items.Cast<object>().ToList().AsReadOnly();
+        _dropdownDisplayMemberPath = displayMemberPath;
+        _dropdownDefaultIndex = defaultIndex;
+        return this;
+    }
+
+    /// <summary>
+    /// Makes the dialog resizable.
+    /// </summary>
+    /// <param name="resizable">Whether the dialog should be resizable.</param>
+    /// <returns>The builder for chaining.</returns>
+    public MessageBoxBuilder WithResizable(bool resizable = true)
+    {
+        _isResizable = resizable;
+        return this;
+    }
+
+    /// <summary>
     /// Registers a callback for when the user clicks Yes.
     /// </summary>
     /// <param name="action">The action to execute.</param>
@@ -308,7 +339,11 @@ public sealed class MessageBoxBuilder
             InputIsPassword = _inputIsPassword,
             TitleBarColor = _titleBarColor,
             Width = _width,
-            Height = _height
+            Height = _height,
+            DropdownItems = _dropdownItems,
+            DropdownDisplayMemberPath = _dropdownDisplayMemberPath,
+            DropdownDefaultIndex = _dropdownDefaultIndex,
+            IsResizable = _isResizable
         };
     }
 }
@@ -413,5 +448,34 @@ public static class MessageBoxBuilderExtensions
             .WithIcon(MessageBoxIcon.Question)
             .WithButtons(MessageBoxButtons.OKCancel)
             .WithInput(placeholder);
+    }
+
+    /// <summary>
+    /// Creates a dropdown selection dialog builder.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the dropdown.</typeparam>
+    /// <param name="service">The message box service.</param>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="items">The items to display in the dropdown.</param>
+    /// <param name="displayMemberPath">The property path to display for each item.</param>
+    /// <param name="defaultIndex">The initially selected index.</param>
+    /// <param name="title">The optional title.</param>
+    /// <returns>A builder configured for dropdown selection.</returns>
+    /// <example>
+    /// <code>
+    /// var result = await _messageBoxService.Dropdown("Select a color:", colors)
+    ///     .OnOk(() => Console.WriteLine("Selected"))
+    ///     .ShowAsync();
+    /// var selected = result.DropdownSelectedItem;
+    /// </code>
+    /// </example>
+    public static MessageBoxBuilder Dropdown<T>(this IMessageBoxService service, string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null)
+    {
+        return MessageBoxBuilder.Create(service)
+            .WithTitle(title ?? "Select")
+            .WithMessage(message)
+            .WithIcon(MessageBoxIcon.Question)
+            .WithButtons(MessageBoxButtons.OKCancel)
+            .WithDropdown(items, displayMemberPath, defaultIndex);
     }
 }

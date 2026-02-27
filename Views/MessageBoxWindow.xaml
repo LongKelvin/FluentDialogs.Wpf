@@ -206,6 +206,15 @@
                                  Style="{DynamicResource FDListBoxStyle}"
                                  Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisConverter}}"/>
 
+                        <!-- Native Dropdown (ComboBox) -->
+                        <ComboBox Margin="0,16,0,0"
+                                  ItemsSource="{Binding DropdownItems}"
+                                  SelectedItem="{Binding DropdownSelectedItem}"
+                                  SelectedIndex="{Binding DropdownSelectedIndex}"
+                                  DisplayMemberPath="{Binding DropdownDisplayMemberPath}"
+                                  Style="{DynamicResource FDComboBoxStyle}"
+                                  Visibility="{Binding HasDropdown, Converter={StaticResource BoolToVisConverter}}"/>
+
                         <!-- Detailed Text (License/Disclaimer) -->
                         <Border Margin="0,16,0,0"
                                 Style="{DynamicResource FDDetailBorderStyle}"

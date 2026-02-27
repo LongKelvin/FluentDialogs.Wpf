@@ -183,6 +183,23 @@ public sealed class MessageBoxService : IMessageBoxService
     }
 
     /// <inheritdoc/>
+    public Task<DialogResult> DropdownAsync<T>(string message, IEnumerable<T> items, string? displayMemberPath = null, int defaultIndex = 0, string? title = null)
+    {
+        var options = new MessageBoxOptions
+        {
+            Title = title ?? "Select",
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            Buttons = MessageBoxButtons.OKCancel,
+            DropdownItems = items.Cast<object>().ToList().AsReadOnly(),
+            DropdownDisplayMemberPath = displayMemberPath,
+            DropdownDefaultIndex = defaultIndex
+        };
+
+        return ShowExtendedAsync(options);
+    }
+
+    /// <inheritdoc/>
     public Task<DialogResult> LicenseAsync(string title, string message, string detailedText, bool requireScrollToBottom = true)
     {
         var options = new MessageBoxOptions
@@ -192,7 +209,11 @@ public sealed class MessageBoxService : IMessageBoxService
             Icon = MessageBoxIcon.Info,
             Buttons = MessageBoxButtons.OKCancel,
             DetailedText = detailedText,
-            RequireScrollToBottom = requireScrollToBottom
+            RequireScrollToBottom = requireScrollToBottom,
+            IsResizable = true,
+            Width = 560,
+            MinHeight = 400,
+            MaxHeight = 700
         };
 
         return ShowExtendedAsync(options);
@@ -308,6 +329,8 @@ public sealed class MessageBoxService : IMessageBoxService
             InputText = viewModel.InputText,
             SelectedItem = viewModel.SelectedItem,
             SelectedIndex = viewModel.SelectedIndex,
+            DropdownSelectedItem = viewModel.DropdownSelectedItem,
+            DropdownSelectedIndex = viewModel.DropdownSelectedIndex,
             TimedOut = viewModel.TimedOut
         };
     }

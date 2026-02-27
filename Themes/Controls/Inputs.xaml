@@ -133,6 +133,160 @@
         </Setter>
     </Style>
 
+    <!-- ═══════ ComboBox Style ═══════ -->
+    <Style x:Key="FDComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="Background" Value="{DynamicResource FDBrushSurfaceSecondary}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource FDBrushBorderDefault}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource FDBorderThicknessDefault}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeMd}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamily}"/>
+        <Setter Property="Padding" Value="{DynamicResource FDSpacingInputPadding}"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="0" MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Toggle button spans entire control -->
+                        <ToggleButton x:Name="toggleButton"
+                                      Grid.ColumnSpan="2"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Focusable="False"
+                                      ClickMode="Press">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border x:Name="toggleBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{DynamicResource FDRadiusSm}"
+                                            SnapsToDevicePixels="True">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="32"/>
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Chevron glyph -->
+                                            <TextBlock x:Name="arrow"
+                                                       Grid.Column="1"
+                                                       Text="&#xE70D;"
+                                                       FontFamily="{DynamicResource FDTypeFontFamilyMdl2}"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       IsHitTestVisible="False"/>
+                                        </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="toggleBorder" Property="BorderBrush" Value="{DynamicResource FDBrushBorderStrong}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="toggleBorder" Property="BorderBrush" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+                                            <Setter TargetName="arrow" Property="Text" Value="&#xE70E;"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+
+                        <!-- Selected item display -->
+                        <ContentPresenter x:Name="contentPresenter"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center"
+                                          IsHitTestVisible="False"
+                                          Margin="{TemplateBinding Padding}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                        <!-- Popup dropdown -->
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                               Placement="Bottom"
+                               PopupAnimation="Slide"
+                               Margin="1">
+                            <Border x:Name="dropDownBorder"
+                                    MinWidth="{Binding ActualWidth, ElementName=templateRoot}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                    Background="{DynamicResource FDBrushSurfacePrimary}"
+                                    BorderBrush="{DynamicResource FDBrushBorderDefault}"
+                                    BorderThickness="{DynamicResource FDBorderThicknessDefault}"
+                                    CornerRadius="{DynamicResource FDRadiusSm}"
+                                    Margin="0,2,0,0"
+                                    Padding="2"
+                                    SnapsToDevicePixels="True">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="{DynamicResource FDColorShadow}"
+                                                      BlurRadius="8"
+                                                      ShadowDepth="2"
+                                                      Opacity="0.24"
+                                                      Direction="270"/>
+                                </Border.Effect>
+                                <ScrollViewer>
+                                    <StackPanel IsItemsHost="True"
+                                                KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="{DynamicResource FDOpacityDisabled}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══════ ComboBoxItem Style ═══════ -->
+    <Style x:Key="FDComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
+        <Setter Property="Padding" Value="{DynamicResource FDSpacingInputPadding}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                    <Border x:Name="border"
+                            Background="Transparent"
+                            CornerRadius="{DynamicResource FDRadiusSm}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushNeutralHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnInteractive}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ═══════════════ v1 Backward-Compatible Aliases ═══════════════ -->
     <Style x:Key="DialogTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource FDTextBoxStyle}"/>
 
