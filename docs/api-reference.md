@@ -20,8 +20,9 @@ Main service for displaying modal dialogs.
 | `ErrorAsync(message, exception?)` | `Task<MessageBoxResult>` | Error dialog with optional exception |
 | `InputAsync(message, placeholder, defaultValue?, title?, isPassword?)` | `Task<DialogResult>` | Text input dialog |
 | `SelectAsync<T>(message, items, displayMemberPath?, defaultIndex?, title?)` | `Task<DialogResult>` | Selection list dialog |
+| `DropdownAsync<T>(message, items, displayMemberPath?, defaultIndex?, title?)` | `Task<DialogResult>` | Dropdown (ComboBox) selection dialog |
 | `ConfirmWithCheckboxAsync(message, checkboxText, title?)` | `Task<DialogResult>` | Confirm with checkbox |
-| `LicenseAsync(title, message, detailedText, requireScrollToBottom?)` | `Task<DialogResult>` | License/disclaimer dialog |
+| `LicenseAsync(title, message, detailedText, requireScrollToBottom?)` | `Task<DialogResult>` | License/disclaimer dialog (resizable) |
 | `TimeoutAsync(message, timeoutSeconds, timeoutResult?, title?)` | `Task<DialogResult>` | Auto-closing dialog |
 | `ShowProgressAsync(ProgressOptions)` | `Task<IProgressController>` | Progress dialog |
 | `RunWithProgressAsync<T>(operation, options)` | `Task<T?>` | Execute operation with progress |
@@ -158,6 +159,10 @@ Configuration for message box dialogs.
 | `TimeoutResult` | `MessageBoxResult` | `Cancel` | Result on timeout |
 | `DetailedText` | `string?` | `null` | Long-form content |
 | `RequireScrollToBottom` | `bool` | `false` | Require scroll for accept |
+| `DropdownItems` | `IReadOnlyList<object>?` | `null` | Dropdown (ComboBox) items |
+| `DropdownDisplayMemberPath` | `string?` | `null` | Display property for dropdown items |
+| `DropdownDefaultIndex` | `int` | `-1` | Initial dropdown selected index |
+| `IsResizable` | `bool` | `false` | Allow user to resize the dialog |
 
 ### DialogResult / FluentDialogResult
 
@@ -170,6 +175,8 @@ Extended result from dialog operations.
 | `InputText` | `string?` | Input field value |
 | `SelectedItem` | `object?` | Selected list item |
 | `SelectedIndex` | `int` | Selected index (-1 if none) |
+| `DropdownSelectedItem` | `object?` | Selected dropdown item |
+| `DropdownSelectedIndex` | `int` | Selected dropdown index (-1 if none) |
 | `TimedOut` | `bool` | Whether dialog timed out |
 
 ### MessageBoxButtonDefinition
@@ -409,6 +416,8 @@ await MessageBoxBuilder.Create(_messageBoxService)
 | `WithContent(object)` | Set custom content |
 | `WithCheckbox(text, checked?)` | Add checkbox |
 | `WithInput(placeholder, default?, password?)` | Add input |
+| `WithDropdown<T>(items, displayMemberPath?, defaultIndex?)` | Add dropdown (ComboBox) selection |
+| `WithResizable(resizable?)` | Make dialog resizable |
 | `WithTitleBarColor(Color)` | Set title bar color |
 | `WithSize(width?, height?)` | Set dimensions |
 | `OnYes(Action)` | Yes button callback |
@@ -427,4 +436,5 @@ _messageBoxService.Info("Done!").ShowAsync();
 _messageBoxService.Warning("Careful!").ShowAsync();
 _messageBoxService.Error("Failed!").ShowAsync();
 _messageBoxService.Input("Name:", "Enter name").ShowAsync();
+_messageBoxService.Dropdown("Pick one:", items).ShowAsync();
 ```

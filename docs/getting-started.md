@@ -64,7 +64,7 @@ This registers:
 
 | Service | Description |
 |---------|-------------|
-| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, etc.) |
+| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, dropdown, etc.) |
 | `IFluentDialogThemeService` | v2 theme management — presets, tokens, accent color |
 | `IToastService` | Non-blocking toast notifications |
 | `IMessageBoxThemeService` | Legacy v1 theme adapter (backward compatible) |

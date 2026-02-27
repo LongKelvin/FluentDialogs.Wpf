@@ -10,10 +10,12 @@ Modern, injectable WPF dialog library with Windows 11 Fluent Design. Replaces `S
 - **Async-first** — All dialogs are async, no UI blocking
 - **Dependency Injection** — First-class DI support with `IMessageBoxService`
 - **MVVM-friendly** — Injectable, testable, mockable services
-- **Fluent Design** — Windows 11 styling with light/dark themes
+- **Fluent Design** — Windows 11 styling with light/dark themes and smooth open animation
 - **Token-based Theming** — Three-layer design token system (Primitives → Semantics → Brushes) with runtime switching, accent colors, and custom presets
-- **Comprehensive** — Info, confirm, error, input, selection, progress, toast notifications
+- **Comprehensive** — Info, confirm, error, input, selection, dropdown, progress, toast notifications
 - **Fluent Builder** — Chainable API with result callbacks
+- **Fluent Icons** — Composite circle-and-symbol icons matching Windows 11 design language
+- **Resizable Dialogs** — License and custom dialogs support edge-drag resizing
 - **Extensible** — Custom buttons, content, and theming
 - **Backward Compatible** — v1 resource keys still work via built-in compatibility layer
 
@@ -97,11 +99,23 @@ await _messageBox.Confirm("Delete item?")
     .ShowAsync();
 ```
 
+### Dropdown Selection
+
+```csharp
+var languages = new[] { "English", "French", "German", "Spanish" };
+var result = await _messageBox.DropdownAsync("Select language:", languages, title: "Language");
+
+if (result.Result == MessageBoxResult.OK)
+{
+    string selected = result.DropdownSelectedItem as string;
+}
+```
+
 ## Services
 
 | Service | Description |
 |---------|-------------|
-| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, selection, progress) |
+| `IMessageBoxService` | Modal dialogs (info, confirm, error, input, selection, dropdown, progress) |
 | `IToastService` | Non-blocking toast notifications |
 | `IFluentDialogThemeService` | v2 theme management — presets, tokens, accent color |
 | `IMessageBoxThemeService` | Legacy v1 theme service (still works via adapter) |

@@ -312,7 +312,7 @@
                                FontSize="28"
                                FontWeight="Bold"
                                Foreground="{DynamicResource FDBrushOnSurfacePrimary}"/>
-                    <TextBlock Text="Explore all features of the FluentDialogs.Wpf library"
+                    <TextBlock Text="Explore all features of the FluentDialogs.Wpf library — Fluent Design icons, dropdown dialogs, resizable windows, and more"
                                FontSize="14"
                                Foreground="{DynamicResource FDBrushOnSurfaceSecondary}"
                                Margin="0,4,0,0"/>
@@ -409,7 +409,7 @@
                     <StackPanel>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="Icon Types" Style="{StaticResource SectionHeaderStyle}"/>
-                            <TextBlock Text="Vector-based icons that scale perfectly at any DPI" 
+                            <TextBlock Text="Windows 11 Fluent Design composite icons — filled circle with white symbol" 
                                        Style="{StaticResource DescriptionStyle}"/>
                         </StackPanel>
                         <UniformGrid Columns="6">
@@ -425,7 +425,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowInfoIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushInteractiveDefault}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="#0078D4" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="i" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Info" FontSize="12" HorizontalAlignment="Center"/>
@@ -434,7 +434,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowWarningIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusWarning}" CornerRadius="4" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="#F7960A" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="!" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Warning" FontSize="12" HorizontalAlignment="Center"/>
@@ -443,8 +443,8 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowErrorIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusError}" CornerRadius="16" Margin="0,0,0,8">
-                                        <TextBlock Text="X" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                                    <Border Width="32" Height="32" Background="#D13438" CornerRadius="16" Margin="0,0,0,8">
+                                        <TextBlock Text="&#x2715;" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Error" FontSize="12" HorizontalAlignment="Center"/>
                                 </StackPanel>
@@ -452,7 +452,7 @@
                             <Button Margin="0,0,8,0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowSuccessIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushStatusSuccess}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="#107C10" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="&#x2713;" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Success" FontSize="12" HorizontalAlignment="Center"/>
@@ -461,7 +461,7 @@
                             <Button Margin="0" Height="90" Style="{StaticResource DemoButtonStyle}"
                                     Command="{Binding ShowQuestionIconCommand}">
                                 <StackPanel HorizontalAlignment="Center">
-                                    <Border Width="32" Height="32" Background="{DynamicResource FDBrushInteractiveDefault}" CornerRadius="16" Margin="0,0,0,8">
+                                    <Border Width="32" Height="32" Background="#0078D4" CornerRadius="16" Margin="0,0,0,8">
                                         <TextBlock Text="?" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
                                     </Border>
                                     <TextBlock Text="Question" FontSize="12" HorizontalAlignment="Center"/>
