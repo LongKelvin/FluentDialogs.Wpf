@@ -17,11 +17,17 @@ namespace FluentDialogs.Services;
 /// Thread-safe: all mutations verify UI-thread affinity.
 /// </summary>
 /// <remarks>
-/// <b>Key architecture decision:</b> Presets and runtime overrides are injected into
-/// <c>FluentDialogs.Theme.xaml</c>'s own <see cref="ResourceDictionary.MergedDictionaries"/>
-/// (not into Application.Resources directly). This guarantees that DynamicResource
-/// expressions on brushes in <c>_Brushes.xaml</c> resolve within the same dictionary
-/// scope and update correctly when presets are swapped at runtime.
+/// <para>
+/// Presets and runtime overrides are injected into <c>FluentDialogs.Theme.xaml</c>'s own
+/// <see cref="ResourceDictionary.MergedDictionaries"/>.
+/// </para>
+/// <para>
+/// <b>Important WPF limitation:</b> <c>DynamicResource</c> expressions on <c>SolidColorBrush.Color</c>
+/// inside a <see cref="ResourceDictionary"/> do NOT re-evaluate when the referenced Color resource changes,
+/// because <c>Freezable</c> objects without a visual-tree mentor don't receive resource-change notifications.
+/// To work around this, <see cref="SyncBrushColors"/> is called after every mutation to programmatically
+/// push resolved Color values onto each brush object.
+/// </para>
 /// </remarks>
 public sealed class FluentDialogThemeService : IFluentDialogThemeService
 {
@@ -37,13 +43,85 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
     /// <summary>Substring used to detect FluentDialogs.Theme.xaml already loaded from App.xaml.</summary>
     private const string ThemeEntryFileName = "FluentDialogs.Theme.xaml";
 
+    /// <summary>
+    /// Complete mapping of every SolidColorBrush key → its corresponding semantic Color key.
+    /// Covers both the v2 FDBrush* layer and the v1-compat legacy brush aliases.
+    /// </summary>
+    private static readonly (string BrushKey, string ColorKey)[] BrushColorMappings =
+    [
+        // ── v2 public API brushes (_Brushes.xaml) ──
+        (ThemeTokenKeys.Brushes.SurfacePrimary, ThemeTokenKeys.SurfacePrimary),
+        (ThemeTokenKeys.Brushes.SurfaceSecondary, ThemeTokenKeys.SurfaceSecondary),
+        (ThemeTokenKeys.Brushes.SurfaceOverlay, ThemeTokenKeys.SurfaceOverlay),
+        (ThemeTokenKeys.Brushes.OnSurfacePrimary, ThemeTokenKeys.OnSurfacePrimary),
+        (ThemeTokenKeys.Brushes.OnSurfaceSecondary, ThemeTokenKeys.OnSurfaceSecondary),
+        (ThemeTokenKeys.Brushes.InteractiveDefault, ThemeTokenKeys.InteractiveDefault),
+        (ThemeTokenKeys.Brushes.InteractiveHover, ThemeTokenKeys.InteractiveHover),
+        (ThemeTokenKeys.Brushes.InteractivePressed, ThemeTokenKeys.InteractivePressed),
+        (ThemeTokenKeys.Brushes.OnInteractive, ThemeTokenKeys.OnInteractive),
+        (ThemeTokenKeys.Brushes.NeutralDefault, ThemeTokenKeys.NeutralDefault),
+        (ThemeTokenKeys.Brushes.NeutralHover, ThemeTokenKeys.NeutralHover),
+        (ThemeTokenKeys.Brushes.NeutralPressed, ThemeTokenKeys.NeutralPressed),
+        (ThemeTokenKeys.Brushes.StatusError, ThemeTokenKeys.StatusError),
+        (ThemeTokenKeys.Brushes.StatusErrorSubtle, ThemeTokenKeys.StatusErrorSubtle),
+        (ThemeTokenKeys.Brushes.OnStatusError, ThemeTokenKeys.OnStatusError),
+        (ThemeTokenKeys.Brushes.StatusErrorHover, ThemeTokenKeys.StatusErrorHover),
+        (ThemeTokenKeys.Brushes.StatusErrorPressed, ThemeTokenKeys.StatusErrorPressed),
+        (ThemeTokenKeys.Brushes.StatusWarning, ThemeTokenKeys.StatusWarning),
+        (ThemeTokenKeys.Brushes.StatusWarningSubtle, ThemeTokenKeys.StatusWarningSubtle),
+        (ThemeTokenKeys.Brushes.StatusSuccess, ThemeTokenKeys.StatusSuccess),
+        (ThemeTokenKeys.Brushes.StatusSuccessSubtle, ThemeTokenKeys.StatusSuccessSubtle),
+        (ThemeTokenKeys.Brushes.StatusInfo, ThemeTokenKeys.StatusInfo),
+        (ThemeTokenKeys.Brushes.BorderDefault, ThemeTokenKeys.BorderDefault),
+        (ThemeTokenKeys.Brushes.BorderStrong, ThemeTokenKeys.BorderStrong),
+        (ThemeTokenKeys.Brushes.Shadow, ThemeTokenKeys.Shadow),
+        (ThemeTokenKeys.Brushes.LinkDefault, ThemeTokenKeys.LinkDefault),
+        (ThemeTokenKeys.Brushes.LinkHover, ThemeTokenKeys.LinkHover),
+        (ThemeTokenKeys.Brushes.CloseHover, ThemeTokenKeys.CloseHover),
+        (ThemeTokenKeys.Brushes.ClosePressed, ThemeTokenKeys.ClosePressed),
+        (ThemeTokenKeys.Brushes.OnClose, ThemeTokenKeys.OnClose),
+
+        // ── v1-compat legacy brush aliases (Legacy/v1-compat.xaml) ──
+        ("DialogBackgroundBrush", ThemeTokenKeys.SurfacePrimary),
+        ("DialogOverlayBrush", ThemeTokenKeys.SurfaceOverlay),
+        ("DialogForegroundBrush", ThemeTokenKeys.OnSurfacePrimary),
+        ("DialogSecondaryForegroundBrush", ThemeTokenKeys.OnSurfaceSecondary),
+        ("DialogBorderBrush", ThemeTokenKeys.BorderDefault),
+        ("DialogShadowBrush", ThemeTokenKeys.Shadow),
+        ("ButtonBackgroundBrush", ThemeTokenKeys.NeutralDefault),
+        ("ButtonForegroundBrush", ThemeTokenKeys.OnSurfacePrimary),
+        ("ButtonBorderBrush", ThemeTokenKeys.BorderDefault),
+        ("ButtonHoverBackgroundBrush", ThemeTokenKeys.NeutralHover),
+        ("ButtonHoverBorderBrush", ThemeTokenKeys.BorderStrong),
+        ("ButtonPressedBackgroundBrush", ThemeTokenKeys.NeutralPressed),
+        ("PrimaryButtonBackgroundBrush", ThemeTokenKeys.InteractiveDefault),
+        ("PrimaryButtonForegroundBrush", ThemeTokenKeys.OnInteractive),
+        ("PrimaryButtonHoverBackgroundBrush", ThemeTokenKeys.InteractiveHover),
+        ("PrimaryButtonPressedBackgroundBrush", ThemeTokenKeys.InteractivePressed),
+        ("DangerButtonBackgroundBrush", ThemeTokenKeys.StatusError),
+        ("DangerButtonForegroundBrush", ThemeTokenKeys.OnInteractive),
+        ("DangerButtonHoverBackgroundBrush", ThemeTokenKeys.StatusErrorHover),
+        ("DangerButtonPressedBackgroundBrush", ThemeTokenKeys.StatusErrorPressed),
+        ("ExceptionBackgroundBrush", ThemeTokenKeys.StatusErrorSubtle),
+        ("ExceptionBorderBrush", ThemeTokenKeys.OnStatusError),
+        ("ExceptionForegroundBrush", ThemeTokenKeys.OnStatusError),
+        ("HyperlinkBrush", ThemeTokenKeys.LinkDefault),
+        ("HyperlinkHoverBrush", ThemeTokenKeys.LinkHover),
+        ("ErrorDialogBorderBrush", ThemeTokenKeys.StatusError),
+        ("ErrorDialogAccentBrush", ThemeTokenKeys.StatusErrorSubtle),
+        ("WarningDialogBorderBrush", ThemeTokenKeys.StatusWarning),
+        ("WarningDialogAccentBrush", ThemeTokenKeys.StatusWarningSubtle),
+        ("DialogBackground", ThemeTokenKeys.SurfacePrimary),
+        ("DialogForeground", ThemeTokenKeys.OnSurfacePrimary),
+        ("DialogSecondaryForeground", ThemeTokenKeys.OnSurfaceSecondary),
+    ];
+
     private readonly FluentDialogOptions _options;
     private readonly ResourceDictionary _runtimeOverrides = new();
 
     /// <summary>
     /// The FluentDialogs.Theme.xaml dictionary instance.
-    /// Presets and runtime overrides are added to THIS dictionary's MergedDictionaries
-    /// so they share the same DynamicResource resolution scope as the brush definitions.
+    /// Presets and runtime overrides are added to THIS dictionary's MergedDictionaries.
     /// </summary>
     private ResourceDictionary? _themeDict;
 
@@ -81,8 +159,6 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         }
 
         // 2. Apply the configured default preset INSIDE the theme dictionary
-        //    This ensures brushes' DynamicResource expressions (Color="{DynamicResource FDSem*}")
-        //    resolve within the same scope and update correctly on preset swap.
         var presetUri = _options.CustomPresetUri ?? GetBuiltInPresetUri(_options.DefaultPreset);
         _activePresetDict = new ResourceDictionary { Source = presetUri };
         _themeDict.MergedDictionaries.Add(_activePresetDict);
@@ -104,7 +180,10 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
 
         _isLoaded = true;
 
-        // 6. Validate in debug builds
+        // 6. Push resolved Color values onto every brush (WPF Freezable workaround)
+        SyncBrushColors();
+
+        // 7. Validate in debug builds
         ThemeValidator.ValidateIfDebug(_target);
     }
 
@@ -120,6 +199,8 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         SwapPreset(new ResourceDictionary { Source = presetUri });
         CurrentPreset = preset;
 
+        SyncBrushColors();
+
         PresetChanged?.Invoke(this, new ThemePresetChangedEventArgs(oldPreset, preset));
     }
 
@@ -134,7 +215,8 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         var oldPreset = CurrentPreset;
         SwapPreset(new ResourceDictionary { Source = presetUri });
 
-        // Custom presets don't map to a built-in enum; keep current as-is
+        SyncBrushColors();
+
         PresetChanged?.Invoke(this, new ThemePresetChangedEventArgs(oldPreset, CurrentPreset, presetName));
     }
 
@@ -146,6 +228,8 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
 
         ArgumentException.ThrowIfNullOrWhiteSpace(tokenKey);
         _runtimeOverrides[tokenKey] = color;
+
+        SyncBrushColors();
     }
 
     /// <inheritdoc/>
@@ -155,6 +239,7 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         EnsureLoaded();
 
         ApplyAccentColorInternal(accentColor);
+        SyncBrushColors();
     }
 
     /// <inheritdoc/>
@@ -164,6 +249,7 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         EnsureLoaded();
 
         _runtimeOverrides.Clear();
+        SyncBrushColors();
     }
 
     // ═══════════════ Private Helpers ═══════════════
@@ -176,21 +262,47 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
     {
         if (_themeDict is null) return;
 
-        // Remove old preset from the theme dictionary
         if (_activePresetDict is not null)
         {
             _themeDict.MergedDictionaries.Remove(_activePresetDict);
         }
 
-        // Remove runtime overrides temporarily (they must stay last = highest priority)
         _themeDict.MergedDictionaries.Remove(_runtimeOverrides);
 
-        // Add new preset
         _activePresetDict = newPreset;
         _themeDict.MergedDictionaries.Add(_activePresetDict);
 
-        // Re-add overrides last
         _themeDict.MergedDictionaries.Add(_runtimeOverrides);
+    }
+
+    /// <summary>
+    /// Pushes resolved semantic Color values onto every known SolidColorBrush.
+    /// </summary>
+    /// <remarks>
+    /// WPF <c>DynamicResource</c> expressions on <c>Freezable.Color</c> inside a
+    /// <see cref="ResourceDictionary"/> resolve once during XAML load but never re-evaluate
+    /// when the referenced Color resource changes (because Freezables without a visual-tree
+    /// mentor don't receive resource-change notifications). This method works around that
+    /// limitation by reading the current Color value from the dictionary tree and directly
+    /// setting it on each brush's <see cref="SolidColorBrush.Color"/> property.
+    /// </remarks>
+    private void SyncBrushColors()
+    {
+        if (_themeDict is null) return;
+
+        foreach (var (brushKey, colorKey) in BrushColorMappings)
+        {
+            // Resolve the semantic color (searches MergedDictionaries last-to-first:
+            // _runtimeOverrides → _activePresetDict → v1-compat → ... → _Semantics)
+            if (_themeDict[colorKey] is not Color resolvedColor)
+                continue;
+
+            // Find the brush and update its Color
+            if (_themeDict[brushKey] is SolidColorBrush brush && !brush.IsFrozen)
+            {
+                brush.Color = resolvedColor;
+            }
+        }
     }
 
     /// <summary>
@@ -211,7 +323,6 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
 
     private void ApplyAccentColorInternal(Color accent)
     {
-        // Derive hover and pressed states from the accent color
         var hover = DarkenColor(accent, 0.15);
         var pressed = DarkenColor(accent, 0.30);
 
