@@ -12,17 +12,34 @@
 
   <PropertyGroup>
     <PackageId>FluentDialogs.Wpf</PackageId>
-    <Version>1.1.0</Version>
+    <Version>2.0.0</Version>
     <Authors>Long Kelvin</Authors>
     <Company>Long Kelvin</Company>
     <Product>FluentDialogs.Wpf</Product>
-    <Description>Modern, injectable WPF dialog library with Windows 11 Fluent Design. Replaces System.Windows.MessageBox with a fully themeable, MVVM-first approach.</Description>
-    <PackageTags>wpf;dialog;messagebox;fluent;windows11;mvvm;di;dependency-injection</PackageTags>
+    <Description>Modern, injectable WPF dialog library with Windows 11 Fluent Design. Fully themeable v2 architecture with custom presets, semantic tokens, accent colors, and MVVM-first approach. Replaces System.Windows.MessageBox.</Description>
+    <PackageTags>wpf;dialog;messagebox;fluent;windows11;mvvm;di;dependency-injection;theming;custom-presets</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LongKelvin/FluentDialogs.Wpf</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LongKelvin/FluentDialogs.Wpf</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>v2.0.0 — Theming Engine &amp; Fluent Design Overhaul
+
+New Features:
+• Custom Theming Engine — IFluentDialogThemeService with 30+ semantic tokens, custom XAML presets, accent colors, and runtime token overrides
+• Windows 11 Fluent Design Icons — Composite DrawingGroup icons (filled circle + white symbol)
+• Dropdown Dialogs — DropdownAsync&lt;T&gt; for combobox-style selection
+• Resizable Dialogs — IsResizable option for license/content dialogs
+• Fluent Builder Extensions — WithDropdown&lt;T&gt;, WithResizable
+• Custom Presets — Load brand-specific XAML presets at runtime (ApplyCustomPreset)
+• Accent Color API — SetAccentColor with auto-derived hover/pressed states
+• PresetChanged Event — Subscribe to theme switch notifications
+
+Breaking Changes:
+• Theming architecture fully reworked (v1 compat layer included via LegacyThemeServiceAdapter)
+• New service registration: services.AddFluentDialogs() now registers IFluentDialogThemeService
+
+Full Changelog: https://github.com/LongKelvin/FluentDialogs.Wpf/compare/v1.1.0...v2.0.0</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
