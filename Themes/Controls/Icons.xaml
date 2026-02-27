@@ -21,16 +21,28 @@
                     <Viewbox Width="{TemplateBinding Width}" 
                              Height="{TemplateBinding Height}"
                              Stretch="Uniform">
-                        <Path Width="32" 
+                        <!--
+                            IMPORTANT: Do NOT set Fill/Stroke as local values on Path.
+                            Local values (precedence 3) override Style.Triggers (precedence 6).
+                            Defaults are set via Style.Setters so that Triggers can override them.
+                        -->
+                        <Path x:Name="IconPath"
+                              Width="32" 
                               Height="32"
                               Data="{TemplateBinding IconContent}"
-                              Fill="{DynamicResource FDBrushStatusInfo}"
-                              Stroke="{DynamicResource FDBrushStatusInfo}"
                               StrokeThickness="2"
                               Stretch="Uniform">
                             <Path.Style>
                                 <Style TargetType="Path">
+                                    <!-- Default: Info color (blue) -->
+                                    <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
+                                    <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
                                     <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
+                                                     Value="{x:Static enums:MessageBoxIcon.None}">
+                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
+                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
                                                      Value="{x:Static enums:MessageBoxIcon.Info}">
                                             <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
@@ -53,8 +65,8 @@
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
                                                      Value="{x:Static enums:MessageBoxIcon.Question}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
+                                            <Setter Property="Fill" Value="{DynamicResource FDBrushInteractiveDefault}"/>
+                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushInteractiveDefault}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -76,6 +88,6 @@
     <SolidColorBrush x:Key="SuccessIconBrush"
                      Color="{DynamicResource FDSemStatusSuccess}"/>
     <SolidColorBrush x:Key="QuestionIconBrush"
-                     Color="{DynamicResource FDSemStatusInfo}"/>
+                     Color="{DynamicResource FDSemInteractiveDefault}"/>
 
 </ResourceDictionary>
