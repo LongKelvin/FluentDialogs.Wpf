@@ -286,6 +286,29 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
     /// limitation by reading the current Color value from the dictionary tree and directly
     /// setting it on each brush's <see cref="SolidColorBrush.Color"/> property.
     /// </remarks>
+    /// <summary>
+    /// Pushes resolved semantic Color values onto every known SolidColorBrush.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// WPF <c>DynamicResource</c> expressions on <c>Freezable.Color</c> inside a
+    /// <see cref="ResourceDictionary"/> resolve once during XAML load but never re-evaluate
+    /// when the referenced Color resource changes (Freezables without a visual-tree
+    /// mentor don't receive resource-change notifications).
+    /// </para>
+    /// <para>
+    /// Additionally, brushes loaded from compiled BAML (pack URI) are <b>automatically frozen</b>
+    /// by WPF — their <see cref="System.Windows.Freezable.IsFrozen"/> is <c>true</c> and setting
+    /// <c>Color</c> throws. This method handles both cases:
+    /// <list type="bullet">
+    ///   <item>Frozen brush → replaced with a new unfrozen <see cref="SolidColorBrush"/> in
+    ///         <c>_themeDict</c> (direct entries shadow MergedDictionaries; DynamicResource
+    ///         holders re-resolve automatically).</item>
+    ///   <item>Unfrozen brush (already replaced on a prior call) → <c>Color</c> updated in place
+    ///         (DependencyProperty change notification triggers re-render).</item>
+    /// </list>
+    /// </para>
+    /// </remarks>
     private void SyncBrushColors()
     {
         if (_themeDict is null) return;
@@ -293,14 +316,29 @@ public sealed class FluentDialogThemeService : IFluentDialogThemeService
         foreach (var (brushKey, colorKey) in BrushColorMappings)
         {
             // Resolve the semantic color (searches MergedDictionaries last-to-first:
-            // _runtimeOverrides → _activePresetDict → v1-compat → ... → _Semantics)
+            // _runtimeOverrides → _activePresetDict → v1-compat → … → _Semantics)
             if (_themeDict[colorKey] is not Color resolvedColor)
                 continue;
 
-            // Find the brush and update its Color
-            if (_themeDict[brushKey] is SolidColorBrush brush && !brush.IsFrozen)
+            if (_themeDict[brushKey] is SolidColorBrush brush)
             {
-                brush.Color = resolvedColor;
+                if (brush.IsFrozen)
+                {
+                    // BAML-loaded brush is frozen — replace with an unfrozen copy.
+                    // Direct entries in _themeDict shadow the frozen original in
+                    // MergedDictionaries; DynamicResource holders re-resolve.
+                    _themeDict[brushKey] = new SolidColorBrush(resolvedColor);
+                }
+                else
+                {
+                    // Already unfrozen (replaced on a prior call) — update in place
+                    brush.Color = resolvedColor;
+                }
+            }
+            else
+            {
+                // Brush doesn't exist yet — create it
+                _themeDict[brushKey] = new SolidColorBrush(resolvedColor);
             }
         }
     }
