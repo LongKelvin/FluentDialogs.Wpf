@@ -8,8 +8,11 @@
         ICON PRESENTER STYLE — FluentDialogs.Wpf v2.0
         ═══════════════════════════════════════════════════════════════
         
-        Migrated from Controls/IconPresenter.xaml to use FDBrush* tokens.
-        Provides backward-compatible brush aliases for v1 key names.
+        Modern Windows 11 Fluent Design icons.
+        Each icon is a DrawingGroup: filled circle bg + white vector symbol.
+        Colors are baked into the DrawingGroup by IconPresenter.cs so they
+        remain correct regardless of theme. The old single-Path + color-
+        trigger approach is removed.
     -->
 
     <Style TargetType="{x:Type controls:IconPresenter}">
@@ -22,57 +25,38 @@
                              Height="{TemplateBinding Height}"
                              Stretch="Uniform">
                         <!--
-                            IMPORTANT: Do NOT set Fill/Stroke as local values on Path.
-                            Local values (precedence 3) override Style.Triggers (precedence 6).
-                            Defaults are set via Style.Setters so that Triggers can override them.
+                            DrawingPresenter renders the composite DrawingGroup
+                            produced by IconPresenter.cs (circle + white glyph).
+                            Falls back to legacy single-Path mode when IconContent
+                            is set directly (custom geometry override).
                         -->
-                        <Path x:Name="IconPath"
-                              Width="32" 
-                              Height="32"
-                              Data="{TemplateBinding IconContent}"
-                              StrokeThickness="2"
-                              Stretch="Uniform">
-                            <Path.Style>
-                                <Style TargetType="Path">
-                                    <!-- Default: Info color (blue) -->
-                                    <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                    <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.None}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.Info}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusInfo}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.Warning}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusWarning}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusWarning}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.Error}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusError}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusError}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.Success}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushStatusSuccess}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushStatusSuccess}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" 
-                                                     Value="{x:Static enums:MessageBoxIcon.Question}">
-                                            <Setter Property="Fill" Value="{DynamicResource FDBrushInteractiveDefault}"/>
-                                            <Setter Property="Stroke" Value="{DynamicResource FDBrushInteractiveDefault}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Path.Style>
-                        </Path>
+                        <Grid Width="32" Height="32">
+                            <!-- Modern composite icon (circle + white symbol) -->
+                            <Image x:Name="DrawingHost"
+                                   Stretch="Uniform">
+                                <Image.Source>
+                                    <DrawingImage Drawing="{Binding IconDrawing, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Image.Source>
+                            </Image>
+                            <!-- Legacy fallback: single-path custom geometry -->
+                            <Path x:Name="LegacyPath"
+                                  Data="{TemplateBinding IconContent}"
+                                  Fill="{DynamicResource FDBrushStatusInfo}"
+                                  StrokeThickness="0"
+                                  Stretch="Uniform"
+                                  Visibility="Collapsed"/>
+                        </Grid>
                     </Viewbox>
+                    <ControlTemplate.Triggers>
+                        <!--
+                            When a custom IconContent geometry is supplied,
+                            show the legacy Path and hide the DrawingImage.
+                        -->
+                        <Trigger Property="IconContent" Value="{x:Null}">
+                            <Setter TargetName="DrawingHost" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="LegacyPath" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

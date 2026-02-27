@@ -33,13 +33,51 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- Main Window Content with Shadow -->
+    <!-- Main Window Content with Shadow + Open Animation -->
     <Border x:Name="MainBorder"
             Margin="16"
             Background="{DynamicResource FDBrushSurfacePrimary}"
             BorderBrush="{DynamicResource FDBrushBorderDefault}"
             BorderThickness="1"
-            CornerRadius="{DynamicResource FDRadiusMd}">
+            CornerRadius="{DynamicResource FDRadiusMd}"
+            RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform x:Name="MainBorderScale" ScaleX="1" ScaleY="1"/>
+        </Border.RenderTransform>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <!-- Fade in -->
+                        <DoubleAnimation Storyboard.TargetName="MainBorder"
+                                         Storyboard.TargetProperty="Opacity"
+                                         From="0" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <!-- Scale up -->
+                        <DoubleAnimation Storyboard.TargetName="MainBorderScale"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         From="0.96" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="MainBorderScale"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         From="0.96" To="1"
+                                         Duration="{StaticResource FDAnimDurationMedium}">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
@@ -348,6 +386,7 @@
                     Background="{DynamicResource FDBrushSurfacePrimary}"
                     BorderBrush="{DynamicResource FDBrushBorderDefault}"
                     BorderThickness="0,1,0,0"
+                    CornerRadius="{DynamicResource FDRadiusButtonPanel}"
                     Padding="24,16">
 
                 <ItemsControl ItemsSource="{Binding Buttons}"

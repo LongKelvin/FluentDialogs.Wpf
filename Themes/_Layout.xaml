@@ -51,7 +51,9 @@
 
     <!-- Asymmetric Radii -->
     <CornerRadius x:Key="FDRadiusDialogTop">8,8,0,0</CornerRadius>
-    <CornerRadius x:Key="FDRadiusCloseButton">0,8,0,0</CornerRadius>
+    <CornerRadius x:Key="FDRadiusTitleBar">8,8,0,0</CornerRadius>
+    <CornerRadius x:Key="FDRadiusButtonPanel">0,0,8,8</CornerRadius>
+    <CornerRadius x:Key="FDRadiusCloseButton">0,7,0,0</CornerRadius>
 
     <!-- ═══════ Elevation / Shadow ═══════ -->
     <sys:Double x:Key="FDElevationDialogBlur">16</sys:Double>
