@@ -122,8 +122,6 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource FDBrushOnSurfacePrimary}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontFamily" Value="{DynamicResource FDTypeFontFamilyIcon}"/>
-        <Setter Property="FontSize" Value="{DynamicResource FDTypeSizeIconSm}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -133,21 +131,23 @@
                             Background="{TemplateBinding Background}"
                             CornerRadius="{DynamicResource FDRadiusCloseButton}"
                             SnapsToDevicePixels="True">
-                        <TextBlock Text="&#xE106;"
+                        <!-- Windows 11 standard Chrome Close glyph via Segoe MDL2 Assets -->
+                        <TextBlock x:Name="glyph"
+                                   Text="&#xE8BB;"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   FontFamily="{DynamicResource FDTypeFontFamilyIcon}"
-                                   FontSize="{DynamicResource FDTypeSizeIconSm}"
+                                   FontFamily="{DynamicResource FDTypeFontFamilyMdl2}"
+                                   FontSize="10"
                                    Foreground="{TemplateBinding Foreground}"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushCloseHover}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnClose}"/>
+                            <Setter TargetName="glyph" Property="Foreground" Value="{DynamicResource FDBrushOnClose}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource FDBrushClosePressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource FDBrushOnClose}"/>
+                            <Setter TargetName="glyph" Property="Foreground" Value="{DynamicResource FDBrushOnClose}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
